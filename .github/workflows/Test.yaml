@@ -1,0 +1,14 @@
+name: test
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Test
+        run: echo "TEST_IMAGE=$(docker build --target test --quiet .)" >> $GITHUB_ENV
+      - name: Run Test
+        run: docker run $TEST_IMAGE
