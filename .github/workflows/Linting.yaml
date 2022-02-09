@@ -1,0 +1,29 @@
+# See: https://github.com/marketplace/actions/run-hlint
+# See: https://github.com/marketplace/actions/ormolu-action
+
+name: lint
+on:
+  pull_request:
+
+jobs:
+  hlint:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up HLint
+        uses: rwe/actions-hlint-setup@v1
+        with:
+          version: '3.1.6'
+
+      - name: Run HLint
+        uses: rwe/actions-hlint-run@v2
+        with:
+          path: '["src/", "test/"]'
+          fail-on: suggestion
+  ormolu:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Ormolu
+        uses: mrkkrp/ormolu-action@v5
