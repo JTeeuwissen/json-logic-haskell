@@ -22,4 +22,4 @@ WORKDIR /opt/project
 # Build test dependencies.
 RUN cabal build --only-dependencies --enable-tests
 
-CMD ["cabal", "test"]
+CMD ["cabal", "test", "--test-show-details=streaming"]
