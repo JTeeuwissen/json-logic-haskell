@@ -14,7 +14,7 @@ bug-reports: https://github.com/JTeeuwissen/Haskell-JsonLogic
 
 -- The license under which the package is released.
 -- license:
-author:             Jelle Teeuwissen, Gerard van Schie, Marien Matser
+author:             Marien Matser, Gerard van Schie, Jelle Teeuwissen
 maintainer:         j.teeuwissen@students.uu.nl
 
 -- A copyright notice.
