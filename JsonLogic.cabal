@@ -9,7 +9,7 @@ version:            0.1.0.0
 -- description:
 
 -- A URL where users can report bugs.
-bug-reports: https://github.com/JTeeuwissen/Haskell-JsonLogic
+bug-reports: https://github.com/JTeeuwissen/json-logic-haskell
 
 
 -- The license under which the package is released.
