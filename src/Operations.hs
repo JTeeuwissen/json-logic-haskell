@@ -1,15 +1,15 @@
 module Operations where
 
 import Context (Context, Stack)
-import Evaluator (Evaluator)
+import Evaluator (SubEvaluator)
 import Json (Json (JsonNumber))
 
 -- | Function type, part of an operation.
 type Function =
-  Evaluator -> -- The current evaluator, can be used to evaluate subrules.
+  SubEvaluator -> -- The current evaluator, can be used to evaluate subrules.
   Stack -> -- The stack of the current rule, can be used to acced the (previous) environment.
   [Json] -> -- The parameters of the operation
-  (Json, Maybe Context) -- The result of the operation and optionally a new context.
+  Json -- The result of the operation and optionally a new context.
 
 -- | The type of an operation
 data Operation = Operation
@@ -26,8 +26,10 @@ defaultOperations =
   ]
 
 plus :: Operation
-plus = Operation "+" (\evaluator stack params -> (plus' params, Nothing))
+plus = Operation "+" plusFunction
   where
-    plus' :: [Json] -> Json
-    plus' [JsonNumber l, JsonNumber r] = JsonNumber $ l + r
-    plus' _ = error "Wrong number of parameters for +"
+    plusFunction :: Function
+    plusFunction evaluator stack [l, r] = case [evaluator stack l [], evaluator stack r []] of
+      [JsonNumber l, JsonNumber r] -> JsonNumber (l + r)
+      _ -> error "Invalid parameters for +"
+    plusFunction evaluator stack _ = error "Wrong number of parameters for +"
