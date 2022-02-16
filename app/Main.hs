@@ -5,65 +5,36 @@ import qualified Data.Map as Map
 import Control.Monad.State
 import Control.Monad (void, when)
 
--- Same definition
-type Rule = Json
-type Data = Json
-
--- Same definition
-data Json
-  = JsonNull
-  | JsonBool Bool
-  | JsonNumber Double
-  | JsonString String
-  | JsonArray [Json]
-  | JsonObject (Map.Map String Json)
-  deriving (Eq, Show)
-
--- Our monad type, contains the logicEnv
--- Now we can use JL (which holds our env) and IO at the same time.
--- Which would otherwise be a real pain!
-type JL a = StateT JsonLogicEnv IO a
-
--- Contains the functions are variables our environment has currently
-data JsonLogicEnv = JLEnv {
-    functions :: Map.Map String ([Json] -> Json), -- All the operations (plus custom ones)
-    variables :: Map.Map String Json -- Variables defined in rules
-}
-
--- Cannot derive itself, so empty instance
-instance Show JsonLogicEnv where
-    show x = ""
+import JsonLogicIO as Impure
+import JsonLogic as Pure
+import Json
 
 -- Create Json logic context and run the state
 main :: IO ()
-main = Control.Monad.void (runStateT jlRun newEnv)
+main = jsonLogicIO jlioIoRun
 
-jlRun :: JL ()
-jlRun = do
+jlioIoRun :: JLIO ()
+jlioIoRun = do
   -- Execute plusJson
   res1 <- apply plusJson JsonNull
   liftIO $ print res1
   -- Call customPlus before it is added!
   res2 <- apply customPlusJson JsonNull
   liftIO $ print res2
-  -- Can be put in seperate function, but this is how a custom operator is added
-  -- GOAL: rewrite to -> addOperation "customPlus" plusJson
-  modify (\(JLEnv funcs vars) -> JLEnv (Map.insert "customPlus" plus funcs) vars)
+  -- This is how a custom operator is added
+  Impure.addOperation "customOperation" customOperation
+  -- modify (\(JLEnv funcs vars) -> JLEnv (Map.insert "customPlus" plus funcs) vars)
   -- Now that the custom operation is added, try to execute it again!
   res3 <- apply customPlusJson JsonNull
   liftIO $ print res3
   res4 <- apply logJson JsonNull
   liftIO $ print res4
 
--- TODO use this one, could not quickly fit this one in
-addOperation :: String -> ([Json] -> Json) -> JL ()
-addOperation k f = modify (\(JLEnv funcs vars) -> JLEnv (Map.insert k f funcs) vars)
-
 -- Apply the rule to the data
-apply :: Rule -> Data -> JL Json
+apply :: Rule -> Data -> JLIO Json
 apply (JsonObject members) ds = Map.foldrWithKey eval (pure JsonNull) members
   where
-    eval :: String -> Json -> JL Json -> JL Json
+    eval :: String -> Json -> JLIO Json -> JLIO Json
     -- Log is seperate handler, cannot use a function type for this
     eval "log" json _ = do
       liftIO $ putStrLn $ "LOGGER: " ++ show json
@@ -81,28 +52,26 @@ apply (JsonObject members) ds = Map.foldrWithKey eval (pure JsonNull) members
 -- Instead of throwing errors, we can log the error and continue, maybe add flag to state to indicate invalid
           liftIO $ putStrLn $ "ERROR: function \"" ++ k ++ "\" missing from environment!"
           return JsonNull
+    eval _ _ _ = undefined
 apply json _ = do
   liftIO $ putStrLn $ "ERROR: Implementation missing for " ++ show json
   return JsonNull
 
--- Initial environment with only "+" defined
-newEnv :: JsonLogicEnv
-newEnv = JLEnv (Map.fromList [("+", plus)])
-  Map.empty -- Variables
-
--- { "+": [1, 2] }
-plusJson :: Json
-plusJson = JsonObject $ Map.singleton "+" (JsonArray [JsonNumber 1, JsonNumber 2])
-
--- Implementation for plus
-plus :: [Json] -> Json
-plus [JsonNumber x, JsonNumber y] = JsonNumber $ x + y
-plus [_, _] = undefined
-
+-------------------------------------------
+-- Example JSON objects
 -- {"log": "apple"}
 logJson :: Json
 logJson = JsonObject $ Map.singleton "log" (JsonString "apple")
 
 -- { "customPlus": [1, 2] }
 customPlusJson :: Json
-customPlusJson = JsonObject $ Map.singleton "customPlus" (JsonArray [JsonNumber 1, JsonNumber 2])
+customPlusJson = JsonObject $ Map.singleton "customOperation" (JsonArray [JsonNumber 1, JsonNumber 2])
+
+-- { "+": [1, 2] }
+plusJson :: Json
+plusJson = JsonObject $ Map.singleton "+" (JsonArray [JsonNumber 1, JsonNumber 2])
+
+-- 'custom operator'
+customOperation :: [Json] -> Json
+customOperation [JsonNumber x, JsonNumber y] = JsonNumber $ x - y
+customOperation _ = undefined
