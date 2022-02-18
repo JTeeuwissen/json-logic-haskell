@@ -1,11 +1,10 @@
 module JsonLogicMonad where
 
-import Control.Monad.State ( modify, evalState )
+import Control.Monad.State (evalState, modify)
 import Data.Map as M
-
 import Json
 import JsonLogic
-import Operations ( createEnv )
+import Operations (createEnv)
 
 -- Create environment (For now with JsonNull as variables)
 jsonLogic :: [(String, Function)] -> JL a -> IO a
