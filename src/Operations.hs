@@ -9,7 +9,7 @@ type Function =
   SubEvaluator -> -- The current evaluator, can be used to evaluate subrules.
   Stack -> -- The stack of the current rule, can be used to acced the (previous) environment.
   [Json] -> -- The parameters of the operation
-  Json -- The result of the operation and optionally a new context.
+  ReturnValue -- The result of the operation and optionally a new context.
 
 -- | The type of an operation
 data Operation = Operation
@@ -33,3 +33,5 @@ plus = Operation "+" plusFunction
       [JsonNumber l, JsonNumber r] -> JsonNumber (l + r)
       _ -> error "Invalid parameters for +"
     plusFunction evaluator stack _ = error "Wrong number of parameters for +"
+
+createEasy [JsonNumber l, JsonNumber r] -> JsonNumber (l + r)
