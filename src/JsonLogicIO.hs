@@ -1,7 +1,6 @@
 module JsonLogicIO where
 
--- import qualified Data.ByteString.Lazy as B
-import Data.Map as Map
+import Data.Map as M
 import Data.Functor ( (<&>) )
 
 import Control.Monad.State
@@ -15,13 +14,13 @@ import Operations ( createEnv )
 -- Which would otherwise be a real pain!
 type JLIO a = StateT JsonLogicEnv IO a
 
--- Create environment
+-- Create environment (For now with JsonNull as variable)
 jsonLogicIO :: [(String, Function)] -> JLIO a -> IO a
-jsonLogicIO fs jlRun = evalStateT jlRun (createEnv fs)
+jsonLogicIO fs jlRun = evalStateT jlRun (createEnv fs JsonNull)
 
 -- How to add an operator to the JsonLogic
 addOperation :: String -> ([Json] -> Maybe Json) -> JLIO ()
-addOperation funcName f = modify (\(JLEnv funcs vars) -> JLEnv (Map.insert funcName f funcs) vars)
+addOperation funcName f = modify (\(JLEnv funcs vars) -> JLEnv (M.insert funcName f funcs) vars)
 
 -- Add data to the environment once
 addData :: Json -> JLIO ()
@@ -34,12 +33,12 @@ apply rule json = addData json >> evalJson rule
 evalJson :: Json -> JLIO (Maybe Json)
 -- If any of the members evaluate to nothing the entire map evaluates to Nothing
 evalJson (JsonObject jDict) = do
-    jDict' <- sequenceA <$> traverseWithKey evalFunc jDict :: JLIO (Maybe (Map.Map String Json))
+    jDict' <- sequenceA <$> traverseWithKey evalFunc jDict :: JLIO (Maybe (M.Map String Json))
     -- Sloppy Implementation, because the jsonlogic object does not have several memebers
     -- We can fold and just keep the last item. Needs revision
     case jDict' of
         Nothing -> return Nothing
-        Just jDict'' -> return $ pure $ Map.foldr const JsonNull jDict''
+        Just jDict'' -> return $ pure $ M.foldr const JsonNull jDict''
 -- Evaluate all the elements of the array, if any of them eval to Nothing
 -- the whole Object evaluates to Nothing, otherwise put it back in array
 evalJson (JsonArray js) = do
@@ -57,14 +56,14 @@ evalFunc "log" (JsonArray (j:_)) = logging j
 evalFunc "log" json = logging json
 evalFunc fName arr@(JsonArray _) = do
     env <- get
-    case Map.lookup fName $ functions env of
+    case M.lookup fName $ functions env of
         Nothing -> funcMissing fName >> return Nothing
-        Just f  -> evalJson arr <&> (\res -> res >>= f . lst)
+        Just f  -> evalJson arr <&> (=<<) (\(JsonArray js) -> f js)
 evalFunc fName json = do
     env <- get
-    case Map.lookup fName $ functions env of
+    case M.lookup fName $ functions env of
         Nothing -> funcMissing fName >> return Nothing
-        Just f  -> evalJson json <&> (\res -> res >>= \r -> f [r])
+        Just f  -> evalJson json <&> (=<<) (\j -> f [j])
 
 logging :: Json -> JLIO (Maybe Json)
 logging j = do

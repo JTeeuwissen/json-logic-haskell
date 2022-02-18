@@ -4,8 +4,8 @@ import Data.Map as M
 import Json
 
 -- Initial environment with only "+" defined
-createEnv :: [(String, Function)] -> JsonLogicEnv
-createEnv fs = JLEnv (M.union (M.fromList fs) defaultOperations) JsonNull -- Variables
+createEnv :: [(String, Function)] -> Json -> JsonLogicEnv
+createEnv fs = JLEnv (M.union (M.fromList fs) defaultOperations)
 
 -- Default operators
 defaultOperations :: M.Map String Function
