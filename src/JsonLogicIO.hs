@@ -1,5 +1,6 @@
 module JsonLogicIO where
 
+-- import qualified Data.ByteString.Lazy as B
 import Data.Map as Map
 import Data.Functor ( (<&>) )
 
@@ -7,7 +8,7 @@ import Control.Monad.State
     ( modify, evalStateT, MonadIO(liftIO), MonadState(get), StateT )
 
 import Json
-import Operations ( newEnv )
+import Operations ( createEnv )
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) and IO at the same time.
@@ -15,8 +16,8 @@ import Operations ( newEnv )
 type JLIO a = StateT JsonLogicEnv IO a
 
 -- Create environment
-jsonLogicIO :: JLIO a -> IO a
-jsonLogicIO jlRun = evalStateT jlRun newEnv
+jsonLogicIO :: [(String, Function)] -> JLIO a -> IO a
+jsonLogicIO fs jlRun = evalStateT jlRun (createEnv fs)
 
 -- How to add an operator to the JsonLogic
 addOperation :: String -> ([Json] -> Maybe Json) -> JLIO ()
@@ -32,11 +33,6 @@ apply rule json = addData json >> evalJson rule
 
 evalJson :: Json -> JLIO (Maybe Json)
 -- If any of the members evaluate to nothing the entire map evaluates to Nothing
--- evalJson (JsonObject jDict) = do
---     jDict' <- sequenceA <$> traverseWithKey evalFunc jDict :: JLIO (Maybe (Map.Map String Json))
---     case jDict' of
---         Nothing -> return Nothing
---         Just _ -> return $ JsonObject <$> jDict'
 evalJson (JsonObject jDict) = do
     jDict' <- sequenceA <$> traverseWithKey evalFunc jDict :: JLIO (Maybe (Map.Map String Json))
     -- Sloppy Implementation, because the jsonlogic object does not have several memebers

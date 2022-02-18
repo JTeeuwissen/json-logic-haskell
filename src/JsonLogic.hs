@@ -5,15 +5,19 @@ import Data.Map as Map
 import Data.Functor ( (<&>) )
 
 import Json
-import Operations ( newEnv )
+import Operations ( createEnv )
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) when we need it
 type JL a = State JsonLogicEnv a
 
+-- evaluate JsonLogic without bothering about monads
+eval :: [(String, Function)] -> Rule -> Data -> Maybe Json
+eval oper json d = evalState (apply json d) $ createEnv oper
+
 -- Create environment
-jsonLogic :: JL a -> IO a
-jsonLogic jlRun = return $ evalState jlRun newEnv
+jsonLogic :: [(String, Function)] -> JL a -> IO a
+jsonLogic fs jlRun = return $ evalState jlRun (createEnv fs)
 
 -- Add an operation to the list of functions
 addOperation :: String -> ([Json] -> Maybe Json) -> JL ()
@@ -30,6 +34,7 @@ apply rule json = addData json >> evalJson rule
 evalJson :: Json -> JL (Maybe Json)
 -- If any of the members evaluate to nothing the entire map evaluates to Nothing
 evalJson (JsonObject jDict) = do
+    -- traverse [Just x, Just y] -> Nothing
     jDict' <- sequenceA <$> traverseWithKey evalFunc jDict :: JL (Maybe (Map.Map String Json))
     -- Sloppy Implementation, because the jsonlogic object does not have several memebers
     -- We can fold and just keep the last item. Needs revision

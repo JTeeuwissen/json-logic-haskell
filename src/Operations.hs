@@ -1,11 +1,15 @@
 module Operations where
 
-import Data.Map as Map
+import Data.Map as M
 import Json
 
 -- Initial environment with only "+" defined
-newEnv :: JsonLogicEnv
-newEnv = JLEnv (Map.fromList [("+", plus)]) JsonNull -- Variables
+createEnv :: [(String, Function)] -> JsonLogicEnv
+createEnv fs = JLEnv (M.union (M.fromList fs) defaultOperations) JsonNull -- Variables
+
+-- Default operators
+defaultOperations :: M.Map String Function
+defaultOperations = M.fromList [("+", plus)]
 
 -- Implementation for plus
 plus :: [Json] -> Maybe Json

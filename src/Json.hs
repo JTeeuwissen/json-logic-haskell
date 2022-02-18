@@ -16,6 +16,8 @@ data Json
   | JsonObject { dict :: Map.Map String Json }
   deriving (Eq, Show)
 
+type Function = [Json] -> Maybe Json
+
 -- Contains the functions are variables our environment has currently
 data JsonLogicEnv = JLEnv {
     functions :: Map.Map String ([Json] -> Maybe Json),-- Either Json String), -- All the operations (plus custom ones)
