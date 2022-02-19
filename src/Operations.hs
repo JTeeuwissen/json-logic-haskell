@@ -4,14 +4,17 @@ import Data.Map as M
 import Json
 
 -- Initial environment with only "+" defined
-createEnv :: [(String, Function)] -> Json -> JsonLogicEnv
+createEnv :: [Operation] -> Json -> JsonLogicEnv
 createEnv fs = JLEnv (M.union (M.fromList fs) defaultOperations)
 
 -- Default operators
 defaultOperations :: M.Map String Function
 defaultOperations = M.fromList [("+", plus)]
 
+-- Operation type
+type Operation = (String, Function)
+
 -- Implementation for plus
-plus :: [Json] -> Maybe Json
-plus [JsonNumber x, JsonNumber y] = Just $ JsonNumber $ x + y
-plus _ = Nothing
+plus :: Json -> FunctionResult
+plus (JsonArray [JsonNumber x, JsonNumber y]) = Right $ JsonNumber $ x + y
+plus _ = Left "Wrong number of arguments for +"

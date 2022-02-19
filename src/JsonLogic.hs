@@ -1,50 +1,41 @@
 module JsonLogic where
 
 import Control.Monad.Reader (MonadReader (ask), Reader, runReader)
-import Data.Functor ((<&>))
 import Data.Map as M
 import Json
-import Operations (createEnv)
+  ( Data,
+    EvalError (EvalError, errorMessage, functionName, paramaters),
+    EvalResult,
+    Json (JsonNull),
+    JsonLogicEnv (functions),
+    Rule,
+  )
+import Operations (Operation, createEnv)
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) when we need it
 type JL a = Reader JsonLogicEnv a
 
 -- evaluate JsonLogic without bothering about monads
-eval :: [(String, Function)] -> Rule -> Data -> Maybe Json
-eval oper json d = runReader (evalJson json) $ createEnv oper d
+eval :: [Operation] -> Rule -> Data -> EvalResult
+eval ops rule d = runReader (evalRule rule) $ createEnv ops d
 
-evalJson :: Json -> JL (Maybe Json)
--- If any of the members evaluate to nothing the entire map evaluates to Nothing
-evalJson (JsonObject jDict) = do
-  -- traverse [Just x, Just y] -> Nothing
-  jDict' <- sequenceA <$> traverseWithKey evalFunc jDict :: JL (Maybe (M.Map String Json))
-  -- Sloppy Implementation, because the jsonlogic object does not have several memebers
-  -- We can fold and just keep the last item. Needs revision
-  case jDict' of
-    Nothing -> return Nothing
-    Just jDict'' -> return $ pure $ M.foldr const JsonNull jDict''
--- Evaluate all the elements of the array, if any of them eval to Nothing
--- the whole Object evaluates to Nothing, otherwise put it back in array
-evalJson (JsonArray js) = do
-  js' <- sequenceA <$> traverse evalJson js :: JL (Maybe [Json])
-  case js' of
-    Nothing -> return Nothing
-    Just _ -> return $ JsonArray <$> js'
--- Json that does not have inner Json that needs to get evaluated
-evalJson j = return $ pure j
+-- | Evaluate a rule
+-- Currently only evaluates the first rule, non recursive.
+evalRule :: Rule -> JL EvalResult
+evalRule rule = do
+  jDict' <- sequenceA <$> traverseWithKey evalFunc rule
+  return $ case jDict' of
+    Left message -> Left message
+    Right jDict'' -> return $ M.foldr const JsonNull jDict''
 
-evalFunc :: String -> Json -> JL (Maybe Json)
--- TODO implement var
-evalFunc "var" _ = undefined
-evalFunc "log" json = evalJson json
-evalFunc fName arr@(JsonArray _) = do
+evalFunc :: String -> Json -> JL EvalResult
+evalFunc fName param = do
   env <- ask
-  case M.lookup fName $ functions env of
-    Nothing -> return Nothing
-    Just f -> evalJson arr <&> (=<<) (\(JsonArray js) -> f js)
-evalFunc fName json = do
-  env <- ask
-  case M.lookup fName $ functions env of
-    Nothing -> return Nothing
-    Just f -> evalJson json <&> (=<<) (\j -> f [j])
+  return $ case M.lookup fName $ functions env of
+    Nothing -> createEvalError "Function not found"
+    Just f -> case f param of
+      Left message -> createEvalError message
+      (Right js) -> Right js
+  where
+    createEvalError message = Left $ EvalError {functionName = fName, paramaters = param, errorMessage = message}

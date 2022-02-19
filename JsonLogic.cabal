@@ -27,7 +27,6 @@ extra-source-files:
 library Logic
     exposed-modules:
         JsonLogic,
-        JsonLogicIO,
         Json,
         Operations
     other-modules:
