@@ -27,4 +27,4 @@ data JsonLogicEnv = JLEnv
 
 -- Cannot derive itself, so empty instance
 instance Show JsonLogicEnv where
-  show _ = ""
+  show (JLEnv _ vs) = "JLEnv " ++ show vs
