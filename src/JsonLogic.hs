@@ -1,6 +1,6 @@
 module JsonLogic where
 
-import Control.Monad.State (MonadState (get), State, evalState)
+import Control.Monad.Reader (MonadReader (ask), Reader, runReader)
 import Data.Functor ((<&>))
 import Data.Map as M
 import Json
@@ -8,11 +8,11 @@ import Operations (createEnv)
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) when we need it
-type JL a = State JsonLogicEnv a
+type JL a = Reader JsonLogicEnv a
 
 -- evaluate JsonLogic without bothering about monads
 eval :: [(String, Function)] -> Rule -> Data -> Maybe Json
-eval oper json d = evalState (evalJson json) $ createEnv oper d
+eval oper json d = runReader (evalJson json) $ createEnv oper d
 
 evalJson :: Json -> JL (Maybe Json)
 -- If any of the members evaluate to nothing the entire map evaluates to Nothing
@@ -39,12 +39,12 @@ evalFunc :: String -> Json -> JL (Maybe Json)
 evalFunc "var" _ = undefined
 evalFunc "log" json = evalJson json
 evalFunc fName arr@(JsonArray _) = do
-  env <- get
+  env <- ask
   case M.lookup fName $ functions env of
     Nothing -> return Nothing
     Just f -> evalJson arr <&> (=<<) (\(JsonArray js) -> f js)
 evalFunc fName json = do
-  env <- get
+  env <- ask
   case M.lookup fName $ functions env of
     Nothing -> return Nothing
     Just f -> evalJson json <&> (=<<) (\j -> f [j])
