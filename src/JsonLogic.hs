@@ -1,7 +1,7 @@
 module JsonLogic where
 
-import Control.Monad.State (MonadState (get), State, evalState)
-import Data.Map as M (foldr, lookup, traverseWithKey)
+import Control.Monad.Reader (MonadReader (ask), Reader, runReader)
+import Data.Map as M
 import Json
   ( Data,
     EvalError (EvalError, errorMessage, functionName, paramaters),
@@ -14,11 +14,11 @@ import Operations (Operation, createEnv)
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) when we need it
-type JL a = State JsonLogicEnv a
+type JL a = Reader JsonLogicEnv a
 
 -- evaluate JsonLogic without bothering about monads
 eval :: [Operation] -> Rule -> Data -> EvalResult
-eval ops rule d = evalState (evalRule rule) $ createEnv ops d
+eval ops rule d = runReader (evalRule rule) $ createEnv ops d
 
 -- | Evaluate a rule
 -- Currently only evaluates the first rule, non recursive.
@@ -31,7 +31,7 @@ evalRule rule = do
 
 evalFunc :: String -> Json -> JL EvalResult
 evalFunc fName param = do
-  env <- get
+  env <- ask
   return $ case M.lookup fName $ functions env of
     Nothing -> createEvalError "Function not found"
     Just f -> case f param of
