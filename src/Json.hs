@@ -21,11 +21,16 @@ data Json
 -- A Json object, dictionary with string keys and Json values.
 type Object = (M.Map String Json)
 
-type Function = Json -> FunctionResult
+-- Subevaluator, with rule, its context and retulting json.
+type SubEvaluator = Rule -> Data -> EvalResult
+
+type Function = SubEvaluator -> Json -> FunctionResult
+
+type Functions = M.Map String Function
 
 -- Contains the functions are variables our environment has currently
 data JsonLogicEnv = JLEnv
-  { functions :: M.Map String Function, -- All the operations (plus custom ones)
+  { functions :: Functions, -- All the operations (plus custom ones)
     variables :: Json -- Variables defined in rules
   }
 
@@ -36,11 +41,17 @@ instance Show JsonLogicEnv where
 data EvalError = EvalError
   { functionName :: String,
     paramaters :: Json,
-    errorMessage :: String
+    functionError :: FunctionError
   }
   deriving (Show, Eq)
 
-type FunctionError = String
+-- Message and possible inner exception
+data FunctionError = FunctionError
+  { functionErrorMessage :: String,
+    innerError ::
+      Maybe EvalError
+  }
+  deriving (Show, Eq)
 
 type EvalResult = Either EvalError Json
 
