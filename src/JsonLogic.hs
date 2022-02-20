@@ -5,14 +5,12 @@ import Data.Map as M (Map, foldr, fromList, traverseWithKey)
 import JL (JL, getFunction, getOperations)
 import Json
   ( Data,
-    EvalError (EvalError, functionError, functionName),
     EvalResult,
     Function,
-    FunctionError (FunctionError),
+    JLError (JLError),
     Json (JsonNull),
     JsonLogicEnv (JLEnv),
     Rule,
-    paramaters,
   )
 import Operations (Operation, createEnv)
 
@@ -31,15 +29,11 @@ evalRule rule = do
 
 evalFunc :: String -> Json -> JL EvalResult
 evalFunc fName param = do
-  function <- getFunction fName
   ops <- getOperations
+  function <- getFunction fName
   return $ case function of
-    Nothing -> createEvalError $ FunctionError "Function not found" Nothing
-    Just f -> case f (subEval ops) param of
-      Left message -> createEvalError message
-      (Right js) -> Right js
-  where
-    createEvalError message = Left $ EvalError {functionName = fName, paramaters = param, functionError = message}
+    Nothing -> Left $ JLError fName "Not found"
+    Just f -> f (subEval ops) param
 
 subEval :: M.Map String Function -> Rule -> Data -> EvalResult
 subEval ops rule d = runReader (evalRule rule) $ JLEnv ops d

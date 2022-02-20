@@ -38,21 +38,12 @@ data JsonLogicEnv = JLEnv
 instance Show JsonLogicEnv where
   show (JLEnv _ vs) = "JLEnv " ++ show vs
 
-data EvalError = EvalError
+data JLError = JLError
   { functionName :: String,
-    paramaters :: Json,
-    functionError :: FunctionError
+    errorMessage :: String
   }
   deriving (Show, Eq)
 
--- Message and possible inner exception
-data FunctionError = FunctionError
-  { functionErrorMessage :: String,
-    innerError ::
-      Maybe EvalError
-  }
-  deriving (Show, Eq)
+type EvalResult = Either JLError Json
 
-type EvalResult = Either EvalError Json
-
-type FunctionResult = Either FunctionError Json
+type FunctionResult = Either JLError Json
