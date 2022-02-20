@@ -26,11 +26,11 @@ type SubEvaluator = Rule -> Data -> EvalResult
 
 type Function = SubEvaluator -> Json -> FunctionResult
 
-type Functions = M.Map String Function
+type Operations = M.Map String Function
 
 -- Contains the functions are variables our environment has currently
 data JsonLogicEnv = JLEnv
-  { functions :: Functions, -- All the operations (plus custom ones)
+  { operations :: Operations, -- All the operations (plus custom ones)
     variables :: Json -- Variables defined in rules
   }
 

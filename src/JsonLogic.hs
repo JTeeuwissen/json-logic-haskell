@@ -9,7 +9,7 @@ import Json
     Function,
     FunctionError (FunctionError),
     Json (JsonNull),
-    JsonLogicEnv (JLEnv, functions),
+    JsonLogicEnv (JLEnv, operations),
     Rule,
     paramaters,
   )
@@ -35,9 +35,9 @@ evalRule rule = do
 evalFunc :: String -> Json -> JL EvalResult
 evalFunc fName param = do
   env <- ask
-  return $ case M.lookup fName $ functions env of
+  return $ case M.lookup fName $ operations env of
     Nothing -> createEvalError $ FunctionError "Function not found" Nothing
-    Just f -> case f (subEval (functions env)) param of
+    Just f -> case f (subEval (operations env)) param of
       Left message -> createEvalError message
       (Right js) -> Right js
   where
