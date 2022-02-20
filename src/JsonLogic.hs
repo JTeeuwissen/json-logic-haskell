@@ -1,20 +1,22 @@
 module JsonLogic where
 
 import Control.Monad.Reader (runReader)
-import Data.Map as M (foldr, traverseWithKey)
-import JL (JL, getFunction)
+import Data.Map as M (Map, foldr, fromList, traverseWithKey)
+import JL (JL, getFunction, getOperations)
 import Json
   ( Data,
-    EvalError (EvalError, errorMessage, functionName, paramaters),
     EvalResult,
+    Function,
+    JLError (JLError),
     Json (JsonNull),
+    JsonLogicEnv (JLEnv),
     Rule,
   )
 import Operations (Operation, createEnv)
 
 -- evaluate JsonLogic without bothering about monads
 eval :: [Operation] -> Rule -> Data -> EvalResult
-eval ops rule d = runReader (evalRule rule) $ createEnv ops d
+eval ops rule d = runReader (evalRule rule) $ createEnv (M.fromList ops) d
 
 -- | Evaluate a rule
 -- Currently only evaluates the first rule, non recursive.
@@ -27,11 +29,11 @@ evalRule rule = do
 
 evalFunc :: String -> Json -> JL EvalResult
 evalFunc fName param = do
+  ops <- getOperations
   function <- getFunction fName
   return $ case function of
-    Nothing -> createEvalError "Function not found"
-    Just f -> case f param of
-      Left message -> createEvalError message
-      (Right js) -> Right js
-  where
-    createEvalError message = Left $ EvalError {functionName = fName, paramaters = param, errorMessage = message}
+    Nothing -> Left $ JLError fName "Not found"
+    Just f -> f (subEval ops) param
+
+subEval :: M.Map String Function -> Rule -> Data -> EvalResult
+subEval ops rule d = runReader (evalRule rule) $ JLEnv ops d

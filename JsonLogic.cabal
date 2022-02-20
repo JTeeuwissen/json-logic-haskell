@@ -30,6 +30,7 @@ library Logic
         Json,
         Operations
     other-modules:
+        JL
     default-language:
         Haskell2010
     ghc-options: -Wall
@@ -52,8 +53,12 @@ Test-Suite Test
         exitcode-stdio-1.0
     hs-source-dirs:
         test
+    other-modules:
+        Generators
     build-depends:
         base,
         Logic,
         tasty,
-        tasty-hunit
+        tasty-hunit,
+        tasty-hedgehog,
+        hedgehog
