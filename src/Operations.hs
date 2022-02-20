@@ -21,7 +21,7 @@ defaultOperations =
       (Operations.>),
       (Operations.<=),
       (Operations.>=),
-      --Logic
+      -- Logic
       (Operations.&&),
       (Operations.||),
       (Operations.!=),
