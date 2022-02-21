@@ -1,6 +1,16 @@
 module Json where
 
+import Data.Aeson
+import Data.Aeson.Encode.Pretty
+  ( Config (Config),
+    Indent (Spaces),
+    NumberFormat (Generic),
+    encodePretty',
+  )
+import Data.ByteString.Lazy as DBL (toStrict)
 import qualified Data.Map as M
+import Data.Text.Encoding (decodeUtf8)
+import Data.Text.IO as TIO (putStrLn)
 
 -- A rule can be any kind of JSON value, but object will be evaluated.
 type Rule = Json
@@ -17,6 +27,21 @@ data Json
   | JsonArray [Json]
   | JsonObject (M.Map String Json)
   deriving (Eq, Show)
+
+-- Convert to aeson json format
+instance ToJSON Json where
+  toJSON JsonNull = Null
+  toJSON (JsonBool b) = toJSON b
+  toJSON (JsonNumber n) = toJSON n
+  toJSON (JsonString s) = toJSON s
+  toJSON (JsonArray js) = toJSON js
+  toJSON (JsonObject o) = toJSON o
+
+-- Pretty print the JSON
+prettyPrintJson :: Json -> IO ()
+prettyPrintJson = TIO.putStrLn . decodeUtf8 . DBL.toStrict . encodePretty' config
+  where
+    config = Config (Spaces 2) mempty Generic False
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> EvalResult

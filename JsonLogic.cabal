@@ -42,7 +42,10 @@ library Logic
         base,
         containers,
         mtl ^>= 2.2.2,
-        aeson
+        aeson,
+        aeson-pretty,
+        text,
+        bytestring
 
 Test-Suite Test
     main-is:
