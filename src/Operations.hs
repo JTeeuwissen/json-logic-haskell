@@ -4,9 +4,11 @@ import Data.Map as M
 import JL
 import Json
 
--- -- Initial environment with only default operations defined
--- createEnv :: Operations -> Json -> JsonLogicEnv
+-- createEnv :: Map String Function -> Data -> JsonLogicEnv
 -- createEnv fs = JLEnv (M.union fs defaultOperations)
+
+-- -- createOperation :: String -> (Json -> JL Json) -> Operation
+-- -- createOperation name f = (name, f)
 
 -- -- Default operators
 -- defaultOperations :: M.Map String Function
@@ -14,25 +16,22 @@ import Json
 --   M.fromList
 --     [ -- Arithmetic
 --       (Operations.+),
---       -- (Operations.-),
---       -- (Operations.*),
---       -- (Operations./),
---       -- -- Comparison
---       -- (Operations.<),
---       -- (Operations.>),
---       -- (Operations.<=),
---       -- (Operations.>=),
---       -- -- Logic
---       -- (Operations.&&),
---       -- (Operations.||),
---       -- (Operations.!=),
---       -- (Operations.==)
+--       (Operations.-),
+--       (Operations.*),
+--       (Operations./),
+--       -- Comparison
+--       (Operations.<),
+--       (Operations.>),
+--       (Operations.<=),
+--       (Operations.>=),
+--       -- Logic
+--       (Operations.&&),
+--       (Operations.||),
+--       (Operations.!=),
+--       (Operations.==)
 --     ]
 
--- -- Operation type
--- type Operation = (String, Function)
-
--- evaluateBool :: CreateError -> SubEvaluator -> Json -> Either JLError Bool
+-- evaluateBool :: Json -> JL Bool
 -- evaluateBool _ _ (JsonBool b) = Right b
 -- evaluateBool err evaluator (JsonObject o) = do
 --   res <- evaluator o JsonNull
@@ -42,28 +41,28 @@ import Json
 -- evaluateBool err _ _ = Left $ err "Invalid parameter type, was expecting boolean"
 
 -- -- Function evaluators
--- evaluateMath :: (Double -> Double -> Double) -> CreateError -> SubEvaluator -> Json -> Either JLError Json
+-- evaluateMath :: (Double -> Double -> Double) -> Json -> JL Double
 -- evaluateMath operator err evaluator (JsonArray [x, y]) = do
 --   x' <- evaluateNumber err evaluator x
 --   y' <- evaluateNumber err evaluator y
 --   return $ JsonNumber $ x' `operator` y'
 -- evaluateMath _ err _ _ = Left $ err "Wrong number of arguments for math operator"
 
--- evaluateComparison :: (Double -> Double -> Bool) -> CreateError -> SubEvaluator -> Json -> Either JLError Json
+-- evaluateComparison :: (Double -> Double -> Bool) -> Json -> JL Bool
 -- evaluateComparison operator evaluator err (JsonArray [x, y]) = do
 --   x' <- evaluateNumber evaluator err x
 --   y' <- evaluateNumber evaluator err y
 --   return $ JsonBool $ x' `operator` y'
 -- evaluateComparison _ err _ _ = Left $ err "Wrong number of arguments for comparison operator"
 
--- evaluateLogic :: (Bool -> Bool -> Bool) -> CreateError -> SubEvaluator -> Json -> Either JLError Json
+-- evaluateLogic :: (Bool -> Bool -> Bool) -> Json -> JL Bool
 -- evaluateLogic operator evaluator err (JsonArray [x, y]) = do
 --   x' <- evaluateBool evaluator err x
 --   y' <- evaluateBool evaluator err y
 --   return $ JsonBool $ x' `operator` y'
 -- evaluateLogic _ err _ _ = Left $ err "Wrong number of arguments for logic operator"
 
--- Implementation for arithmetic operators
+-- -- Implementation for arithmetic operators
 
 -- (+) :: Operation
 -- (+) = createOperation "+" $ evaluateMath (Prelude.+)
@@ -102,8 +101,3 @@ import Json
 
 -- (>=) :: Operation
 -- (>=) = createOperation ">=" $ evaluateComparison (Prelude.>=)
-
--- createOperation :: String -> (CreateError -> Json -> JL (Either JLError Json)) -> Operation
--- createOperation name f = (name, f createError)
---   where
---     createError = JLError name
