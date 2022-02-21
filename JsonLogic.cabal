@@ -61,4 +61,5 @@ Test-Suite Test
         tasty,
         tasty-hunit,
         tasty-hedgehog,
-        hedgehog
+        hedgehog,
+        containers

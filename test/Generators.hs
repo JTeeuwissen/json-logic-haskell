@@ -28,7 +28,7 @@ genNumericJson = do
     ]
 
 -- Creates numeric Json generator given the operator
-createNumericObject :: String -> (Double -> Double -> Double) -> Gen (Json, Double)
+createNumericObject :: String -> (Double -> Double -> a) -> Gen (Json, a)
 createNumericObject str op = do
   (j1, x1) <- genNumericJson
   (j2, x2) <- genNumericJson
@@ -40,18 +40,11 @@ genComparisonJson = do
   b <- bool
   frequency
     [ (5, return (JsonBool b, b)),
-      (1, createComparisonObject "<" (Prelude.<)),
-      (1, createComparisonObject ">" (Prelude.>)),
-      (1, createComparisonObject "<=" (Prelude.<=)),
-      (1, createComparisonObject ">=" (Prelude.>=))
+      (1, createNumericObject "<" (Prelude.<)),
+      (1, createNumericObject ">" (Prelude.>)),
+      (1, createNumericObject "<=" (Prelude.<=)),
+      (1, createNumericObject ">=" (Prelude.>=))
     ]
-
--- Creates Comparison generator given the operator
-createComparisonObject :: String -> (Double -> Double -> Bool) -> Gen (Json, Bool)
-createComparisonObject str op = do
-  (j1, x1) <- genNumericJson
-  (j2, x2) <- genNumericJson
-  return (JsonObject (M.fromList [(str, JsonArray [j1, j2])]), x1 `op` x2)
 
 -- Generator for a Json object that evaluates to a boolean and only contains logic operations
 genLogicJson :: Gen (Json, Bool)
