@@ -2,8 +2,8 @@ module Json where
 
 import qualified Data.Map as M
 
--- A rule can only be a JSON object.
-type Rule = Object
+-- A rule can be any kind of JSON value, but object will be evaluated.
+type Rule = Json
 
 -- Data can be any kind of JSON value.
 type Data = Json
@@ -15,11 +15,8 @@ data Json
   | JsonNumber Double
   | JsonString String
   | JsonArray [Json]
-  | JsonObject Object
+  | JsonObject (M.Map String Json)
   deriving (Eq, Show)
-
--- A Json object, dictionary with string keys and Json values.
-type Object = (M.Map String Json)
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> EvalResult
