@@ -8,7 +8,7 @@ import Json
     EvalResult,
     Function,
     JLError (JLError),
-    Json (JsonNull),
+    Json (JsonNull, JsonObject),
     JsonLogicEnv (JLEnv),
     Rule,
   )
@@ -21,11 +21,12 @@ eval ops rule d = runReader (evalRule rule) $ createEnv (M.fromList ops) d
 -- | Evaluate a rule
 -- Currently only evaluates the first rule, non recursive.
 evalRule :: Rule -> JL EvalResult
-evalRule rule = do
+evalRule (JsonObject rule) = do
   jDict' <- sequenceA <$> traverseWithKey evalFunc rule
   return $ case jDict' of
     Left message -> Left message
     Right jDict'' -> return $ M.foldr const JsonNull jDict''
+evalRule x = (return . return) x
 
 evalFunc :: String -> Json -> JL EvalResult
 evalFunc fName param = do

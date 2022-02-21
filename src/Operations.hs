@@ -33,22 +33,18 @@ type Operation = (String, Function)
 
 -- Primitive evaluators
 evaluateNumber :: CreateError -> SubEvaluator -> Json -> Either JLError Double
-evaluateNumber _ _ (JsonNumber n) = Right n
-evaluateNumber err evaluator (JsonObject o) = do
-  res <- evaluator o JsonNull
+evaluateNumber err evaluator param = do
+  res <- evaluator param JsonNull
   case res of
     JsonNumber n -> Right n
     _ -> Left $ err "Invalid parameter type, was expecting number"
-evaluateNumber err _ _ = Left $ err "Invalid parameter type, was expecting number"
 
 evaluateBool :: CreateError -> SubEvaluator -> Json -> Either JLError Bool
-evaluateBool _ _ (JsonBool b) = Right b
-evaluateBool err evaluator (JsonObject o) = do
-  res <- evaluator o JsonNull
+evaluateBool err evaluator param = do
+  res <- evaluator param JsonNull
   case res of
     JsonBool b -> Right b
     _ -> Left $ err "Invalid parameter type, was expecting boolean"
-evaluateBool err _ _ = Left $ err "Invalid parameter type, was expecting boolean"
 
 -- Function evaluators
 evaluateMath :: (Double -> Double -> Double) -> CreateError -> SubEvaluator -> Json -> Either JLError Json
