@@ -19,9 +19,9 @@ data Json
   deriving (Eq, Show)
 
 -- Subevaluator, with rule, its context and retulting json.
-type SubEvaluator = Rule -> Data -> EvalResult
+type SubEvaluator = Rule -> Data -> Result
 
-type Function = SubEvaluator -> Json -> FunctionResult
+type Function = SubEvaluator -> Json -> Result
 
 type Operations = M.Map String Function
 
@@ -35,6 +35,4 @@ data JsonLogicEnv = JLEnv
 instance Show JsonLogicEnv where
   show (JLEnv _ vs) = "JLEnv " ++ show vs
 
-type EvalResult = Either String Json
-
-type FunctionResult = Either String Json
+type Result = Either String Json
