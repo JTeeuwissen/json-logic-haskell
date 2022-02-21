@@ -1,39 +1,88 @@
 module JsonLogic where
 
-import Control.Monad.Reader (runReader)
-import Data.Map as M (Map, foldr, fromList, traverseWithKey)
-import JL (JL, getFunction, getOperations)
+import Control.Monad.Except
+import Control.Monad.Reader
+-- import Control.Monad.Reader (lift, runReader)
+import Data.Map as M
+-- import JL (JL, getFunction, getOperations)
 import Json
-  ( Data,
-    EvalResult,
-    Function,
-    JLError (JLError),
-    Json (JsonNull),
-    JsonLogicEnv (JLEnv),
-    Rule,
-  )
-import Operations (Operation, createEnv)
 
--- evaluate JsonLogic without bothering about monads
-eval :: [Operation] -> Rule -> Data -> EvalResult
-eval ops rule d = runReader (evalRule rule) $ createEnv (M.fromList ops) d
+-- ( CreateError,
+--   Data,
+--   EvalResult,
+--   Function,
+--   JLError (JLError),
+--   Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString),
+--   JsonLogicEnv (JLEnv),
+--   Rule,
+-- )
+
+-- import Operations (Operation, createEnv)
+
+eval :: [(String, Function)] -> Rule -> Data -> Either String Json
+eval ops rule d = runExcept (runReaderT (evalRule rule) $ createEnv (M.fromList ops) d)
 
 -- | Evaluate a rule
 -- Currently only evaluates the first rule, non recursive.
-evalRule :: Rule -> JL EvalResult
-evalRule rule = do
-  jDict' <- sequenceA <$> traverseWithKey evalFunc rule
-  return $ case jDict' of
-    Left message -> Left message
-    Right jDict'' -> return $ M.foldr const JsonNull jDict''
+evalRule :: Rule -> JL Json
+evalRule (JsonObject rule) = head . M.elems <$> traverseWithKey evalFunc rule
+evalRule json = return json
 
-evalFunc :: String -> Json -> JL EvalResult
+evalFunc :: String -> Json -> JL Json
 evalFunc fName param = do
-  ops <- getOperations
   function <- getFunction fName
-  return $ case function of
-    Nothing -> Left $ JLError fName "Not found"
-    Just f -> f (subEval ops) param
+  case function of
+    Nothing -> throwError $ "Function '" ++ fName ++ "' Not found"
+    Just f -> f param
 
-subEval :: M.Map String Function -> Rule -> Data -> EvalResult
-subEval ops rule d = runReader (evalRule rule) $ JLEnv ops d
+-- Primitive evaluators
+evaluateNumber :: Json -> JL Double
+evaluateNumber (JsonNumber n) = return n
+evaluateNumber o@(JsonObject _) = do
+  jsonRes <- evalRule o
+  case jsonRes of
+    JsonNumber n -> return n
+    json -> throwError $ show o ++ "did not evaluate to a number, but to: " ++ show json
+evaluateNumber j = throwError $ "Invalid parameter type, was expecting number, got " ++ show j
+
+-- Function evaluators
+evaluateMath :: (Double -> Double -> Double {-CreateError ->-}) -> Json -> JL Json
+evaluateMath operator (JsonArray [x, y]) = do
+  x' <- evaluateNumber x
+  y' <- evaluateNumber y
+  return $ JsonNumber $ x' `operator` y'
+evaluateMath _ _ = throwError "Wrong number of arguments for math operator"
+
+-- (+) :: Operation
+(+) :: (String, Json -> JL Json)
+(+) = ("+", evaluateMath (Prelude.+))
+
+createEnv :: Map String Function -> Data -> JsonLogicEnv
+createEnv fs = JLEnv (M.union fs defaultOperations)
+
+-- createOperation :: String -> ({-CreateError ->-} Json -> JL Json) -> Operation
+-- createOperation name f = (name, f)
+
+-- Default operators
+defaultOperations :: M.Map String Function
+defaultOperations =
+  M.fromList
+    [ -- Arithmetic
+      (JsonLogic.+)
+      -- (Operations.-),
+      -- (Operations.*),
+      -- (Operations./),
+      -- -- Comparison
+      -- (Operations.<),
+      -- (Operations.>),
+      -- (Operations.<=),
+      -- (Operations.>=),
+      -- -- Logic
+      -- (Operations.&&),
+      -- (Operations.||),
+      -- (Operations.!=),
+      -- (Operations.==)
+    ]
+
+-- Operation type
+type Operation = (String, Function)
