@@ -8,7 +8,6 @@ import Json
   ( Data,
     EvalResult,
     Function,
-    JLError (JLError),
     Json (JsonNull, JsonObject),
     JsonLogicEnv (JLEnv),
     Rule,
@@ -32,7 +31,7 @@ evalFunc fName param = do
   ops <- getOperations
   function <- getFunction fName
   return $ case function of
-    Nothing -> throwError $ JLError fName "Not found"
+    Nothing -> throwError $ "Function" ++ fName ++ "Not found"
     Just f -> f (subEval ops) param
 
 subEval :: M.Map String Function -> Rule -> Data -> EvalResult
