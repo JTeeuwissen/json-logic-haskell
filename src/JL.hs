@@ -7,7 +7,6 @@ import Json
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) when we need it
--- type JL a = Reader JsonLogicEnv a
 type JL a = ReaderT JsonLogicEnv (Except String) a
 
 getFunction :: String -> JL (Maybe Function)
@@ -19,7 +18,7 @@ getOperations = asks operations
 getVariables :: JL Json
 getVariables = asks variables
 
-type Operations = M.Map String Function
+type Operations = (M.Map String Function)
 
 -- Contains the functions are variables our environment has currently
 data JsonLogicEnv = JLEnv
@@ -31,7 +30,7 @@ data JsonLogicEnv = JLEnv
 instance Show JsonLogicEnv where
   show (JLEnv _ vs) = "JLEnv " ++ show vs
 
-type Function = Json -> JL Json
+type Function = Data -> Rule -> Json
 
 data JLError = JLError
   { functionName :: String,

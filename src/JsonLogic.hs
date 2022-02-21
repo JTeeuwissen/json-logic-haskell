@@ -2,28 +2,17 @@ module JsonLogic where
 
 import Control.Monad.Except
 import Control.Monad.Reader
--- import Control.Monad.Reader (lift, runReader)
 import Data.Map as M
--- import JL (JL, getFunction, getOperations)
-
 import JL
 import Json
 import Operations
 
--- ( CreateError,
---   Data,
---   EvalResult,
---   Function,
---   JLError (JLError),
---   Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString),
---   JsonLogicEnv (JLEnv),
---   Rule,
--- )
-
 -- import Operations (Operation, createEnv)
 -- String can be our own ERROR type
 eval :: [(String, Function)] -> Rule -> Data -> Either String Json
-eval ops rule d = runExcept (runReaderT (evalRule rule) $ createEnv (M.fromList ops) d)
+eval ops rule d = runExcept (runReaderT (evalRule rule) env)
+  where
+    env = JLEnv (M.union (M.fromList ops) defaultOperations) d
 
 -- | Evaluate a rule
 -- Currently only evaluates the first rule, non recursive.
@@ -36,13 +25,16 @@ evalFunc fName param = do
   function <- getFunction fName
   case function of
     Nothing -> throwError $ "Function '" ++ fName ++ "' Not found"
-    Just f -> f param
+    Just f -> do
+      -- Create subevaluator
+      subEval <- getSubEvaluator
+      vars <- getVariables
+      return $ f subEval vars param
 
-createEnv :: Map String Function -> Data -> JsonLogicEnv
-createEnv fs = JLEnv (M.union fs defaultOperations)
-
--- (:: String -> (Json -> JL Json) -> Operation
--- (name f = (name, f)
+getSubEvaluator :: JL (Data -> Rule -> Except String Json)
+getSubEvaluator = do
+  ops <- getOperations
+  return (\d rule -> runReaderT (evalRule rule) $ JLEnv ops d)
 
 -- Default operators
 defaultOperations :: M.Map String Function
