@@ -1,19 +1,37 @@
+# JsonLogic
+
 [![test](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Test.yaml/badge.svg?event=push)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Test.yaml)
 [![lint](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Linting.yaml/badge.svg?event=push)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Linting.yaml)
 
-# Packages
-Holds packages for:
- * jsonlogic
- * jsonlogic-aeson
-
-# Run tests
-cabal test jsonlogic
-
-# Build
-cabal build all
-
-# json-logic-haskell
 JsonLogic library for Haskell
 
+## Packages
+
+Holds packages for:
+
+* jsonlogic
+* jsonlogic-aeson
+
+## Run tests
+
+Run all package tests:
+
+```bash
+cabal test all
+```
+
+## Build
+
+build all packages:
+
+```bash
+cabal build all
+```
+
 ## Documentation
-run `cabal haddock` to build the documentation and find it in [here](dist-newstyle\build\x86_64-windows\ghc-9.0.1\JsonLogic-0.1.0.0\l\Logic\doc\html\JsonLogic)
+
+To build all documentation run:
+
+```bash
+cabal haddock all
+```
