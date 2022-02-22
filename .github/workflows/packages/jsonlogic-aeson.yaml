@@ -1,4 +1,4 @@
-name: test
+name: test aeson
 on:
   pull_request:
   push:
@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  test:
+  test-aeson:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2

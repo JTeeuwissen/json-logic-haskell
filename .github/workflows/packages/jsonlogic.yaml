@@ -1,4 +1,4 @@
-name: test
+name: test core
 on:
   pull_request:
   push:
@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  test:
+  test-core:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
