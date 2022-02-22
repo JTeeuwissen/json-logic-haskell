@@ -1,5 +1,6 @@
 module Operations where
 
+import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M
 import Json
 
@@ -32,85 +33,78 @@ defaultOperations =
 type Operation = (String, Function)
 
 -- Primitive evaluators
-evaluateNumber :: CreateError -> SubEvaluator -> Json -> Either JLError Double
-evaluateNumber err evaluator param = do
+evaluateNumber :: SubEvaluator -> Json -> Either String Double
+evaluateNumber evaluator param = do
   res <- evaluator param JsonNull
   case res of
-    JsonNumber n -> Right n
-    _ -> Left $ err "Invalid parameter type, was expecting number"
+    JsonNumber n -> return n
+    _ -> throwError "Invalid parameter type, was expecting number"
 
-evaluateBool :: CreateError -> SubEvaluator -> Json -> Either JLError Bool
-evaluateBool err evaluator param = do
+evaluateBool :: SubEvaluator -> Json -> Either String Bool
+evaluateBool evaluator param = do
   res <- evaluator param JsonNull
   case res of
-    JsonBool b -> Right b
-    _ -> Left $ err "Invalid parameter type, was expecting boolean"
+    JsonBool b -> return b
+    _ -> throwError "Invalid parameter type, was expecting boolean"
 
 -- Function evaluators
-evaluateMath :: (Double -> Double -> Double) -> CreateError -> SubEvaluator -> Json -> Either JLError Json
-evaluateMath operator err evaluator (JsonArray [x, y]) = do
-  x' <- evaluateNumber err evaluator x
-  y' <- evaluateNumber err evaluator y
+evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Json -> Either String Json
+evaluateMath operator evaluator (JsonArray [x, y]) = do
+  x' <- evaluateNumber evaluator x
+  y' <- evaluateNumber evaluator y
   return $ JsonNumber $ x' `operator` y'
-evaluateMath _ err _ _ = Left $ err "Wrong number of arguments for math operator"
+evaluateMath _ _ _ = throwError "Wrong number of arguments for math operator"
 
-evaluateComparison :: (Double -> Double -> Bool) -> CreateError -> SubEvaluator -> Json -> Either JLError Json
-evaluateComparison operator evaluator err (JsonArray [x, y]) = do
-  x' <- evaluateNumber evaluator err x
-  y' <- evaluateNumber evaluator err y
+evaluateComparison :: (Double -> Double -> Bool) -> SubEvaluator -> Json -> Either String Json
+evaluateComparison operator evaluator (JsonArray [x, y]) = do
+  x' <- evaluateNumber evaluator x
+  y' <- evaluateNumber evaluator y
   return $ JsonBool $ x' `operator` y'
-evaluateComparison _ err _ _ = Left $ err "Wrong number of arguments for comparison operator"
+evaluateComparison _ _ _ = throwError "Wrong number of arguments for comparison operator"
 
-evaluateLogic :: (Bool -> Bool -> Bool) -> CreateError -> SubEvaluator -> Json -> Either JLError Json
-evaluateLogic operator evaluator err (JsonArray [x, y]) = do
-  x' <- evaluateBool evaluator err x
-  y' <- evaluateBool evaluator err y
+evaluateLogic :: (Bool -> Bool -> Bool) -> SubEvaluator -> Json -> Either String Json
+evaluateLogic operator evaluator (JsonArray [x, y]) = do
+  x' <- evaluateBool evaluator x
+  y' <- evaluateBool evaluator y
   return $ JsonBool $ x' `operator` y'
-evaluateLogic _ err _ _ = Left $ err "Wrong number of arguments for logic operator"
+evaluateLogic _ _ _ = throwError "Wrong number of arguments for logic operator"
 
 -- Implementation for arithmetic operators
 
 (+) :: Operation
-(+) = createOperation "+" $ evaluateMath (Prelude.+)
+(+) = ("+", evaluateMath (Prelude.+))
 
 (-) :: Operation
-(-) = createOperation "-" $ evaluateMath (Prelude.-)
+(-) = ("-", evaluateMath (Prelude.-))
 
 (*) :: Operation
-(*) = createOperation "*" $ evaluateMath (Prelude.*)
+(*) = ("*", evaluateMath (Prelude.*))
 
 (/) :: Operation
-(/) = createOperation "/" $ evaluateMath (Prelude./)
+(/) = ("/", evaluateMath (Prelude./))
 
 -- Implementation for bool -> bool -> bool operators
 (&&) :: Operation
-(&&) = createOperation "and" $ evaluateLogic (Prelude.&&)
+(&&) = ("and", evaluateLogic (Prelude.&&))
 
 (||) :: Operation
-(||) = createOperation "or" $ evaluateLogic (Prelude.||)
+(||) = ("or", evaluateLogic (Prelude.||))
 
 (==) :: Operation
-(==) = createOperation "==" $ evaluateLogic (Prelude.==) -- TODO proper equality implementation.
+(==) = ("==", evaluateLogic (Prelude.==)) -- TODO proper equality implementation.
 
 (!=) :: Operation
-(!=) = createOperation "!=" $ evaluateLogic (Prelude./=)
+(!=) = ("!=", evaluateLogic (Prelude./=))
 
 -- Implementation for double -> double -> bool operators
 (<) :: Operation
-(<) = createOperation "<" $ evaluateComparison (Prelude.<)
+(<) = ("<", evaluateComparison (Prelude.<))
 
 (>) :: Operation
-(>) = createOperation ">" $ evaluateComparison (Prelude.>)
+(>) = (">", evaluateComparison (Prelude.>))
 
 (<=) :: Operation
-(<=) = createOperation "<=" $ evaluateComparison (Prelude.<=)
+(<=) = ("<=", evaluateComparison (Prelude.<=))
 
 (>=) :: Operation
-(>=) = createOperation ">=" $ evaluateComparison (Prelude.>=)
-
-type CreateError = String -> JLError
-
-createOperation :: String -> (CreateError -> SubEvaluator -> Json -> Either JLError Json) -> Operation
-createOperation name f = (name, f createError)
-  where
-    createError = JLError name
+(>=) = (">=", evaluateComparison (Prelude.>=))
