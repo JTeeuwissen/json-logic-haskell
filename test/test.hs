@@ -1,12 +1,14 @@
 {-# LANGUAGE OverloadedLists #-}
 
 import Data.List
+import qualified Data.Map as M
 import Data.Ord
 import Generators (genArithmeticOperator, genComparisonOperator, genLogicOperator)
 import Hedgehog (Gen, Size (Size), forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
+import qualified Hedgehog.Internal.Range
 import qualified Hedgehog.Range as Range
-import Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject))
+import Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
 import JsonLogic
 import Test.Tasty
 import Test.Tasty.HUnit as U
@@ -16,7 +18,7 @@ main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [unitTests, hedgehogTests]
+tests = testGroup "Tests" [unitTests, hedgehogTests, varUnitTests, mapUnitTests]
 
 unitTests :: TestTree
 unitTests =
@@ -76,6 +78,66 @@ hedgehogTests =
           rl <- forAll Gen.bool
           rr <- forAll Gen.bool
           Right (JsonBool (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonBool rl, JsonBool rr])]])]) JsonNull
+    ]
+
+varUnitTests :: TestTree
+varUnitTests =
+  testGroup
+    "Var unit tests"
+    -- logic{"var":"x"} data{"x":1} => 1
+    [ testCase "logic{\"var\":\"x\"} data{\"x\":1}" $
+        U.assertEqual
+          "Simple var case is correct"
+          (Right $ JsonNumber 1)
+          (eval [] (JsonObject $ M.singleton "var" $ JsonString "x") (JsonObject $ M.singleton "x" $ JsonNumber 1)),
+      -- logic{"var":"x"} => Null
+      testCase "logic{\"var\":\"x\"} data{}" $
+        U.assertEqual
+          "Empty data gives Null"
+          (Right JsonNull)
+          (eval [] (JsonObject $ M.singleton "var" $ JsonString "x") JsonNull),
+      -- logic{"var":"x"} data{"x":[1,2,3]} => [1,2,3]
+      testCase "logic{\"var\":\"x\"} data{\"x\":[1,2,3]\"}" $
+        U.assertEqual
+          "Substitutes arraytype correctly"
+          (Right $ JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3])
+          (eval [] (JsonObject $ M.singleton "var" $ JsonString "x") (JsonObject $ M.singleton "x" $ JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3])),
+      -- logic{"var":"x.y"} data{"x":{"y":1}} => 1
+      testCase "logic{\"var\":\"x.y\"} data{\"x\":{\"y\":1}\"}" $
+        U.assertEqual
+          "Access nested parameter 'x.y'"
+          (Right $ JsonNumber 1)
+          (eval [] (JsonObject $ M.singleton "var" $ JsonString "x.y") (JsonObject $ M.singleton "x" $ JsonObject $ M.singleton "y" $ JsonNumber 1)),
+      -- logic{"var":"y"} data{"x":{"y":1}} => Null
+      testCase "logic{\"var\":\"y\"} data{\"x\":{\"y\":1}\"}" $
+        U.assertEqual
+          "Parameter not accessed on correct level"
+          (Right JsonNull)
+          (eval [] (JsonObject $ M.singleton "var" $ JsonString "y") (JsonObject $ M.singleton "x" $ JsonObject $ M.singleton "y" $ JsonNumber 1))
+    ]
+
+mapUnitTests :: TestTree
+mapUnitTests =
+  testGroup
+    "Map unit tests"
+    -- logic{"map":[[], {"+", [1,2]} => []
+    [ testCase "logic{\"map\":\"[[], {\"+\":[1, 2]}]\"} data{}" $
+        U.assertEqual
+          "Empty list case"
+          (Right $ JsonArray [])
+          (eval [] (JsonObject $ M.singleton "map" $ JsonArray [JsonArray [], JsonObject $ M.singleton "+" $ JsonArray [JsonNumber 1, JsonNumber 2]]) JsonNull),
+      -- logic{"map":[[1,2], {"+", [{"var":""},2]} => [3,4]
+      testCase "logic{\"map\":\"[[1,2], {\"+\":[{\"var\":\"\"}, 2]}]\"} data{}" $
+        U.assertEqual
+          "Empty list case"
+          (Right $ JsonArray [JsonNumber 3, JsonNumber 4])
+          (eval [] (JsonObject $ M.singleton "map" $ JsonArray [JsonArray [JsonNumber 1, JsonNumber 2], JsonObject $ M.singleton "+" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "", JsonNumber 2]]) JsonNull),
+      -- logic{"map":[{"var":"x"}, {"+", [{"var":""},2]} data[1,2,3]=> [3,4,5]
+      testCase "logic{\"map\":\"[{\"var\":\"x\"}, {\"+\":[{\"var\":\"\"}, 2]}]\"} data{\"x\":[1,2,3]\"}" $
+        U.assertEqual
+          "Empty list case"
+          (Right $ JsonArray [JsonNumber 3, JsonNumber 4, JsonNumber 5])
+          (eval [] (JsonObject $ M.singleton "map" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "x", JsonObject $ M.singleton "+" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "", JsonNumber 2]]) (JsonObject $ M.singleton "x" $ JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3]))
     ]
 
 genDouble :: Gen Double

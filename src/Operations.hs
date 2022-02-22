@@ -3,6 +3,7 @@ module Operations where
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M
 import Json
+import Utils
 
 -- Initial environment with only "+" defined
 createEnv :: Operations -> Json -> JsonLogicEnv
@@ -48,7 +49,14 @@ evaluateBool evaluator param vars = do
   res <- evaluator param vars
   case res of
     JsonBool b -> return b
-    _ -> throwError "Invalid parameter type, was expecting boolean"
+    j -> throwError $ "Invalid parameter type, was expecting boolean. Got: " ++ show j
+
+evaluateArray :: SubEvaluator -> Rule -> Data -> Either String [Json]
+evaluateArray evaluator param vars = do
+  res <- evaluator param vars
+  case res of
+    JsonArray xs -> return xs
+    j -> throwError $ "Invalid parameter type, was expecting array. Got: " ++ show j
 
 -- Function evaluators
 evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
@@ -73,35 +81,23 @@ evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
 evaluateLogic _ _ _ _ = throwError "Wrong number of arguments for logic operator"
 
 -- Evaluation for map
-evaluateArrayElems :: SubEvaluator -> Rule -> Data -> Either String [Json]
-evaluateArrayElems evaluator (JsonArray xs) vars = mapM (`evaluator` vars) xs
-evaluateArrayElems _ _ _ = throwError "EvaluteArray called on Non array type"
-
 evaluateMap :: SubEvaluator -> Rule -> Data -> Either String Json
 evaluateMap evaluator (JsonArray [xs, f]) vars = do
-  xs' <- evaluateArrayElems evaluator xs vars -- This is our data we evaluate
+  xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
   JsonArray <$> mapM (evaluator f) xs'
 evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 
 evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
-evaluateVar _ (JsonString s) vars = return vars
+evaluateVar _ (JsonString s) vars = indexVar (splitOnPeriod s) vars
+  where
+    indexVar :: [String] -> Data -> Either String Json
+    indexVar [] vars' = return vars'
+    indexVar _ JsonNull = return JsonNull
+    indexVar (x : xs) (JsonObject o) = case M.lookup x o of
+      Nothing -> return JsonNull -- If member is not present it returns Null
+      Just js -> indexVar xs js
+    indexVar _ _ = throwError "TODO implement var for non-objects"
 evaluateVar _ s vars = throwError $ "LOGIC: " ++ show s ++ "VARS: " ++ show vars
-
-indexVar :: [String] -> Data -> Either String Json
-indexVar [] vars = return vars
-indexVar (x : xs) j@(JsonObject o) = case M.lookup x o of
-  Nothing -> throwError $ "cannot find: '" ++ show x ++ "' in data: " ++ show j
-  Just js -> indexVar xs js
-indexVar xs json = throwError $ "invalid search var: " ++ show (unwords xs) ++ " in data: " ++ show json
-
--- Same definition as words at: https://github.com/ghc/ghc/blob/master/libraries/base/Data/OldList.hs
-splitOnPeriod :: String -> [String]
-splitOnPeriod "" = []
-splitOnPeriod s = case dropWhile ('.' Prelude.==) s of
-  "." -> []
-  s' -> w : splitOnPeriod s''
-    where
-      (w, s'') = break ('.' Prelude.==) s'
 
 -- Implementation for arithmetic operators
 
