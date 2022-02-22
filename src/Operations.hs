@@ -3,6 +3,7 @@ module Operations where
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M
 import Json
+import Utils
 
 -- Initial environment with only "+" defined
 createEnv :: Operations -> Json -> JsonLogicEnv
@@ -26,48 +27,77 @@ defaultOperations =
       (Operations.&&),
       (Operations.||),
       (Operations.!=),
-      (Operations.==)
+      (Operations.==),
+      -- Functions
+      Operations.map,
+      Operations.var
     ]
 
 -- Operation type
 type Operation = (String, Function)
 
 -- Primitive evaluators
-evaluateNumber :: SubEvaluator -> Json -> Either String Double
-evaluateNumber evaluator param = do
-  res <- evaluator param JsonNull
+evaluateNumber :: SubEvaluator -> Rule -> Data -> Either String Double
+evaluateNumber evaluator param vars = do
+  res <- evaluator param vars
   case res of
     JsonNumber n -> return n
-    _ -> throwError "Invalid parameter type, was expecting number"
+    j -> throwError $ "Invalid parameter type, was expecting number. Got: " ++ show j
 
-evaluateBool :: SubEvaluator -> Json -> Either String Bool
-evaluateBool evaluator param = do
-  res <- evaluator param JsonNull
+evaluateBool :: SubEvaluator -> Rule -> Data -> Either String Bool
+evaluateBool evaluator param vars = do
+  res <- evaluator param vars
   case res of
     JsonBool b -> return b
-    _ -> throwError "Invalid parameter type, was expecting boolean"
+    j -> throwError $ "Invalid parameter type, was expecting boolean. Got: " ++ show j
+
+evaluateArray :: SubEvaluator -> Rule -> Data -> Either String [Json]
+evaluateArray evaluator param vars = do
+  res <- evaluator param vars
+  case res of
+    JsonArray xs -> return xs
+    j -> throwError $ "Invalid parameter type, was expecting array. Got: " ++ show j
 
 -- Function evaluators
-evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Json -> Either String Json
-evaluateMath operator evaluator (JsonArray [x, y]) = do
-  x' <- evaluateNumber evaluator x
-  y' <- evaluateNumber evaluator y
+evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateMath operator evaluator (JsonArray [x, y]) vars = do
+  x' <- evaluateNumber evaluator x vars
+  y' <- evaluateNumber evaluator y vars
   return $ JsonNumber $ x' `operator` y'
-evaluateMath _ _ _ = throwError "Wrong number of arguments for math operator"
+evaluateMath _ _ _ _ = throwError "Wrong number of arguments for math operator"
 
-evaluateComparison :: (Double -> Double -> Bool) -> SubEvaluator -> Json -> Either String Json
-evaluateComparison operator evaluator (JsonArray [x, y]) = do
-  x' <- evaluateNumber evaluator x
-  y' <- evaluateNumber evaluator y
+evaluateComparison :: (Double -> Double -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
+  x' <- evaluateNumber evaluator x vars
+  y' <- evaluateNumber evaluator y vars
   return $ JsonBool $ x' `operator` y'
-evaluateComparison _ _ _ = throwError "Wrong number of arguments for comparison operator"
+evaluateComparison _ _ _ _ = throwError "Wrong number of arguments for comparison operator"
 
-evaluateLogic :: (Bool -> Bool -> Bool) -> SubEvaluator -> Json -> Either String Json
-evaluateLogic operator evaluator (JsonArray [x, y]) = do
-  x' <- evaluateBool evaluator x
-  y' <- evaluateBool evaluator y
+evaluateLogic :: (Bool -> Bool -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
+  x' <- evaluateBool evaluator x vars
+  y' <- evaluateBool evaluator y vars
   return $ JsonBool $ x' `operator` y'
-evaluateLogic _ _ _ = throwError "Wrong number of arguments for logic operator"
+evaluateLogic _ _ _ _ = throwError "Wrong number of arguments for logic operator"
+
+-- Evaluation for map
+evaluateMap :: SubEvaluator -> Rule -> Data -> Either String Json
+evaluateMap evaluator (JsonArray [xs, f]) vars = do
+  xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
+  JsonArray <$> mapM (evaluator f) xs'
+evaluateMap _ _ _ = throwError "Map received the wrong arguments"
+
+evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
+evaluateVar _ (JsonString s) vars = indexVar (splitOnPeriod s) vars
+  where
+    indexVar :: [String] -> Data -> Either String Json
+    indexVar [] vars' = return vars'
+    indexVar _ JsonNull = return JsonNull
+    indexVar (x : xs) (JsonObject o) = case M.lookup x o of
+      Nothing -> return JsonNull -- If member is not present it returns Null
+      Just js -> indexVar xs js
+    indexVar _ _ = throwError "TODO implement var for non-objects"
+evaluateVar _ s vars = throwError $ "LOGIC: " ++ show s ++ "VARS: " ++ show vars
 
 -- Implementation for arithmetic operators
 
@@ -108,3 +138,9 @@ evaluateLogic _ _ _ = throwError "Wrong number of arguments for logic operator"
 
 (>=) :: Operation
 (>=) = (">=", evaluateComparison (Prelude.>=))
+
+map :: Operation
+map = ("map", evaluateMap)
+
+var :: Operation
+var = ("var", evaluateVar)

@@ -21,7 +21,7 @@ data Json
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result
 
-type Function = SubEvaluator -> Json -> Result
+type Function = SubEvaluator -> Rule -> Data -> Result
 
 type Operations = M.Map String Function
 
