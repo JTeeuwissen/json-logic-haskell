@@ -1,8 +1,8 @@
-module JL where
+module JsonLogic.JL where
 
 import Control.Monad.Reader (Reader, asks)
 import qualified Data.Map as M
-import Json (Function, Json, JsonLogicEnv (operations, variables), Operations)
+import JsonLogic.Json (Function, Json, JsonLogicEnv (operations, variables), Operations)
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) when we need it

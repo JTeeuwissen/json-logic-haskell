@@ -1,4 +1,4 @@
-# Revision history for JsonLogic
+# Revision history for jsonlogic
 
 ## 0.1.0.0 -- YYYY-mm-dd
 

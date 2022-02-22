@@ -1,0 +1,8 @@
+# Common
+Dockerfile
+.dockerignore
+
+# git
+.git
+.gitattributes
+.gitignore
