@@ -5,7 +5,7 @@ WORKDIR /opt/project
 RUN cabal update
 
 # Add just the .cabal file to capture dependencies
-COPY ./*.cabal .
+COPY ./core/*.cabal .
 
 # Docker will cache this command as a layer, freeing us up to
 # modify source code without re-installing dependencies
@@ -13,7 +13,7 @@ COPY ./*.cabal .
 RUN cabal build --only-dependencies all
 
 # Add and Install Application Code
-COPY . .
+COPY core .
 
 FROM build as test
 
