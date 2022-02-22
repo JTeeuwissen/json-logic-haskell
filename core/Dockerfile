@@ -22,4 +22,4 @@ WORKDIR /opt/project
 # Build test dependencies.
 RUN cabal build --only-dependencies --enable-tests all
 
-CMD ["cabal", "test", "--test-show-details=streaming", "jsonlogic"]
+CMD ["cabal", "test", "--test-show-details=streaming"]
