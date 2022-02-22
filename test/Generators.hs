@@ -17,73 +17,103 @@ genLogicOperator = element [((&&), "and"), ((||), "or"), ((==), "=="), ((/=), "!
 
 -- Generator for a Json object that evaluates to a number
 genNumericJson :: Gen (Json, Double)
-genNumericJson = do
-  d <- double $ Range.constantFrom 1 10 100
-  frequency
-    [ (5, return (JsonNumber d, d)),
-      (1, createNumericObject "+" (Prelude.+)),
-      (1, createNumericObject "-" (Prelude.-)),
-      (1, createNumericObject "*" (Prelude.*)),
-      (1, createNumericObject "/" (Prelude./))
-    ]
+genNumericJson = sized sizedGenNumericJson
+
+sizedGenNumericJson :: Size -> Gen (Json, Double)
+sizedGenNumericJson s@(Size size)
+  | size <= 0 = do
+    d <- double $ Range.constantFrom 1 10 100
+    return (JsonNumber d, d)
+  | otherwise =
+    choice
+      [ createNumericObject "+" (Prelude.+) s,
+        createNumericObject "-" (Prelude.-) s,
+        createNumericObject "*" (Prelude.*) s,
+        createNumericObject "/" (Prelude./) s
+      ]
 
 -- Creates numeric Json generator given the operator
-createNumericObject :: String -> (Double -> Double -> a) -> Gen (Json, a)
-createNumericObject str op = do
-  (j1, x1) <- genNumericJson
-  (j2, x2) <- genNumericJson
+createNumericObject :: String -> (Double -> Double -> a) -> Size -> Gen (Json, a)
+createNumericObject str op size = do
+  (s1, s2) <- genUnbalancedSizes size
+  (j1, x1) <- sizedGenNumericJson s1
+  (j2, x2) <- sizedGenNumericJson s2
   return (JsonObject (M.fromList [(str, JsonArray [j1, j2])]), x1 `op` x2)
 
 -- Generator for a Json object that evaluates to a boolean and only contains comparisons
 genComparisonJson :: Gen (Json, Bool)
-genComparisonJson = do
-  b <- bool
-  frequency
-    [ (5, return (JsonBool b, b)),
-      (1, createNumericObject "<" (Prelude.<)),
-      (1, createNumericObject ">" (Prelude.>)),
-      (1, createNumericObject "<=" (Prelude.<=)),
-      (1, createNumericObject ">=" (Prelude.>=))
-    ]
+genComparisonJson = sized sizedGenComparisonJson
+
+sizedGenComparisonJson :: Size -> Gen (Json, Bool)
+sizedGenComparisonJson s@(Size size)
+  | size <= 0 = do
+    b <- bool
+    return (JsonBool b, b)
+  | otherwise = do
+    choice
+      [ createNumericObject "<" (Prelude.<) s,
+        createNumericObject ">" (Prelude.>) s,
+        createNumericObject "<=" (Prelude.<=) s,
+        createNumericObject ">=" (Prelude.>=) s
+      ]
 
 -- Generator for a Json object that evaluates to a boolean and only contains logic operations
 genLogicJson :: Gen (Json, Bool)
-genLogicJson = do
-  b <- bool
-  frequency
-    [ (5, return (JsonBool b, b)),
-      (1, createLogicObject "&&" (Prelude.&&)),
-      (1, createLogicObject "||" (Prelude.||)),
-      (1, createLogicObject "!=" (Prelude./=)),
-      (1, createLogicObject "==" (Prelude.==))
-    ]
+genLogicJson = sized sizedGenLogicJson
+
+sizedGenLogicJson :: Size -> Gen (Json, Bool)
+sizedGenLogicJson s@(Size size)
+  | size <= 0 = do
+    b <- bool
+    return (JsonBool b, b)
+  | otherwise = do
+    choice
+      [ createLogicObject "&&" (Prelude.&&) s,
+        createLogicObject "||" (Prelude.||) s,
+        createLogicObject "!=" (Prelude./=) s,
+        createLogicObject "==" (Prelude.==) s
+      ]
 
 -- Creates the Logic generator given the operator
-createLogicObject :: String -> (Bool -> Bool -> Bool) -> Gen (Json, Bool)
-createLogicObject str op = do
-  (j1, x1) <- genLogicJson
-  (j2, x2) <- genLogicJson
+createLogicObject :: String -> (Bool -> Bool -> Bool) -> Size -> Gen (Json, Bool)
+createLogicObject str op size = do
+  (s1, s2) <- genUnbalancedSizes size
+  (j1, x1) <- sizedGenLogicJson s1
+  (j2, x2) <- sizedGenLogicJson s2
   return (JsonObject (M.fromList [(str, JsonArray [j1, j2])]), x1 `op` x2)
 
 -- Generates Json that evaluates to a boolean. Contains both logic and comparison operators
 genBoolJson :: Gen (Json, Bool)
-genBoolJson = do
-  b <- bool
-  frequency
-    [ (10, return (JsonBool b, b)),
-      (1, createBoolObject "&&" (Prelude.&&)),
-      (1, createBoolObject "||" (Prelude.||)),
-      (1, createBoolObject "!=" (Prelude./=)),
-      (1, createBoolObject "==" (Prelude.==)),
-      (1, createBoolObject "<" (Prelude.<)),
-      (1, createBoolObject ">" (Prelude.>)),
-      (1, createBoolObject "<=" (Prelude.<=)),
-      (1, createBoolObject ">=" (Prelude.>=))
-    ]
+genBoolJson = sized sizedGenBoolJson
+
+sizedGenBoolJson :: Size -> Gen (Json, Bool)
+sizedGenBoolJson s@(Size size)
+  | size <= 0 = do
+    b <- bool
+    return (JsonBool b, b)
+  | otherwise = do
+    choice
+      [ createBoolObject "&&" (Prelude.&&) s,
+        createBoolObject "||" (Prelude.||) s,
+        createBoolObject "!=" (Prelude./=) s,
+        createBoolObject "==" (Prelude.==) s,
+        createBoolObject "<" (Prelude.<) s,
+        createBoolObject ">" (Prelude.>) s,
+        createBoolObject "<=" (Prelude.<=) s,
+        createBoolObject ">=" (Prelude.>=) s
+      ]
 
 -- Creates a generator for json logic given an operator. Can contain out of logic and comparison operators
-createBoolObject :: String -> (Bool -> Bool -> Bool) -> Gen (Json, Bool)
-createBoolObject str op = do
-  (j1, x1) <- choice [genLogicJson, genComparisonJson]
-  (j2, x2) <- choice [genLogicJson, genComparisonJson]
+createBoolObject :: String -> (Bool -> Bool -> Bool) -> Size -> Gen (Json, Bool)
+createBoolObject str op s@(Size size) = do
+  (s1, s2) <- genUnbalancedSizes s
+  (j1, x1) <- choice [sizedGenLogicJson s1, sizedGenComparisonJson s1]
+  (j2, x2) <- choice [sizedGenLogicJson s2, sizedGenComparisonJson s2]
   return (JsonObject (M.fromList [(str, JsonArray [j1, j2])]), x1 `op` x2)
+
+genUnbalancedSizes :: Size -> Gen (Size, Size)
+genUnbalancedSizes (Size size) = do
+  balanceOffset <- int $ Range.constant (- size) size
+  let s1 = Size $ (size + balanceOffset) `div` 2
+      s2 = Size $ (size - balanceOffset) `div` 2
+  return (s1, s2)
