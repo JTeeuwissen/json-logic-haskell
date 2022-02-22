@@ -42,10 +42,22 @@ library Logic
         base,
         containers,
         mtl ^>= 2.2.2,
+
+library Logic-Aeson
+    exposed-modules:
+        JsonAeson
+    default-language:
+        Haskell2010
+    ghc-options: -Wall -Wno-orphans
+    hs-source-dirs:
+        aeson
+    build-depends:
+        base,
         aeson,
         aeson-pretty,
         text,
-        bytestring
+        bytestring,
+        Logic
 
 Test-Suite Test
     main-is:
