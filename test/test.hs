@@ -10,7 +10,7 @@ import qualified Hedgehog.Internal.Range
 import qualified Hedgehog.Range as Range
 import Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
 import JsonLogic
-import Test.Tasty (TestTree)
+import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
 
