@@ -32,7 +32,7 @@ evalFunc fName param = do
   vars <- getVariables
   function <- getFunction fName
   return $ case function of
-    Nothing -> throwError $ "Function" ++ fName ++ "Not found"
+    Nothing -> throwError $ "Function: " ++ fName ++ " not found"
     Just f -> f (subEval ops) param vars
 
 subEval :: M.Map String Function -> Rule -> Data -> Result
