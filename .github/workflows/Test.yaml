@@ -12,6 +12,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build Test
-        run: echo "TEST_IMAGE=$(docker build --target test --quiet .)" >> $GITHUB_ENV
+        run: echo "TEST_IMAGE=$(docker build --file ./core/Dockerfile --target test --quiet .)" >> $GITHUB_ENV
       - name: Run Test
         run: docker run $TEST_IMAGE
