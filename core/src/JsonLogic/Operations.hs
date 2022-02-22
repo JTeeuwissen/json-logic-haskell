@@ -1,11 +1,11 @@
 module JsonLogic.Operations where
 
-import qualified Prelude as P
-import Prelude hiding ((+), (-), (*), (/), (<), (>), (<=), (>=), (&&), (||), (/=), (==), map)
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M hiding (map)
 import JsonLogic.Json
 import JsonLogic.Utils
+import Prelude hiding (map, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
+import qualified Prelude as P
 
 -- Initial environment with only "+" defined
 createEnv :: Operations -> Json -> JsonLogicEnv
@@ -16,13 +16,23 @@ defaultOperations :: M.Map String Function
 defaultOperations =
   M.fromList
     [ -- Arithmetic
-      (+), (-), (*), (/),
+      (+),
+      (-),
+      (*),
+      (/),
       -- Comparison
-      (<), (>), (<=), (>=),
+      (<),
+      (>),
+      (<=),
+      (>=),
       -- Logic
-      (&&), (||), (!=), (==),
+      (&&),
+      (||),
+      (!=),
+      (==),
       -- Other
-      var, map
+      var,
+      map
     ]
 
 -- Operation type
