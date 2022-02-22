@@ -1,4 +1,4 @@
-FROM haskell as build
+FROM haskell:9.2.1-buster as build
 
 WORKDIR /opt/project
 

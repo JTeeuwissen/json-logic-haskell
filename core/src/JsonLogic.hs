@@ -2,8 +2,8 @@ module JsonLogic where
 
 import Control.Monad.Reader (runReader)
 import Data.Map as M (Map, foldr, fromList, traverseWithKey)
-import JL (JL, getFunction, getOperations)
-import Json
+import JsonLogic.JL (JL, getFunction, getOperations)
+import JsonLogic.Json
   ( Data,
     EvalResult,
     Function,
@@ -12,7 +12,7 @@ import Json
     JsonLogicEnv (JLEnv),
     Rule,
   )
-import Operations (Operation, createEnv)
+import JsonLogic.Operations (Operation, createEnv)
 
 -- evaluate JsonLogic without bothering about monads
 eval :: [Operation] -> Rule -> Data -> EvalResult

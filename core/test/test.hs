@@ -6,8 +6,8 @@ import Generators (genArithmeticOperator, genComparisonOperator, genLogicOperato
 import Hedgehog (Gen, Size (Size), forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject))
 import JsonLogic
+import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject))
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H

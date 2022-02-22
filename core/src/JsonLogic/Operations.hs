@@ -1,7 +1,7 @@
-module Operations where
+module JsonLogic.Operations where
 
 import Data.Map as M
-import Json
+import JsonLogic.Json
 
 -- Initial environment with only "+" defined
 createEnv :: Operations -> Json -> JsonLogicEnv
@@ -12,20 +12,20 @@ defaultOperations :: M.Map String Function
 defaultOperations =
   M.fromList
     [ -- Arithmetic
-      (Operations.+),
-      (Operations.-),
-      (Operations.*),
-      (Operations./),
+      (JsonLogic.Operations.+),
+      (JsonLogic.Operations.-),
+      (JsonLogic.Operations.*),
+      (JsonLogic.Operations./),
       -- Comparison
-      (Operations.<),
-      (Operations.>),
-      (Operations.<=),
-      (Operations.>=),
+      (JsonLogic.Operations.<),
+      (JsonLogic.Operations.>),
+      (JsonLogic.Operations.<=),
+      (JsonLogic.Operations.>=),
       -- Logic
-      (Operations.&&),
-      (Operations.||),
-      (Operations.!=),
-      (Operations.==)
+      (JsonLogic.Operations.&&),
+      (JsonLogic.Operations.||),
+      (JsonLogic.Operations.!=),
+      (JsonLogic.Operations.==)
     ]
 
 -- Operation type

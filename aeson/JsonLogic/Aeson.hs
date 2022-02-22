@@ -1,4 +1,4 @@
-module JsonAeson where
+module JsonLogic.Aeson where
 
 import Data.Aeson
 import Data.Aeson.Encode.Pretty
@@ -10,7 +10,7 @@ import Data.Aeson.Encode.Pretty
 import Data.ByteString.Lazy as DBL (toStrict)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Text.IO as TIO (putStrLn)
-import Json
+import JsonLogic.Json
 
 -- Convert to aeson json format
 instance ToJSON Json where
