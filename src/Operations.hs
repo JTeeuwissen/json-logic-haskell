@@ -33,41 +33,46 @@ defaultOperations =
 type Operation = (String, Function)
 
 -- Primitive evaluators
-evaluateNumber :: SubEvaluator -> Json -> Either String Double
-evaluateNumber evaluator param = do
-  res <- evaluator param JsonNull
+evaluateNumber :: SubEvaluator -> Rule -> Data -> Either String Double
+evaluateNumber evaluator param vars = do
+  res <- evaluator param vars
   case res of
     JsonNumber n -> return n
     _ -> throwError "Invalid parameter type, was expecting number"
 
-evaluateBool :: SubEvaluator -> Json -> Either String Bool
-evaluateBool evaluator param = do
-  res <- evaluator param JsonNull
+evaluateBool :: SubEvaluator -> Rule -> Data -> Either String Bool
+evaluateBool evaluator param vars = do
+  res <- evaluator param vars
   case res of
     JsonBool b -> return b
     _ -> throwError "Invalid parameter type, was expecting boolean"
 
 -- Function evaluators
-evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Json -> Either String Json
-evaluateMath operator evaluator (JsonArray [x, y]) = do
-  x' <- evaluateNumber evaluator x
-  y' <- evaluateNumber evaluator y
+evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateMath operator evaluator (JsonArray [x, y]) vars = do
+  x' <- evaluateNumber evaluator x vars
+  y' <- evaluateNumber evaluator y vars
   return $ JsonNumber $ x' `operator` y'
-evaluateMath _ _ _ = throwError "Wrong number of arguments for math operator"
+evaluateMath _ _ _ _ = throwError "Wrong number of arguments for math operator"
 
-evaluateComparison :: (Double -> Double -> Bool) -> SubEvaluator -> Json -> Either String Json
-evaluateComparison operator evaluator (JsonArray [x, y]) = do
-  x' <- evaluateNumber evaluator x
-  y' <- evaluateNumber evaluator y
+evaluateComparison :: (Double -> Double -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
+  x' <- evaluateNumber evaluator x vars
+  y' <- evaluateNumber evaluator y vars
   return $ JsonBool $ x' `operator` y'
-evaluateComparison _ _ _ = throwError "Wrong number of arguments for comparison operator"
+evaluateComparison _ _ _ _ = throwError "Wrong number of arguments for comparison operator"
 
-evaluateLogic :: (Bool -> Bool -> Bool) -> SubEvaluator -> Json -> Either String Json
-evaluateLogic operator evaluator (JsonArray [x, y]) = do
-  x' <- evaluateBool evaluator x
-  y' <- evaluateBool evaluator y
+evaluateLogic :: (Bool -> Bool -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
+  x' <- evaluateBool evaluator x vars
+  y' <- evaluateBool evaluator y vars
   return $ JsonBool $ x' `operator` y'
-evaluateLogic _ _ _ = throwError "Wrong number of arguments for logic operator"
+evaluateLogic _ _ _ _ = throwError "Wrong number of arguments for logic operator"
+
+evaluateMap :: SubEvaluator -> Rule -> Data -> Either String Json
+evaluateMap evaluator (JsonArray [xs, f]) vars = do
+  xs' <- evaluator xs vars -- This is our data we evaluate
+  evaluator f xs'
 
 -- Implementation for arithmetic operators
 
@@ -108,3 +113,6 @@ evaluateLogic _ _ _ = throwError "Wrong number of arguments for logic operator"
 
 (>=) :: Operation
 (>=) = (">=", evaluateComparison (Prelude.>=))
+
+map :: Operation
+map = ("map", evaluateMap)
