@@ -1,4 +1,4 @@
-module Utils where
+module JsonLogic.Utils where
 
 -- Splits string on periods
 -- Same definition as words at: https://github.com/ghc/ghc/blob/master/libraries/base/Data/OldList.hs

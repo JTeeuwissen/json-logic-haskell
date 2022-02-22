@@ -8,7 +8,7 @@ import Hedgehog (Gen, Size (Size), forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Internal.Range
 import qualified Hedgehog.Range as Range
-import Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
+import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
 import JsonLogic
 import Test.Tasty
 import Test.Tasty.HUnit as U

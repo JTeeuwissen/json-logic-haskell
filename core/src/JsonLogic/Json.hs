@@ -1,4 +1,4 @@
-module Json where
+module JsonLogic.Json where
 
 import qualified Data.Map as M
 

@@ -1,9 +1,11 @@
-module Operations where
+module JsonLogic.Operations where
 
+import qualified Prelude as P
+import Prelude hiding ((+), (-), (*), (/), (<), (>), (<=), (>=), (&&), (||), (/=), (==), map)
 import Control.Monad.Except (MonadError (throwError))
-import Data.Map as M
-import Json
-import Utils
+import Data.Map as M hiding (map)
+import JsonLogic.Json
+import JsonLogic.Utils
 
 -- Initial environment with only "+" defined
 createEnv :: Operations -> Json -> JsonLogicEnv
@@ -14,23 +16,13 @@ defaultOperations :: M.Map String Function
 defaultOperations =
   M.fromList
     [ -- Arithmetic
-      (Operations.+),
-      (Operations.-),
-      (Operations.*),
-      (Operations./),
+      (+), (-), (*), (/),
       -- Comparison
-      (Operations.<),
-      (Operations.>),
-      (Operations.<=),
-      (Operations.>=),
+      (<), (>), (<=), (>=),
       -- Logic
-      (Operations.&&),
-      (Operations.||),
-      (Operations.!=),
-      (Operations.==),
-      -- Functions
-      Operations.map,
-      Operations.var
+      (&&), (||), (!=), (==),
+      -- Other
+      var, map
     ]
 
 -- Operation type
@@ -102,42 +94,42 @@ evaluateVar _ s vars = throwError $ "LOGIC: " ++ show s ++ "VARS: " ++ show vars
 -- Implementation for arithmetic operators
 
 (+) :: Operation
-(+) = ("+", evaluateMath (Prelude.+))
+(+) = ("+", evaluateMath (P.+))
 
 (-) :: Operation
-(-) = ("-", evaluateMath (Prelude.-))
+(-) = ("-", evaluateMath (P.-))
 
 (*) :: Operation
-(*) = ("*", evaluateMath (Prelude.*))
+(*) = ("*", evaluateMath (P.*))
 
 (/) :: Operation
-(/) = ("/", evaluateMath (Prelude./))
+(/) = ("/", evaluateMath (P./))
 
 -- Implementation for bool -> bool -> bool operators
 (&&) :: Operation
-(&&) = ("and", evaluateLogic (Prelude.&&))
+(&&) = ("and", evaluateLogic (P.&&))
 
 (||) :: Operation
-(||) = ("or", evaluateLogic (Prelude.||))
+(||) = ("or", evaluateLogic (P.||))
 
 (==) :: Operation
-(==) = ("==", evaluateLogic (Prelude.==)) -- TODO proper equality implementation.
+(==) = ("==", evaluateLogic (P.==)) -- TODO proper equality implementation.
 
 (!=) :: Operation
-(!=) = ("!=", evaluateLogic (Prelude./=))
+(!=) = ("!=", evaluateLogic (P./=))
 
 -- Implementation for double -> double -> bool operators
 (<) :: Operation
-(<) = ("<", evaluateComparison (Prelude.<))
+(<) = ("<", evaluateComparison (P.<))
 
 (>) :: Operation
-(>) = (">", evaluateComparison (Prelude.>))
+(>) = (">", evaluateComparison (P.>))
 
 (<=) :: Operation
-(<=) = ("<=", evaluateComparison (Prelude.<=))
+(<=) = ("<=", evaluateComparison (P.<=))
 
 (>=) :: Operation
-(>=) = (">=", evaluateComparison (Prelude.>=))
+(>=) = (">=", evaluateComparison (P.>=))
 
 map :: Operation
 map = ("map", evaluateMap)

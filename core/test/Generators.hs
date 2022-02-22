@@ -4,7 +4,7 @@ import Data.Map as M
 import Hedgehog
 import Hedgehog.Gen
 import Hedgehog.Range as Range
-import Json
+import JsonLogic.Json
 
 genArithmeticOperator :: Gen (Double -> Double -> Double, [Char])
 genArithmeticOperator = element [((+), "+"), ((-), "-"), ((*), "*"), ((/), "/")]

@@ -1,6 +1,17 @@
 [![test](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Test.yaml/badge.svg?event=push)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Test.yaml)
 [![lint](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Linting.yaml/badge.svg?event=push)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Linting.yaml)
 
+# Packages
+Holds packages for:
+ * jsonlogic
+ * jsonlogic-aeson
+
+# Run tests
+cabal test jsonlogic
+
+# Build
+cabal build all
+
 # json-logic-haskell
 JsonLogic library for Haskell
 

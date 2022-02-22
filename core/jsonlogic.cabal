@@ -1,5 +1,5 @@
 cabal-version:      2.4
-name:               JsonLogic
+name:               jsonlogic
 version:            0.1.0.0
 
 -- A short (one-line) description of the package.
@@ -24,26 +24,23 @@ extra-source-files:
     CHANGELOG.md
     README.md
 
-library Logic
+library
     exposed-modules:
         JsonLogic,
-        Json,
-        Operations
+        JsonLogic.Json,
+        JsonLogic.Operations
     other-modules:
-        JL,
-        Utils
+        JsonLogic.JL,
+        JsonLogic.Utils
     default-language:
         Haskell2010
     ghc-options: -Wall
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
     hs-source-dirs:
         src
     build-depends:
         base,
         containers,
         mtl ^>= 2.2.2,
-        aeson
 
 Test-Suite Test
     main-is:
@@ -58,7 +55,7 @@ Test-Suite Test
         Generators
     build-depends:
         base,
-        Logic,
+        jsonlogic,
         tasty,
         tasty-hunit,
         tasty-hedgehog,
