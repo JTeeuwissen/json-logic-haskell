@@ -10,7 +10,7 @@ import qualified Hedgehog.Internal.Range
 import qualified Hedgehog.Range as Range
 import Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
 import JsonLogic
-import Test.Tasty
+import Test.Tasty (TestTree)
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
 
@@ -18,12 +18,15 @@ main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [unitTests, hedgehogTests, varUnitTests, mapUnitTests]
+tests = testGroup "Tests" [unitTests, hedgehogTests]
 
 unitTests :: TestTree
-unitTests =
+unitTests = testGroup "Unit tests" [simpleUnitTests, varUnitTests, mapUnitTests]
+
+simpleUnitTests :: TestTree
+simpleUnitTests =
   testGroup
-    "Unit tests"
+    "Simple unit tests"
     [ testCase "Simple plus" $
         U.assertEqual
           "Result is correct"
@@ -34,50 +37,6 @@ unitTests =
           "Result is correct"
           (Right $ JsonNumber 6)
           (eval [] (JsonObject [("+", JsonArray [JsonNumber 1, JsonObject [("+", JsonArray [JsonNumber 2, JsonNumber 3])]])]) JsonNull)
-    ]
-
-hedgehogTests :: TestTree
-hedgehogTests =
-  testGroup
-    "Hedgehog tests"
-    [ H.testProperty "Simple math operations" $
-        property $ do
-          (f, n) <- forAllWith snd genArithmeticOperator
-          l <- forAll genDouble
-          r <- forAll genDouble1
-          Right (JsonNumber (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
-      H.testProperty "Simple comparison operations" $
-        property $ do
-          (f, n) <- forAllWith snd genComparisonOperator
-          l <- forAll genDouble
-          r <- forAll genDouble
-          Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
-      H.testProperty "Simple logic operations" $
-        property $ do
-          (f, n) <- forAllWith snd genLogicOperator
-          l <- forAll Gen.bool
-          r <- forAll Gen.bool
-          Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonBool l, JsonBool r])]) JsonNull,
-      H.testProperty "Nested arihmetic operations" $
-        property $ do
-          (f1, n1) <- forAllWith snd genArithmeticOperator
-          (f2, n2) <- forAllWith snd genArithmeticOperator
-          (f3, n3) <- forAllWith snd genArithmeticOperator
-          ll <- forAll genDouble
-          lr <- forAll genDouble1
-          rl <- forAll genDouble
-          rr <- forAll genDouble1
-          Right (JsonNumber (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonNumber rl, JsonNumber rr])]])]) JsonNull,
-      H.testProperty "Nested boolean operations" $
-        property $ do
-          (f1, n1) <- forAllWith snd genLogicOperator
-          (f2, n2) <- forAllWith snd genComparisonOperator
-          (f3, n3) <- forAllWith snd genLogicOperator
-          ll <- forAll genDouble
-          lr <- forAll genDouble1
-          rl <- forAll Gen.bool
-          rr <- forAll Gen.bool
-          Right (JsonBool (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonBool rl, JsonBool rr])]])]) JsonNull
     ]
 
 varUnitTests :: TestTree
@@ -138,6 +97,50 @@ mapUnitTests =
           "Empty list case"
           (Right $ JsonArray [JsonNumber 3, JsonNumber 4, JsonNumber 5])
           (eval [] (JsonObject $ M.singleton "map" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "x", JsonObject $ M.singleton "+" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "", JsonNumber 2]]) (JsonObject $ M.singleton "x" $ JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3]))
+    ]
+
+hedgehogTests :: TestTree
+hedgehogTests =
+  testGroup
+    "Hedgehog tests"
+    [ H.testProperty "Simple math operations" $
+        property $ do
+          (f, n) <- forAllWith snd genArithmeticOperator
+          l <- forAll genDouble
+          r <- forAll genDouble1
+          Right (JsonNumber (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
+      H.testProperty "Simple comparison operations" $
+        property $ do
+          (f, n) <- forAllWith snd genComparisonOperator
+          l <- forAll genDouble
+          r <- forAll genDouble
+          Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
+      H.testProperty "Simple logic operations" $
+        property $ do
+          (f, n) <- forAllWith snd genLogicOperator
+          l <- forAll Gen.bool
+          r <- forAll Gen.bool
+          Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonBool l, JsonBool r])]) JsonNull,
+      H.testProperty "Nested arihmetic operations" $
+        property $ do
+          (f1, n1) <- forAllWith snd genArithmeticOperator
+          (f2, n2) <- forAllWith snd genArithmeticOperator
+          (f3, n3) <- forAllWith snd genArithmeticOperator
+          ll <- forAll genDouble
+          lr <- forAll genDouble1
+          rl <- forAll genDouble
+          rr <- forAll genDouble1
+          Right (JsonNumber (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonNumber rl, JsonNumber rr])]])]) JsonNull,
+      H.testProperty "Nested boolean operations" $
+        property $ do
+          (f1, n1) <- forAllWith snd genLogicOperator
+          (f2, n2) <- forAllWith snd genComparisonOperator
+          (f3, n3) <- forAllWith snd genLogicOperator
+          ll <- forAll genDouble
+          lr <- forAll genDouble1
+          rl <- forAll Gen.bool
+          rr <- forAll Gen.bool
+          Right (JsonBool (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonBool rl, JsonBool rr])]])]) JsonNull
     ]
 
 genDouble :: Gen Double
