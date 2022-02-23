@@ -5,6 +5,7 @@ WORKDIR /opt/project
 RUN cabal update
 
 # Copy the cabal files.
+COPY cabal.project .
 COPY ./core/*.cabal ./core
 COPY ./aeson/*.cabal ./aeson
 
