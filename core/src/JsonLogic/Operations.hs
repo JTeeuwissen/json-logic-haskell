@@ -3,7 +3,7 @@ module JsonLogic.Operations where
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M hiding (map)
 import JsonLogic.Json
-import JsonLogic.Utils
+import JsonLogic.Operation.Var
 import Prelude hiding (map, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
@@ -88,21 +88,6 @@ evaluateMap evaluator (JsonArray [xs, f]) vars = do
   xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
   JsonArray <$> mapM (evaluator f) xs'
 evaluateMap _ _ _ = throwError "Map received the wrong arguments"
-
--- Evaluates a var
-evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
-evaluateVar evaluator param vars = do
-  res <- evaluator param vars
-  -- Extracts default value from array if it is one
-  let (j, def) = getJsonWithDefault res
-  case j of
-    JsonNull -> return vars -- Always First value
-    JsonBool _ -> return def -- Always Second value
-    JsonNumber n -> return $ returnOrDefault (indexArray n vars) def
-    JsonString s -> return $ returnOrDefault (indexData s vars) def
-    -- Default value is already extracted, cannot have nested list as var value.
-    JsonArray js -> throwError $ "Cannot evaluate a var of type array, namely: " ++ show js
-    JsonObject o -> throwError $ "Cannot evaluate a var of type object, namely: " ++ show o
 
 -- Implementation for arithmetic operators
 

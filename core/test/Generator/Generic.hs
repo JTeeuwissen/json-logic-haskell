@@ -1,5 +1,6 @@
 module Generator.Generic where
 
+import Data.Map as M
 import Hedgehog
 import Hedgehog.Gen
 import Hedgehog.Range as Range
@@ -29,5 +30,5 @@ genGenericJsonString = do
 genGenericEmptyJsonArray :: Gen (Json, [a])
 genGenericEmptyJsonArray = return (JsonArray [], [])
 
--- genGenericJsonObject :: Gen (Json, M.Map String Json)
--- genGenericJsonObject = undefined
+genGenericJsonObject :: Gen (Json, M.Map String Json)
+genGenericJsonObject = undefined

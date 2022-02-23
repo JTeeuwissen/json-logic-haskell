@@ -31,7 +31,7 @@ library
         JsonLogic.Operations
     other-modules:
         JsonLogic.JL,
-        JsonLogic.Utils
+        JsonLogic.Operation.Var
     default-language:
         Haskell2010
     ghc-options: -Wall
@@ -41,6 +41,7 @@ library
         base,
         containers,
         mtl ^>= 2.2.2,
+        safe
 
 Test-Suite Test
     main-is:
