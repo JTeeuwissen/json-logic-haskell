@@ -1,7 +1,8 @@
 module JsonLogic.Operation.Var (evaluateVar) where
 
 import Control.Monad.Except (MonadError (throwError))
-import Data.Map as M (lookup, singleton)
+import qualified Data.List as L (singleton)
+import qualified Data.Map as M (lookup)
 import Data.Maybe (fromMaybe)
 import JsonLogic.Json (Data, Json (..), Rule, SubEvaluator)
 import Text.Read (readMaybe)
@@ -54,12 +55,10 @@ indexJson indexString = index (splitOnPeriod indexString)
     index :: [String] -> Json -> Maybe Json
     index [] vars = Just vars
     index [x] (JsonString s) =
-      readMaybe x >>= (!?) s >>= \c -> Just $ JsonString [c]
+      readMaybe x >>= (!?) s >>= Just . JsonString . L.singleton
     index (x : xs) (JsonArray js) =
       readMaybe x >>= (!?) js >>= index xs
-    index (x : xs) (JsonObject o) = case M.lookup x o of
-      Nothing -> Nothing -- If member is not present it returns Null
-      Just js -> index xs js
+    index (x : xs) (JsonObject o) = M.lookup x o >>= index xs
     index _ _ = Nothing
 
 -- Safe indexing of a list

@@ -34,7 +34,7 @@ library
     hs-source-dirs:
         src
     build-depends:
-        base,
+        base >= 4.15.0.0,
         aeson,
         aeson-pretty,
         text,
