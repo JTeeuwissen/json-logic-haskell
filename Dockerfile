@@ -1,4 +1,4 @@
-FROM haskell:9.2.1-buster as build
+FROM haskell:9.2.1-buster as install
 
 WORKDIR /opt/project
 
@@ -12,7 +12,7 @@ COPY ./*/*.cabal ./
 # (unless the .cabal file changes!)
 RUN cabal build --only-dependencies all
 
-FROM build as test
+FROM install as test
 
 WORKDIR /opt/project
 
@@ -21,5 +21,8 @@ RUN cabal build --only-dependencies --enable-tests all
 
 # Add and Install Application Code
 COPY . .
+
+# Build the actual code
+RUN cabal build --enable-tests all
 
 CMD ["cabal", "test", "--test-show-details=streaming", "all"]
