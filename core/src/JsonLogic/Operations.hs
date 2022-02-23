@@ -103,46 +103,21 @@ evaluateVar _ s vars = throwError $ "LOGIC: " ++ show s ++ "VARS: " ++ show vars
 
 -- Implementation for arithmetic operators
 
-(+) :: Operation
+(+), (-), (*), (/), (&&), (||), (==), (!=), (<), (>), (<=), (>=), map, var :: Operation
 (+) = ("+", evaluateMath (P.+))
-
-(-) :: Operation
 (-) = ("-", evaluateMath (P.-))
-
-(*) :: Operation
 (*) = ("*", evaluateMath (P.*))
-
-(/) :: Operation
 (/) = ("/", evaluateMath (P./))
-
 -- Implementation for bool -> bool -> bool operators
-(&&) :: Operation
 (&&) = ("and", evaluateLogic (P.&&))
-
-(||) :: Operation
 (||) = ("or", evaluateLogic (P.||))
-
-(==) :: Operation
 (==) = ("==", evaluateLogic (P.==)) -- TODO proper equality implementation.
-
-(!=) :: Operation
 (!=) = ("!=", evaluateLogic (P./=))
-
 -- Implementation for double -> double -> bool operators
-(<) :: Operation
 (<) = ("<", evaluateComparison (P.<))
-
-(>) :: Operation
 (>) = (">", evaluateComparison (P.>))
-
-(<=) :: Operation
 (<=) = ("<=", evaluateComparison (P.<=))
-
-(>=) :: Operation
 (>=) = (">=", evaluateComparison (P.>=))
-
-map :: Operation
+-- Implementation for other operators
 map = ("map", evaluateMap)
-
-var :: Operation
 var = ("var", evaluateVar)
