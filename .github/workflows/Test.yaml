@@ -6,13 +6,13 @@ on:
       - 'main'
 
 jobs:
-  test-core:
+  test:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
       - name: Create action id
         run: echo "ACTION_ID=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
       - name: Build Test
-        run: docker build --target test --tag $ACTION_ID ./core
+        run: docker build --target test --tag $ACTION_ID .
       - name: Run Test
         run: docker run $ACTION_ID
