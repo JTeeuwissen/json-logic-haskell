@@ -1,6 +1,6 @@
 module JsonLogic.Utils where
 
-import Data.List ((!!))
+-- import Data.List ((!!))
 import Data.Map as M (lookup)
 import JsonLogic.Json
 

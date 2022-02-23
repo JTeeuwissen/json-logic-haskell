@@ -1,10 +1,12 @@
-module Generators where
+module Generator.Logic where
 
 import Data.Map as M
 import Hedgehog
 import Hedgehog.Gen
 import Hedgehog.Range as Range
 import JsonLogic.Json
+import Generator.Generic
+import Generator.Utils
 
 genArithmeticOperator :: Gen (Double -> Double -> Double, [Char])
 genArithmeticOperator = element [((+), "+"), ((-), "-"), ((*), "*"), ((/), "/")]
@@ -21,9 +23,7 @@ genNumericJson = sized sizedGenNumericJson
 
 sizedGenNumericJson :: Size -> Gen (Json, Double)
 sizedGenNumericJson s@(Size size)
-  | size <= 0 = do
-      d <- double $ Range.constantFrom 1 10 100
-      return (JsonNumber d, d)
+  | size <= 0 = genGenericJsonNumber
   | otherwise =
       choice
         [ createNumericObject "+" (Prelude.+) s,
@@ -46,10 +46,8 @@ genComparisonJson = sized sizedGenComparisonJson
 
 sizedGenComparisonJson :: Size -> Gen (Json, Bool)
 sizedGenComparisonJson s@(Size size)
-  | size <= 0 = do
-      b <- bool
-      return (JsonBool b, b)
-  | otherwise = do
+  | size <= 0 = genGenericJsonBool
+  | otherwise =
       choice
         [ createNumericObject "<" (Prelude.<) s,
           createNumericObject ">" (Prelude.>) s,
@@ -63,10 +61,8 @@ genLogicJson = sized sizedGenLogicJson
 
 sizedGenLogicJson :: Size -> Gen (Json, Bool)
 sizedGenLogicJson s@(Size size)
-  | size <= 0 = do
-      b <- bool
-      return (JsonBool b, b)
-  | otherwise = do
+  | size <= 0 = genGenericJsonBool
+  | otherwise =
       choice
         [ createLogicObject "&&" (Prelude.&&) s,
           createLogicObject "||" (Prelude.||) s,
@@ -88,10 +84,8 @@ genBoolJson = sized sizedGenBoolJson
 
 sizedGenBoolJson :: Size -> Gen (Json, Bool)
 sizedGenBoolJson s@(Size size)
-  | size <= 0 = do
-      b <- bool
-      return (JsonBool b, b)
-  | otherwise = do
+  | size <= 0 = genGenericJsonBool
+  | otherwise =
       choice
         [ createBoolObject "&&" (Prelude.&&) s,
           createBoolObject "||" (Prelude.||) s,
@@ -110,10 +104,3 @@ createBoolObject str op s@(Size size) = do
   (j1, x1) <- choice [sizedGenLogicJson s1, sizedGenComparisonJson s1]
   (j2, x2) <- choice [sizedGenLogicJson s2, sizedGenComparisonJson s2]
   return (JsonObject (M.fromList [(str, JsonArray [j1, j2])]), x1 `op` x2)
-
-genUnbalancedSizes :: Size -> Gen (Size, Size)
-genUnbalancedSizes (Size size) = do
-  balanceOffset <- int $ Range.constant (-size) size
-  let s1 = Size $ (size + balanceOffset) `div` 2
-      s2 = Size $ (size - balanceOffset) `div` 2
-  return (s1, s2)

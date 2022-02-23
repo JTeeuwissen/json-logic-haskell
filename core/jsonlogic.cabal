@@ -52,7 +52,11 @@ Test-Suite Test
     hs-source-dirs:
         test
     other-modules:
-        Generators
+        Generator.Data
+        Generator.Generic
+        Generator.Logic
+        Generator.Utils
+        TestVar
     build-depends:
         base,
         jsonlogic,
