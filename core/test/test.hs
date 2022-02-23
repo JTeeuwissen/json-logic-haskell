@@ -43,8 +43,26 @@ varUnitTests :: TestTree
 varUnitTests =
   testGroup
     "Var unit tests"
-    -- logic{"var":"x"} data{"x":1} => 1
-    [ testCase "logic {\"var\":\"x\"} data {\"x\":1}" $
+    -- logic{"var":""} data 1 => 1
+    [ testCase "logic{\"var\":\"\"} data{\"x\":1}" $
+        U.assertEqual
+          "Simple var case is correct"
+          (Right $ JsonNumber 1)
+          (eval [] (JsonObject $ M.singleton "var" $ JsonString "") (JsonNumber 1)),
+      -- logic{"var":"x"} data 1 => Null
+      testCase "logic{\"var\":\"x\"} data{\"x\":1}" $
+        U.assertEqual
+          "Simple var case is correct"
+          (Right JsonNull)
+          (eval [] (JsonObject $ M.singleton "var" $ JsonString "x") (JsonNumber 1)),
+      -- logic{"var":true} data 1 => Null
+      testCase "logic{\"var\":true} data{\"x\":1}" $
+        U.assertEqual
+          "Simple var case is correct"
+          (Right JsonNull)
+          (eval [] (JsonObject $ M.singleton "var" $ JsonBool True) (JsonNumber 1)),
+      -- logic{"var":"x"} data{"x":1} => 1
+      testCase "logic{\"var\":\"x\"} data{\"x\":1}" $
         U.assertEqual
           "Simple var case is correct"
           (Right $ JsonNumber 1)

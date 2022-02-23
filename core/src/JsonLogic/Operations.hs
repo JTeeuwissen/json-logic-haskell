@@ -89,17 +89,20 @@ evaluateMap evaluator (JsonArray [xs, f]) vars = do
   JsonArray <$> mapM (evaluator f) xs'
 evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 
+-- Evaluates a var
 evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
-evaluateVar _ (JsonString s) vars = indexVar (splitOnPeriod s) vars
-  where
-    indexVar :: [String] -> Data -> Either String Json
-    indexVar [] vars' = return vars'
-    indexVar _ JsonNull = return JsonNull
-    indexVar (x : xs) (JsonObject o) = case M.lookup x o of
-      Nothing -> return JsonNull -- If member is not present it returns Null
-      Just js -> indexVar xs js
-    indexVar _ _ = throwError "TODO implement var for non-objects"
-evaluateVar _ s vars = throwError $ "LOGIC: " ++ show s ++ "VARS: " ++ show vars
+evaluateVar evaluator param vars = do
+  res <- evaluator param vars
+  -- Extracts default value from array if it is one
+  let (j, def) = getJsonWithDefault res
+  case j of
+    JsonNull -> return vars -- Always First value
+    JsonBool _ -> return def -- Always Second value
+    JsonNumber n -> return $ returnOrDefault (indexArray n vars) def
+    JsonString s -> return $ returnOrDefault (indexData s vars) def
+    -- Default value is already extracted, cannot have nested list as var value.
+    JsonArray js -> throwError $ "Cannot evaluate a var of type array, namely: " ++ show js
+    JsonObject o -> throwError $ "Cannot evaluate a var of type object, namely: " ++ show o
 
 -- Implementation for arithmetic operators
 
