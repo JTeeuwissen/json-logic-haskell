@@ -5,7 +5,8 @@ WORKDIR /opt/project
 RUN cabal update
 
 # Copy the cabal files.
-COPY ./*/*.cabal ./
+COPY ./core/*.cabal ./core
+COPY ./aeson/*.cabal ./aeson
 
 # Install all the package dependencies
 RUN cabal build --only-dependencies all
@@ -15,10 +16,7 @@ WORKDIR /opt/project
 
 # Build all the test dependencies
 RUN cabal build --only-dependencies --enable-tests all
-
-# Remove the cabal files
-RUN rm *.cabal 
-
+ 
 FROM build-test-dependencies as test
 WORKDIR /opt/project
 
