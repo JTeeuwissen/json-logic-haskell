@@ -1,7 +1,6 @@
 # JsonLogic
 
-[![test core](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/jsonlogic.yaml/badge.svg)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/jsonlogic.yaml)
-[![test aeson](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/jsonlogic-aeson.yaml/badge.svg)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/jsonlogic-aeson.yaml)
+[![test](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Test.yaml/badge.svg)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Test.yaml)
 [![lint](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Linting.yaml/badge.svg)](https://github.com/JTeeuwissen/json-logic-haskell/actions/workflows/Linting.yaml)
 
 JsonLogic library for Haskell
