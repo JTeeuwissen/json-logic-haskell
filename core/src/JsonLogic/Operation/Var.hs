@@ -1,11 +1,10 @@
 module JsonLogic.Operation.Var (evaluateVar) where
 
-import Control.Monad ((>=>))
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M (lookup)
 import Data.Maybe (fromMaybe)
 import JsonLogic.Json (Data, Json (..), Rule, SubEvaluator)
-import Safe (atMay, readMay)
+import Text.Read (readMaybe)
 
 -- Evaluates a var
 evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
@@ -55,9 +54,15 @@ indexJson indexString = index (splitOnPeriod indexString)
     index :: [String] -> Json -> Maybe Json
     index [] vars = Just vars
     index [x] (JsonString s) =
-      readMay x >>= (atMay s >=> (\c -> Just $ JsonString [c]))
+      readMaybe x >>= \i ->
+        if i >= 0 && i <= length s
+          then Just $ JsonString [s !! i]
+          else Nothing
     index (x : xs) (JsonArray js) =
-      readMay x >>= (atMay js >=> index xs)
+      readMaybe x >>= \i ->
+        if i >= 0 && i <= length js
+          then index xs (js !! i)
+          else Nothing
     index (x : xs) (JsonObject o) = case M.lookup x o of
       Nothing -> Nothing -- If member is not present it returns Null
       Just js -> index xs js
