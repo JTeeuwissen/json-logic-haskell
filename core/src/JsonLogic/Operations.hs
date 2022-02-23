@@ -3,7 +3,7 @@ module JsonLogic.Operations where
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M hiding (map)
 import JsonLogic.Json
-import JsonLogic.Utils
+import JsonLogic.Operation.Var
 import Prelude hiding (map, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
@@ -88,18 +88,6 @@ evaluateMap evaluator (JsonArray [xs, f]) vars = do
   xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
   JsonArray <$> mapM (evaluator f) xs'
 evaluateMap _ _ _ = throwError "Map received the wrong arguments"
-
-evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
-evaluateVar _ (JsonString s) vars = indexVar (splitOnPeriod s) vars
-  where
-    indexVar :: [String] -> Data -> Either String Json
-    indexVar [] vars' = return vars'
-    indexVar _ JsonNull = return JsonNull
-    indexVar (x : xs) (JsonObject o) = case M.lookup x o of
-      Nothing -> return JsonNull -- If member is not present it returns Null
-      Just js -> indexVar xs js
-    indexVar _ _ = throwError "TODO implement var for non-objects"
-evaluateVar _ s vars = throwError $ "LOGIC: " ++ show s ++ "VARS: " ++ show vars
 
 -- Implementation for arithmetic operators
 
