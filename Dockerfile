@@ -6,8 +6,8 @@ RUN cabal update
 
 # Copy the cabal files.
 COPY cabal.project .
-COPY ./core/*.cabal ./core
-COPY ./aeson/*.cabal ./aeson
+COPY ./core/*.cabal ./core/
+COPY ./aeson/*.cabal ./aeson/
 
 # Install all the package dependencies
 RUN cabal build --only-dependencies all
