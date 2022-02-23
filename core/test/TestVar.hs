@@ -7,10 +7,10 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Internal.Range
 import qualified Hedgehog.Range as Range
 import JsonLogic
+import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
-import JsonLogic.Json
 
 varUnitTests :: TestTree
 varUnitTests =

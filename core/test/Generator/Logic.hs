@@ -1,12 +1,12 @@
 module Generator.Logic where
 
 import Data.Map as M
+import Generator.Generic
+import Generator.Utils
 import Hedgehog
 import Hedgehog.Gen
 import Hedgehog.Range as Range
 import JsonLogic.Json
-import Generator.Generic
-import Generator.Utils
 
 genArithmeticOperator :: Gen (Double -> Double -> Double, [Char])
 genArithmeticOperator = element [((+), "+"), ((-), "-"), ((*), "*"), ((/), "/")]
