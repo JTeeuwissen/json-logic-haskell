@@ -1,23 +1,26 @@
-FROM haskell:9.2.1-buster as install
-
+FROM haskell:9.2.1-buster as build-dependencies
 WORKDIR /opt/project
 
+# Update cabal to get the latest infex.
 RUN cabal update
 
-# Add just the .cabal file to capture dependencies
+# Copy the cabal files.
 COPY ./*/*.cabal ./
 
-# Docker will cache this command as a layer, freeing us up to
-# modify source code without re-installing dependencies
-# (unless the .cabal file changes!)
+# Install all the package dependencies
 RUN cabal build --only-dependencies all
 
-FROM install as test
-
+FROM build-dependencies as build-test-dependencies
 WORKDIR /opt/project
 
-# Build test dependencies.
+# Build all the test dependencies
 RUN cabal build --only-dependencies --enable-tests all
+
+# Remove the cabal files
+RUN rm *.cabal 
+
+FROM build-test-dependencies as test
+WORKDIR /opt/project
 
 # Add and Install Application Code
 COPY . .
