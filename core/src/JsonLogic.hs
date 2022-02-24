@@ -12,7 +12,7 @@ import JsonLogic.Json
     Result,
     Rule,
   )
-import JsonLogic.Operations (Operation, createEnv)
+import JsonLogic.Operation (Operation, createEnv)
 
 -- evaluate JsonLogic without bothering about monads
 eval :: [Operation] -> Rule -> Data -> Result
