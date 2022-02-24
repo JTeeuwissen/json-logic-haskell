@@ -26,7 +26,7 @@ instance Show Json where
   show (JsonNumber d) = show d
   show (JsonString s) = show s
   show (JsonArray js) = show js
-  show (JsonObject o) = "{" ++ concat (M.mapWithKey (\k v -> show k ++ ":" ++ show v) o) ++ "}"
+  show (JsonObject o) = "{" ++ concat (M.mapWithKey (\k v -> show k ++ ":" ++ show v ++ ",") o) ++ "}"
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result
