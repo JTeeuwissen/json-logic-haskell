@@ -28,7 +28,7 @@ library
     exposed-modules:
         JsonLogic,
         JsonLogic.Json,
-        JsonLogic.Operations
+        JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
         JsonLogic.Operation.Var
