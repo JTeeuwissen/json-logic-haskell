@@ -13,6 +13,7 @@ import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObje
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
+import TestIf
 import TestVar
 
 main :: IO ()
@@ -22,7 +23,7 @@ tests :: TestTree
 tests = testGroup "Tests" [unitTests, hedgehogTests]
 
 unitTests :: TestTree
-unitTests = testGroup "Unit tests" [simpleUnitTests, varUnitTests, mapUnitTests]
+unitTests = testGroup "Unit tests" [simpleUnitTests, varUnitTests, ifUnitTests, mapUnitTests]
 
 simpleUnitTests :: TestTree
 simpleUnitTests =

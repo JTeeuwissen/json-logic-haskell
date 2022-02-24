@@ -3,6 +3,7 @@ module JsonLogic.Operation where
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M hiding (map)
 import JsonLogic.Json
+import JsonLogic.Operation.If
 import JsonLogic.Operation.Var
 import Prelude hiding (map, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
@@ -32,7 +33,8 @@ defaultOperations =
       (==),
       -- Other
       var,
-      map
+      map,
+      if'
     ]
 
 -- Operation type
@@ -112,6 +114,7 @@ evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var :: Operation
+map, var, if' :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
+if' = ("if", evaluateIf)
