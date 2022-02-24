@@ -16,7 +16,17 @@ data Json
   | JsonString String
   | JsonArray [Json]
   | JsonObject (M.Map String Json)
-  deriving (Eq, Show)
+  deriving (Eq)
+
+-- Simple instance to show Json, does not format it nicely.
+instance Show Json where
+  show JsonNull = "null"
+  show (JsonBool True) = "true"
+  show (JsonBool False) = "false"
+  show (JsonNumber d) = show d
+  show (JsonString s) = show s
+  show (JsonArray js) = show js
+  show (JsonObject o) = "{" <> M.foldlWithKey' (\str k v -> str <> show k <> ":" <> show v) "" o <> "}"
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result
