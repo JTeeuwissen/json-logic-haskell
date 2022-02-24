@@ -1,6 +1,6 @@
 module JsonLogic.Json where
 
-import qualified Data.Map as M
+import qualified Data.Map as M (Map, mapWithKey)
 
 -- A rule can be any kind of JSON value, but object will be evaluated.
 type Rule = Json
@@ -26,7 +26,7 @@ instance Show Json where
   show (JsonNumber d) = show d
   show (JsonString s) = show s
   show (JsonArray js) = show js
-  show (JsonObject o) = "{" <> M.foldlWithKey' (\str k v -> str <> show k <> ":" <> show v) "" o <> "}"
+  show (JsonObject o) = "{" ++ concat (M.mapWithKey (\k v -> show k ++ ":" ++ show v) o) ++ "}"
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result
