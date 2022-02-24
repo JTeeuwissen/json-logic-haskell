@@ -1,4 +1,4 @@
-module JsonLogic.Operations where
+module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
 import Data.Map as M hiding (map)
