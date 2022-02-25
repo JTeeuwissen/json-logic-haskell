@@ -31,7 +31,8 @@ library
         JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
-        JsonLogic.Operation.Var
+        JsonLogic.Operation.Var,
+        JsonLogic.Operation.If
     default-language:
         Haskell2010
     ghc-options: -Wall
@@ -54,14 +55,15 @@ Test-Suite Test
     other-modules:
         Generator.Data,
         Generator.Generic,
-        Generator.Utils,
         Generator.Logic,
-        TestVar
+        Generator.Utils,
+        TestVar,
+        TestIf
     build-depends:
         base >= 4.15.0.0,
         jsonlogic,
         tasty,
-        tasty-hunit,
+        tasty-hunit >= 0.10.0.3,
         tasty-hedgehog,
-        hedgehog,
+        hedgehog >= 1.1.1,
         containers
