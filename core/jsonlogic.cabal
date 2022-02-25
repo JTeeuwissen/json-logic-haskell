@@ -45,7 +45,7 @@ library
 
 Test-Suite Test
     main-is:
-        test.hs
+        Test.hs
     default-language:
         Haskell2010
     type:
