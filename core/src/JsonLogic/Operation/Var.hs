@@ -1,6 +1,5 @@
 module JsonLogic.Operation.Var (evaluateVar) where
 
-import Control.Monad.Except (MonadError (throwError))
 import qualified Data.List as L (singleton)
 import qualified Data.Map as M (lookup)
 import Data.Maybe (fromMaybe)
@@ -21,8 +20,9 @@ evaluateVar evaluator param vars = do
     JsonNumber n -> return $ fromMaybe def $ indexJson (show (round n :: Int)) vars
     JsonString s -> return $ fromMaybe def $ indexJson s vars
     -- Default value is already extracted, cannot have nested list as var value
-    JsonArray js -> throwError $ "Cannot evaluate a var of type array, namely: " ++ show js
-    JsonObject o -> throwError $ "Cannot evaluate a var of type object, namely: " ++ show o
+    JsonArray [] -> return vars
+    JsonArray _ -> return def
+    JsonObject _ -> return def
 
 -- Splits string on periods
 -- Same definition as words at: https://github.com/ghc/ghc/blob/master/libraries/base/Data/OldList.hs
@@ -68,7 +68,7 @@ _ !? n | n < 0 = Nothing
 (x : _) !? 0 = Just x
 (_ : xs) !? n = xs !? (n - 1)
 
--- Default is only given if the initial object is an array
+-- | Default is only given if the initial object is an array as second argument
 getJsonWithDefault :: Json -> (Json, Json)
-getJsonWithDefault (JsonArray [x, y]) = (x, y)
+getJsonWithDefault (JsonArray (x : y : _)) = (x, y)
 getJsonWithDefault j = (j, JsonNull)
