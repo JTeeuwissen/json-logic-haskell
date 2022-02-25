@@ -9,8 +9,7 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Internal.Range
 import qualified Hedgehog.Range as Range
 import JsonLogic
-import JsonLogic.Json
-import JsonLogic.Json (Json (JsonBool))
+import JsonLogic.Json (Json (JsonArray, JsonBool))
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
@@ -28,5 +27,10 @@ filterUnitTests =
         U.assertEqual
           "Only the first item is < 2"
           (Right $ JsonArray [JsonNumber 1])
-          (eval [] (JsonObject [("filter", JsonArray [JsonArray [JsonNumber 1, JsonNumber 3], JsonObject [("<", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) JsonNull)
+          (eval [] (JsonObject [("filter", JsonArray [JsonArray [JsonNumber 1, JsonNumber 3], JsonObject [("<", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) JsonNull),
+      testCase "Evaluate array values" $
+        U.assertEqual
+          "The array value gets evaluated to True and returned."
+          (Right $ JsonArray [JsonBool True])
+          (eval [] (JsonObject [("filter", JsonArray [JsonArray [JsonBool False, JsonObject [("<", JsonArray [JsonNumber 1, JsonNumber 2])]], JsonObject [("var", JsonString "")]])]) JsonNull)
     ]
