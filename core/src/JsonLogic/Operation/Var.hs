@@ -18,7 +18,7 @@ evaluateVar evaluator param vars = do
     JsonNull -> return vars
     JsonBool _ -> return def
     -- Indexing using a floored double
-    JsonNumber n -> return $ fromMaybe def $ indexJson (show (floor n :: Int)) vars
+    JsonNumber n -> return $ fromMaybe def $ indexJson (show (round n :: Int)) vars
     JsonString s -> return $ fromMaybe def $ indexJson s vars
     -- Default value is already extracted, cannot have nested list as var value
     JsonArray js -> throwError $ "Cannot evaluate a var of type array, namely: " ++ show js
