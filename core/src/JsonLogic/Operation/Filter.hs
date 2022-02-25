@@ -2,21 +2,13 @@ module JsonLogic.Operation.Filter where
 
 import Control.Monad.Except (MonadError (throwError))
 import Data.Maybe (catMaybes)
-import JsonLogic.Json (Function, Json (JsonArray, JsonBool))
-import JsonLogic.Operation.Primitive (evaluateArray)
+import JsonLogic.Json (Function, Json (JsonArray))
+import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool)
 
 evaluateFilter :: Function
 evaluateFilter evaluator (JsonArray [xs, f]) vars = do
   array <- evaluateArray evaluator xs vars
-  filtered <-
-    filterEither
-      ( \x -> do
-          res <- evaluator f x
-          case res of
-            JsonBool b -> return b
-            _ -> throwError "filter: filter failed"
-      )
-      array
+  filtered <- filterEither (evaluateBool evaluator f) array
   return $ JsonArray filtered
 evaluateFilter _ _ _ = throwError "Wrong number of arguments for filter"
 
