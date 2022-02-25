@@ -31,8 +31,10 @@ library
         JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
+        JsonLogic.Operation.Primitive,
         JsonLogic.Operation.Var,
-        JsonLogic.Operation.If
+        JsonLogic.Operation.If,
+        JsonLogic.Operation.Filter
     default-language:
         Haskell2010
     ghc-options: -Wall
@@ -58,7 +60,8 @@ Test-Suite Test
         Generator.Logic,
         Generator.Utils,
         TestVar,
-        TestIf
+        TestIf,
+        TestFilter
     build-depends:
         base >= 4.15.0.0,
         jsonlogic,
