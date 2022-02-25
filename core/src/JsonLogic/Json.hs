@@ -1,7 +1,7 @@
 module JsonLogic.Json where
 
 import Data.List (intercalate)
-import qualified Data.Map as M (Map, elems, mapWithKey)
+import qualified Data.Map as M (Map, toList)
 
 -- A rule can be any kind of JSON value, but object will be evaluated.
 type Rule = Json
@@ -27,7 +27,7 @@ instance Show Json where
   show (JsonNumber d) = show d
   show (JsonString s) = show s
   show (JsonArray js) = show js
-  show (JsonObject o) = "{" ++ intercalate "," (M.elems $ M.mapWithKey (\k v -> show k ++ ":" ++ show v) o) ++ "}"
+  show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result
