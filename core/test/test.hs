@@ -62,7 +62,12 @@ showJsonUnitTests =
         U.assertEqual
           "Result is correct"
           "{\"var\":\"x\"}"
-          (show $ JsonObject [("var", JsonString "x")])
+          (show $ JsonObject [("var", JsonString "x")]),
+      testCase "{\"var\":\"x\",\"hi\":null}" $
+        U.assertEqual
+          "Result is correct"
+          "{\"hi\":null,\"var\":\"x\"}"
+          (show $ JsonObject [("var", JsonString "x"), ("hi", JsonNull)])
     ]
 
 simpleUnitTests :: TestTree
