@@ -13,6 +13,7 @@ import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObje
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
+import TestIf
 import TestVar
 
 main :: IO ()
@@ -22,7 +23,7 @@ tests :: TestTree
 tests = testGroup "Tests" [unitTests, hedgehogTests]
 
 unitTests :: TestTree
-unitTests = testGroup "Unit tests" [simpleUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests]
+unitTests = testGroup "Unit tests" [simpleUnitTests, ifUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests]
 
 showJsonUnitTests :: TestTree
 showJsonUnitTests =
@@ -95,19 +96,19 @@ mapUnitTests =
         U.assertEqual
           "Empty list case"
           (Right $ JsonArray [])
-          (eval [] (JsonObject $ M.singleton "map" $ JsonArray [JsonArray [], JsonObject $ M.singleton "+" $ JsonArray [JsonNumber 1, JsonNumber 2]]) JsonNull),
+          (eval [] (JsonObject [("map", JsonArray [JsonArray [], JsonObject [("+", JsonArray [JsonNumber 1, JsonNumber 2])]])]) JsonNull),
       -- logic{"map":[[1,2], {"+", [{"var":""},2]} => [3,4]
       testCase "logic{\"map\":\"[[1,2], {\"+\":[{\"var\":\"\"}, 2]}]\"} data{}" $
         U.assertEqual
           "Empty list case"
           (Right $ JsonArray [JsonNumber 3, JsonNumber 4])
-          (eval [] (JsonObject $ M.singleton "map" $ JsonArray [JsonArray [JsonNumber 1, JsonNumber 2], JsonObject $ M.singleton "+" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "", JsonNumber 2]]) JsonNull),
+          (eval [] (JsonObject [("map", JsonArray [JsonArray [JsonNumber 1, JsonNumber 2], JsonObject [("+", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) JsonNull),
       -- logic{"map":[{"var":"x"}, {"+", [{"var":""},2]} data[1,2,3]=> [3,4,5]
       testCase "logic{\"map\":\"[{\"var\":\"x\"}, {\"+\":[{\"var\":\"\"}, 2]}]\"} data{\"x\":[1,2,3]\"}" $
         U.assertEqual
           "Empty list case"
           (Right $ JsonArray [JsonNumber 3, JsonNumber 4, JsonNumber 5])
-          (eval [] (JsonObject $ M.singleton "map" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "x", JsonObject $ M.singleton "+" $ JsonArray [JsonObject $ M.singleton "var" $ JsonString "", JsonNumber 2]]) (JsonObject $ M.singleton "x" $ JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3]))
+          (eval [] (JsonObject [("map", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [("+", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) (JsonObject [("x", JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3])]))
     ]
 
 hedgehogTests :: TestTree
