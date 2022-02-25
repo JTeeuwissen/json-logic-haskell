@@ -40,7 +40,7 @@ insertAtPath (p : ps) value JsonNull = case readMaybe p of
   Nothing -> JsonObject [(p, insertAtPath ps value JsonNull)]
   Just i -> JsonArray $ replicate (i :: Int) JsonNull ++ [insertAtPath ps value JsonNull]
 -- Data is always an array or an object in the top layer, everything else is wrong
-insertAtPath _ _ _ = undefined
+insertAtPath _ _ _ = error "Error invalid Json, your json data is not an array or object"
 
 -- | Generate random Json given a size
 genSizedRandomJson :: Size -> Gen Json
