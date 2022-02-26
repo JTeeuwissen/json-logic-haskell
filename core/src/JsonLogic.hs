@@ -2,12 +2,12 @@ module JsonLogic where
 
 import Control.Monad.Except (MonadError (throwError))
 import Control.Monad.Reader (runReader)
-import Data.Map as M (Map, empty, foldr, fromList, traverseWithKey)
+import Data.Map as M (Map, foldr, fromList, traverseWithKey)
 import JsonLogic.JL (JL, getFunction, getOperations, getVariables)
 import JsonLogic.Json
   ( Data,
     Function,
-    Json (JsonNull, JsonObject),
+    Json (JsonObject),
     JsonLogicEnv (JLEnv),
     Result,
     Rule,
@@ -21,12 +21,10 @@ eval ops rule d = runReader (evalRule rule) $ createEnv (M.fromList ops) d
 -- | Evaluate a rule
 -- Currently only evaluates the first rule, non recursive.
 evalRule :: Rule -> JL Result
-evalRule o@(JsonObject rule)
-  -- An empty rule object returns itself as result
-  | null rule = return o
-  | otherwise = do
-      result <- sequenceA <$> traverseWithKey evalFunc rule
-      return $ M.foldr const JsonNull <$> result
+evalRule o@(JsonObject rule) = do
+  result <- sequenceA <$> traverseWithKey evalFunc rule
+  -- An empty rule returns itself
+  return $ M.foldr const o <$> result
 evalRule x = (return . return) x
 
 evalFunc :: String -> Json -> JL Result

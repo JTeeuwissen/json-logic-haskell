@@ -10,19 +10,17 @@ import Text.Read (readMaybe)
 evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
 evaluateVar evaluator param vars = do
   res <- evaluator param vars
-  -- Extracts default value from array if it is one
+  -- Extracts default value from array if it has one
   let (j, def) = getJsonWithDefault res
   case j of
-    -- Always: JsonNull -> vars and JsonBool -> Default value
-    JsonNull -> return vars
-    JsonBool _ -> return def
-    -- Indexing using a floored double
+    -- Indexing using a floored double or index object using a string
     JsonNumber n -> return $ fromMaybe def $ indexJson (show (floor n :: Int)) vars
     JsonString s -> return $ fromMaybe def $ indexJson s vars
-    -- Default value is already extracted, cannot have nested list as var value
+    -- null and empty array return the variables directly
+    JsonNull -> return vars
     JsonArray [] -> return vars
-    JsonArray _ -> return def
-    JsonObject _ -> return def
+    -- Nested array, boolean and object always resort to default value
+    _ -> return def
 
 -- Splits string on periods
 -- Same definition as words at: https://github.com/ghc/ghc/blob/master/libraries/base/Data/OldList.hs
