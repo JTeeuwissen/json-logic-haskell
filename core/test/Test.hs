@@ -1,12 +1,8 @@
 {-# LANGUAGE OverloadedLists #-}
 
-import Data.List
-import qualified Data.Map as M
-import Data.Ord
 import Generator.Logic (genArithmeticOperator, genComparisonOperator, genLogicOperator)
-import Hedgehog (Gen, Size (Size), forAll, forAllWith, property, (===))
+import Hedgehog (Gen, forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
-import qualified Hedgehog.Internal.Range
 import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
@@ -21,10 +17,13 @@ main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [unitTests, hedgehogTests]
+tests = testGroup "Tests" [unitTests, generatorTests, hedgehogTests]
 
 unitTests :: TestTree
 unitTests = testGroup "Unit tests" [simpleUnitTests, ifUnitTests, filterUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests]
+
+generatorTests :: TestTree
+generatorTests = testGroup "Generator tests" [varGeneratorTests]
 
 showJsonUnitTests :: TestTree
 showJsonUnitTests =

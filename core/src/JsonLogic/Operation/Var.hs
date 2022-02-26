@@ -1,6 +1,5 @@
 module JsonLogic.Operation.Var (evaluateVar) where
 
-import Control.Monad.Except (MonadError (throwError))
 import qualified Data.List as L (singleton)
 import qualified Data.Map as M (lookup)
 import Data.Maybe (fromMaybe)
@@ -11,18 +10,17 @@ import Text.Read (readMaybe)
 evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
 evaluateVar evaluator param vars = do
   res <- evaluator param vars
-  -- Extracts default value from array if it is one
+  -- Extracts default value from array if it has one
   let (j, def) = getJsonWithDefault res
   case j of
-    -- Always: JsonNull -> vars and JsonBool -> Default value
-    JsonNull -> return vars
-    JsonBool _ -> return def
-    -- Indexing using a floored double
+    -- Indexing using a floored double or index object using a string
     JsonNumber n -> return $ fromMaybe def $ indexJson (show (floor n :: Int)) vars
     JsonString s -> return $ fromMaybe def $ indexJson s vars
-    -- Default value is already extracted, cannot have nested list as var value
-    JsonArray js -> throwError $ "Cannot evaluate a var of type array, namely: " ++ show js
-    JsonObject o -> throwError $ "Cannot evaluate a var of type object, namely: " ++ show o
+    -- null and empty array return the variables directly
+    JsonNull -> return vars
+    JsonArray [] -> return vars
+    -- Nested array, boolean and object always resort to default value
+    _ -> return def
 
 -- Splits string on periods
 -- Same definition as words at: https://github.com/ghc/ghc/blob/master/libraries/base/Data/OldList.hs
@@ -68,7 +66,9 @@ _ !? n | n < 0 = Nothing
 (x : _) !? 0 = Just x
 (_ : xs) !? n = xs !? (n - 1)
 
--- Default is only given if the initial object is an array
+-- | When var receives an array, the first item is the initial logic
+-- If that logic fails then the second value is defaulted to
+-- Any valuie after the second one is ignored
 getJsonWithDefault :: Json -> (Json, Json)
-getJsonWithDefault (JsonArray [x, y]) = (x, y)
+getJsonWithDefault (JsonArray (x : y : _)) = (x, y)
 getJsonWithDefault j = (j, JsonNull)

@@ -11,7 +11,7 @@ import Generator.Generic
 import Generator.Utils (genUnbalancedSizeList)
 import Hedgehog (Gen, Size (Size))
 import Hedgehog.Gen (choice)
-import JsonLogic.Json (Json (JsonArray, JsonNull, JsonObject))
+import JsonLogic.Json (Json (..))
 import Text.Read (readMaybe)
 
 -- | Inserts Json into a specific path and returns it
@@ -34,7 +34,13 @@ insertAtPath (p : ps) value (JsonObject o) = case readMaybe p of
 -- Insert value into an array
 insertAtPath (p : ps) value (JsonArray js) = case readMaybe p of
   Nothing -> JsonObject [(p, insertAtPath ps value JsonNull)]
-  Just i -> JsonArray $ replicate ((i :: Int) - length js) JsonNull ++ [insertAtPath ps value JsonNull]
+  -- Insert it into array if it already has the length
+  Just i
+    | i < length js ->
+        let (xs, ys) = splitAt i js
+         in JsonArray $ xs ++ [insertAtPath ps value JsonNull] ++ ys
+    -- Otherwise append items to the list and put it at the end
+    | otherwise -> JsonArray $ js ++ replicate ((i :: Int) - length js) JsonNull ++ [insertAtPath ps value JsonNull]
 -- It is inserting along a new path, denoted with JsonNull
 insertAtPath (p : ps) value JsonNull = case readMaybe p of
   Nothing -> JsonObject [(p, insertAtPath ps value JsonNull)]
@@ -65,6 +71,20 @@ genSizedRandomJsonArray :: Size -> Gen Json
 genSizedRandomJsonArray size = do
   sizes <- genUnbalancedSizeList size
   JsonArray <$> mapM genSizedRandomJson sizes
+
+-- | Generate a Random size Json array that does not contain any objects
+genSizedNestedJsonArray :: Size -> Gen Json
+genSizedNestedJsonArray size
+  | size <= 0 =
+      choice
+        [ return JsonNull,
+          fst <$> genGenericJsonBool,
+          fst <$> genGenericJsonNumber,
+          fst <$> genGenericJsonString
+        ]
+  | otherwise = do
+      sizes <- genUnbalancedSizeList size
+      JsonArray <$> mapM genSizedNestedJsonArray sizes
 
 -- | Generate sized Jsonobject entry (pair<key,value>)
 genSizedRandomJsonEntry :: Size -> Gen (String, Json)
