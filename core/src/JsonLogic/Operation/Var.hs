@@ -68,7 +68,9 @@ _ !? n | n < 0 = Nothing
 (x : _) !? 0 = Just x
 (_ : xs) !? n = xs !? (n - 1)
 
--- | Default is only given if the initial object is an array as second argument
+-- | When var receives an array, the first item is the initial logic
+-- If that logic fails then the second value is defaulted to
+-- Any valuie after the second one is ignored
 getJsonWithDefault :: Json -> (Json, Json)
 getJsonWithDefault (JsonArray (x : y : _)) = (x, y)
 getJsonWithDefault j = (j, JsonNull)

@@ -34,12 +34,11 @@ insertAtPath (p : ps) value (JsonObject o) = case readMaybe p of
 -- Insert value into an array
 insertAtPath (p : ps) value (JsonArray js) = case readMaybe p of
   Nothing -> JsonObject [(p, insertAtPath ps value JsonNull)]
-  Just i ->
-    if i < length js
-      then -- Insert it into array
-        JsonArray $ (\(s, es) -> s ++ [insertAtPath ps value JsonNull] ++ es) $ splitAt i js
-      else -- Else append items to the list and put it at the end
-        JsonArray $ js ++ replicate ((i :: Int) - length js) JsonNull ++ [insertAtPath ps value JsonNull]
+  -- Insert it into array if it already has the length
+  Just i
+    | i < length js -> JsonArray $ (\(s, es) -> s ++ [insertAtPath ps value JsonNull] ++ es) $ splitAt i js
+    -- Otherwise append items to the list and put it at the end
+    | otherwise -> JsonArray $ js ++ replicate ((i :: Int) - length js) JsonNull ++ [insertAtPath ps value JsonNull]
 -- It is inserting along a new path, denoted with JsonNull
 insertAtPath (p : ps) value JsonNull = case readMaybe p of
   Nothing -> JsonObject [(p, insertAtPath ps value JsonNull)]

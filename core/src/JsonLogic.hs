@@ -21,9 +21,9 @@ eval ops rule d = runReader (evalRule rule) $ createEnv (M.fromList ops) d
 -- | Evaluate a rule
 -- Currently only evaluates the first rule, non recursive.
 evalRule :: Rule -> JL Result
-evalRule (JsonObject rule)
+evalRule o@(JsonObject rule)
   -- An empty rule object returns itself as result
-  | null rule = return $ return $ JsonObject M.empty
+  | null rule = return o
   | otherwise = do
       result <- sequenceA <$> traverseWithKey evalFunc rule
       return $ M.foldr const JsonNull <$> result
