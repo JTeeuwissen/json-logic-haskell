@@ -9,6 +9,7 @@ import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObje
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
+import TestFilter
 import TestIf
 import TestVar
 
@@ -19,7 +20,7 @@ tests :: TestTree
 tests = testGroup "Tests" [unitTests, generatorTests, hedgehogTests]
 
 unitTests :: TestTree
-unitTests = testGroup "Unit tests" [simpleUnitTests, ifUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests]
+unitTests = testGroup "Unit tests" [simpleUnitTests, ifUnitTests, filterUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests]
 
 generatorTests :: TestTree
 generatorTests = testGroup "Generator tests" [varGeneratorTests]
