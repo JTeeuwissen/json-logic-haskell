@@ -1,11 +1,13 @@
 module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
-import Data.Map as M hiding (map)
+import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
+import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
+import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
-import Prelude hiding (map, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
+import Prelude hiding (filter, map, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
 -- Initial environment with only "+" defined
@@ -34,33 +36,12 @@ defaultOperations =
       -- Other
       var,
       map,
-      if'
+      if',
+      filter
     ]
 
 -- Operation type
 type Operation = (String, Function)
-
--- Primitive evaluators
-evaluateNumber :: SubEvaluator -> Rule -> Data -> Either String Double
-evaluateNumber evaluator param vars = do
-  res <- evaluator param vars
-  case res of
-    JsonNumber n -> return n
-    j -> throwError $ "Invalid parameter type, was expecting number. Got: " ++ show j
-
-evaluateBool :: SubEvaluator -> Rule -> Data -> Either String Bool
-evaluateBool evaluator param vars = do
-  res <- evaluator param vars
-  case res of
-    JsonBool b -> return b
-    j -> throwError $ "Invalid parameter type, was expecting boolean. Got: " ++ show j
-
-evaluateArray :: SubEvaluator -> Rule -> Data -> Either String [Json]
-evaluateArray evaluator param vars = do
-  res <- evaluator param vars
-  case res of
-    JsonArray xs -> return xs
-    j -> throwError $ "Invalid parameter type, was expecting array. Got: " ++ show j
 
 -- Function evaluators
 evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
@@ -114,7 +95,8 @@ evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, if' :: Operation
+map, var, if', filter :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
 if' = ("if", evaluateIf)
+filter = ("filter", evaluateFilter)
