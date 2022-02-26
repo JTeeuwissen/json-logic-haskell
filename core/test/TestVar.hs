@@ -111,7 +111,7 @@ varGeneratorTests =
         property $ do
           -- Logic that all returns null
           boolJson <- forAll genGenericJsonBool
-          arrJson <- forAll $ Gen.sized genSizedRandomJsonArray
+          arrJson <- forAll $ Gen.sized genSizedNestedJsonArray
           let boolVar = JsonObject [("var", fst boolJson)]
               arrVar = JsonObject [("var", JsonArray [arrJson])]
               objVar = JsonObject [("var", JsonObject [])]

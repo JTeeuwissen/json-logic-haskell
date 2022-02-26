@@ -72,6 +72,20 @@ genSizedRandomJsonArray size = do
   sizes <- genUnbalancedSizeList size
   JsonArray <$> mapM genSizedRandomJson sizes
 
+-- | Generate a Random size Json array that does not contain any objects
+genSizedNestedJsonArray :: Size -> Gen Json
+genSizedNestedJsonArray size
+  | size <= 0 =
+      choice
+        [ return JsonNull,
+          fst <$> genGenericJsonBool,
+          fst <$> genGenericJsonNumber,
+          fst <$> genGenericJsonString
+        ]
+  | otherwise = do
+      sizes <- genUnbalancedSizeList size
+      JsonArray <$> mapM genSizedNestedJsonArray sizes
+
 -- | Generate sized Jsonobject entry (pair<key,value>)
 genSizedRandomJsonEntry :: Size -> Gen (String, Json)
 genSizedRandomJsonEntry size = do
