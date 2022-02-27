@@ -2,12 +2,13 @@ module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Map as M hiding (map)
+import qualified Data.Fixed as F
 import JsonLogic.Json
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
-import Prelude hiding (filter, map, (&&), (*), (+), (-), (/), (%), (/=), (<), (<=), (==), (>), (>=), (||), min, max)
+import Prelude hiding (filter, map, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||), min, max, sum)
 import qualified Prelude as P
 
 -- Initial environment with only "+" defined
@@ -38,7 +39,10 @@ defaultOperations =
       var,
       map,
       if',
-      filter
+      filter,
+      min,
+      max,
+      sum
     ]
 
 -- Operation type
@@ -60,16 +64,12 @@ evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
 evaluateComparison _ _ _ _ = throwError "Wrong number of arguments for comparison operator"
 
 evaluateBetween :: (Double -> Double -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
-evaluateBetween operator evaluator (JsonArray [x, y]) vars = do
-  x' <- evaluateNumber evaluator x vars
-  y' <- evaluateNumber evaluator y vars
-  return $ JsonBool $ x' `operator` y'
 evaluateBetween operator evaluator (JsonArray [x, y, z]) vars = do
   x' <- evaluateNumber evaluator x vars
   y' <- evaluateNumber evaluator y vars
   z' <- evaluateNumber evaluator z vars
-  return $ JsonBool $ x' `operator` y' && y `operator` z
-evaluateBetween _ _ _ _ = throwError "Wrong number of arguments for comparison operator"
+  return $ JsonBool $ (x' `operator` y') P.&& (y' `operator` z')
+evaluateBetween operator evaluator json vars = evaluateComparison operator evaluator json vars
 
 evaluateLogic :: (Bool -> Bool -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
 evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
@@ -86,11 +86,11 @@ evaluateMap evaluator (JsonArray [xs, f]) vars = do
 evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 
 -- Evaluation for max/min
-evaluateMinMax :: (Doube -> Double -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
-evaluateMinMax operator evaluator (JsonArray arr@(_:_)) vars = do
-  x:arr' <- mapM (\x -> evaluateNumber evaluator x vars) arr
-  return $ JsonNumber $ foldr operator x arr'
-evaluateMinMax _ _ _ = throwError "Cant determine min or max of empty list"
+evaluateDoubleArray :: ([Double] -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateDoubleArray operator evaluator (JsonArray arr@(_:_)) vars = do
+  arr' <- mapM (\x -> evaluateNumber evaluator x vars) arr
+  return $ JsonNumber $ operator arr'
+evaluateDoubleArray _ _ _ _ = throwError "Cant perform action on empty list"
 
 -- Implementation for arithmetic operators
 
@@ -99,7 +99,7 @@ evaluateMinMax _ _ _ = throwError "Cant determine min or max of empty list"
 (-) = ("-", evaluateMath (P.-))
 (*) = ("*", evaluateMath (P.*))
 (/) = ("/", evaluateMath (P./))
-(%) = ("%", evaluateMath (P.%))
+(%) = ("%", evaluateMath F.mod')
 
 -- Implementation for bool -> bool -> bool operators
 (&&), (||), (==), (!=) :: Operation
@@ -116,10 +116,11 @@ evaluateMinMax _ _ _ = throwError "Cant determine min or max of empty list"
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, if', filter, min, max :: Operation
+map, var, if', filter, min, max, sum :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
 if' = ("if", evaluateIf)
 filter = ("filter", evaluateFilter)
-min = ("min", evaluateMinMax (P.min))
-max = ("max", evaluateMinMax (P.max))
+min = ("min", evaluateDoubleArray P.minimum)
+max = ("max", evaluateDoubleArray P.maximum)
+sum = ("sum", evaluateDoubleArray P.sum)
