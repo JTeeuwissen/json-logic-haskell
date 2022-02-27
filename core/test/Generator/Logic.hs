@@ -1,7 +1,7 @@
 module Generator.Logic where
 
-import Data.Map as M
 import Data.Fixed as F
+import Data.Map as M
 import Generator.Generic
 import Generator.Utils
 import Hedgehog

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-import Generator.Logic (genArithmeticOperator, genComparisonOperator, genBetweenOperator, genLogicOperator, genArrayOperator)
+import Generator.Logic (genArithmeticOperator, genArrayOperator, genBetweenOperator, genComparisonOperator, genLogicOperator)
 import Hedgehog (Gen, forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
