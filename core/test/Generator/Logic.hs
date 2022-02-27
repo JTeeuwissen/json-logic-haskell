@@ -1,5 +1,6 @@
 module Generator.Logic where
 
+import Data.Fixed as F
 import Data.Map as M
 import Generator.Generic
 import Generator.Utils
@@ -9,13 +10,19 @@ import Hedgehog.Range as Range
 import JsonLogic.Json
 
 genArithmeticOperator :: Gen (Double -> Double -> Double, [Char])
-genArithmeticOperator = element [((+), "+"), ((-), "-"), ((*), "*"), ((/), "/")]
+genArithmeticOperator = element [((+), "+"), ((-), "-"), ((*), "*"), ((/), "/"), (F.mod', "%")]
 
 genComparisonOperator :: Gen (Double -> Double -> Bool, [Char])
 genComparisonOperator = element [((<), "<"), ((>), ">"), ((<=), "<="), ((>=), ">=")]
 
+genBetweenOperator :: Gen (Double -> Double -> Bool, [Char])
+genBetweenOperator = element [((<), "<"), ((<=), "<=")]
+
 genLogicOperator :: Gen (Bool -> Bool -> Bool, [Char])
 genLogicOperator = element [((&&), "and"), ((||), "or"), ((==), "=="), ((/=), "!=")]
+
+genArrayOperator :: Gen ([Double] -> Double, [Char])
+genArrayOperator = element [(minimum, "min"), (maximum, "max"), (sum, "sum")]
 
 -- Generator for a Json object that evaluates to a number
 genNumericJson :: Gen (Json, Double)

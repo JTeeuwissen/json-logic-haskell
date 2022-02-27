@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-import Generator.Logic (genArithmeticOperator, genComparisonOperator, genLogicOperator)
+import Generator.Logic (genArithmeticOperator, genArrayOperator, genBetweenOperator, genComparisonOperator, genLogicOperator)
 import Hedgehog (Gen, forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -127,12 +127,24 @@ hedgehogTests =
           l <- forAll genDouble
           r <- forAll genDouble
           Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
+      H.testProperty "Between comparison operations" $
+        property $ do
+          (f, n) <- forAllWith snd genBetweenOperator
+          l <- forAll genDouble
+          m <- forAll genDouble
+          r <- forAll genDouble
+          Right (JsonBool (f l m && f m r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber m, JsonNumber r])]) JsonNull,
       H.testProperty "Simple logic operations" $
         property $ do
           (f, n) <- forAllWith snd genLogicOperator
           l <- forAll Gen.bool
           r <- forAll Gen.bool
           Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonBool l, JsonBool r])]) JsonNull,
+      H.testProperty "Simple double array operations" $
+        property $ do
+          (f, n) <- forAllWith snd genArrayOperator
+          arr <- forAll genDoubleArray
+          Right (JsonNumber (f arr)) === eval [] (JsonObject [(n, JsonArray (map JsonNumber arr))]) JsonNull,
       H.testProperty "Nested arihmetic operations" $
         property $ do
           (f1, n1) <- forAllWith snd genArithmeticOperator
@@ -157,6 +169,9 @@ hedgehogTests =
 
 genDouble :: Gen Double
 genDouble = Gen.double $ Range.constant 0 1000
+
+genDoubleArray :: Gen [Double]
+genDoubleArray = Gen.list (Range.constant 1 50) genDouble
 
 -- Not 0 to avoid division by zero
 genDouble1 :: Gen Double
