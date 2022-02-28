@@ -12,8 +12,8 @@ evaluateVar evaluator param vars = do
   let (j, def) = getJsonWithDefault res
   case j of
     -- Indexing using a floored double or index object using a string
-    JsonNumber n -> return $ fromMaybe def $ indexJson (show (floor n :: Int)) vars
-    JsonString s -> return $ fromMaybe def $ indexJson s vars
+    i@(JsonNumber _) -> return $ fromMaybe def $ indexWithJson i vars
+    i@(JsonString _) -> return $ fromMaybe def $ indexWithJson i vars
     -- null and empty array return the variables directly
     JsonNull -> return vars
     JsonArray [] -> return vars

@@ -1,3 +1,5 @@
 packages:
   core
   aeson
+
+tests: true

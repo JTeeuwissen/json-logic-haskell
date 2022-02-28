@@ -47,7 +47,7 @@ library
         containers,
         mtl >= 2.2.2,
 
-Test-Suite Test
+Test-Suite jsonlogic-tests
     main-is:
         Test.hs
     default-language:

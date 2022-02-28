@@ -38,7 +38,7 @@ insertAtPath (p : ps) value (JsonArray js) = case readMaybe p of
   Just i
     | i < length js ->
         let (xs, ys) = splitAt i js
-         in JsonArray $ xs ++ [insertAtPath ps value JsonNull] ++ ys
+         in JsonArray $ xs ++ [insertAtPath ps value JsonNull] ++ drop 1 ys
     -- Otherwise append items to the list and put it at the end
     | otherwise -> JsonArray $ js ++ replicate ((i :: Int) - length js) JsonNull ++ [insertAtPath ps value JsonNull]
 -- It is inserting along a new path, denoted with JsonNull
