@@ -1,7 +1,7 @@
 module JsonLogic.Operation.Missing where
 
 import Control.Monad.Except (MonadError (throwError))
-import Data.Maybe (isNothing, mapMaybe)
+import Data.Maybe (isNothing)
 import JsonLogic.Json (Function, Json (..))
 import JsonLogic.Operation.Utils
 
@@ -23,15 +23,15 @@ evaluateMissing evaluator param vars = do
 -- Otherwise it returns an empty list
 evaluateMissingSome :: Function
 evaluateMissingSome evaluator (JsonArray [JsonNumber x, y]) vars = do
-  res <- evaluateMissing evaluator y vars
-  case res of
+  params <- evaluator y vars
+  missingArr <- evaluateMissing evaluator params vars
+  let (JsonArray missing) = missingArr
+  case params of
     -- Return result if at least x elements are missing or else an empty array
-    (JsonArray js) | jsonLength y - length js >= floor x -> return $ JsonArray []
-    _ -> return res
+    JsonArray js | length js - length missing >= floor x -> return $ JsonArray []
+    JsonArray _ -> return missingArr
+    -- If there is only a singleton as parameter, the length is 1
+    _ | 1 - length missing >= floor x -> return $ JsonArray []
+    _ -> return missingArr
 -- The parameters are invalid
 evaluateMissingSome _ json _ = throwError $ "Error: missing_some expects an array of two arguments, instead it got: " ++ show json
-
--- Length of the json
-jsonLength :: Json -> Int
-jsonLength (JsonArray js) = length js
-jsonLength _ = 1

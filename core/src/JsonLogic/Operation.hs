@@ -92,10 +92,11 @@ evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 
 -- Evaluation for max/min
 evaluateDoubleArray :: ([Double] -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateDoubleArray _ _ (JsonArray []) _ = throwError "Can't evaluate array action an empty list"
 evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   arr' <- mapM (\x -> evaluateNumber evaluator x vars) arr
   return $ JsonNumber $ operator arr'
-evaluateDoubleArray _ _ _ json = throwError $ "Can't perform action on empty list or other json. Rule: " ++ show json
+evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
 
 -- Implementation for arithmetic operators
 
