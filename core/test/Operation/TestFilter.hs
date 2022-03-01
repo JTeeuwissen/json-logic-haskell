@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module TestFilter where
+module Operation.TestFilter where
 
 import JsonLogic
 import JsonLogic.Json (Json (..))

@@ -98,3 +98,8 @@ genSizedRandomJsonObject :: Size -> Gen Json
 genSizedRandomJsonObject size = do
   sizes <- genUnbalancedSizeList size
   JsonObject . M.fromList <$> mapM genSizedRandomJsonEntry sizes
+
+-- | Generator for a flat array of a size array
+-- genFlatArray :: Size -> Gen Json
+-- genFlatArray (Size size) = do
+--   return (JsonArray $ mapM (genSizedRandomJson) $ repeat size $ Size 0)

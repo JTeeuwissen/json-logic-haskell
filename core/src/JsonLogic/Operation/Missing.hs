@@ -1,15 +1,16 @@
 module JsonLogic.Operation.Missing where
 
 import Control.Monad.Except (MonadError (throwError))
-import Data.Maybe (mapMaybe)
-import JsonLogic.Json (Data, Function, Json (..), Rule, SubEvaluator)
+import Data.Maybe (isNothing, mapMaybe)
+import JsonLogic.Json (Function, Json (..))
 import JsonLogic.Operation.Utils
 
 -- | Evaluates which elements are missing from the Json
 evaluateMissing :: Function
 evaluateMissing evaluator param vars = do
   res <- evaluator param vars
-  return $ JsonArray $ mapMaybe (`indexWithJson` vars) $ keys res
+  -- Only keep the missing values in the json array
+  return $ JsonArray [a | a <- keys res, isNothing $ indexWithJson a vars]
   where
     -- The keys used for our search
     keys :: Json -> [Json]

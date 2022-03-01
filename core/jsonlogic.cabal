@@ -62,9 +62,11 @@ Test-Suite jsonlogic-tests
         Generator.Generic,
         Generator.Logic,
         Generator.Utils,
-        TestVar,
-        TestIf,
-        TestFilter
+        Operation.TestVar,
+        Operation.TestMissing,
+        Operation.TestIf,
+        Operation.TestFilter,
+        Utils
     build-depends:
         base >= 4.15.0.0,
         jsonlogic,

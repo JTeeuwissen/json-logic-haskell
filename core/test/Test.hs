@@ -6,12 +6,13 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
+import Operation.TestFilter
+import Operation.TestIf
+import Operation.TestMissing
+import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
-import TestFilter
-import TestIf
-import TestVar
 
 main :: IO ()
 main = defaultMain tests
@@ -20,10 +21,10 @@ tests :: TestTree
 tests = testGroup "Tests" [unitTests, generatorTests, hedgehogTests]
 
 unitTests :: TestTree
-unitTests = testGroup "Unit tests" [simpleUnitTests, ifUnitTests, filterUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests]
+unitTests = testGroup "Unit tests" [simpleUnitTests, ifUnitTests, filterUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests, missingUnitTests]
 
 generatorTests :: TestTree
-generatorTests = testGroup "Generator tests" [varGeneratorTests]
+generatorTests = testGroup "Generator tests" [varGeneratorTests, missingGeneratorTests]
 
 showJsonUnitTests :: TestTree
 showJsonUnitTests =
