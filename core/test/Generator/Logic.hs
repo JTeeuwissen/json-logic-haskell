@@ -1,12 +1,11 @@
 module Generator.Logic where
 
 import Data.Fixed as F
-import Data.Map as M
+import qualified Data.Map as M
 import Generator.Generic
 import Generator.Utils
 import Hedgehog
 import Hedgehog.Gen
-import Hedgehog.Range as Range
 import JsonLogic.Json
 
 genArithmeticOperator :: Gen (Double -> Double -> Double, [Char])
@@ -106,8 +105,8 @@ sizedGenBoolJson s@(Size size)
 
 -- Creates a generator for json logic given an operator. Can contain out of logic and comparison operators
 createBoolObject :: String -> (Bool -> Bool -> Bool) -> Size -> Gen (Json, Bool)
-createBoolObject str op s@(Size size) = do
-  (s1, s2) <- genUnbalancedSizes s
+createBoolObject str op size = do
+  (s1, s2) <- genUnbalancedSizes size
   (j1, x1) <- choice [sizedGenLogicJson s1, sizedGenComparisonJson s1]
   (j2, x2) <- choice [sizedGenLogicJson s2, sizedGenComparisonJson s2]
   return (JsonObject (M.fromList [(str, JsonArray [j1, j2])]), x1 `op` x2)

@@ -2,6 +2,7 @@ module Generator.Utils where
 
 import Hedgehog
 import Hedgehog.Gen
+import qualified Hedgehog.Gen as Gen
 import Hedgehog.Range as Range
 
 -- | Splits size object into two uneven sizes
@@ -34,3 +35,6 @@ genUnbalancedIntList remaining maxInt
       chunkSize <- int $ Range.constant 0 $ min remaining maxInt
       -- Important! -1 so the size of each element will converge to 0 eventually
       (:) chunkSize <$> genUnbalancedIntList (remaining - chunkSize - 1) maxInt
+
+increaseSizeBy :: Int -> Gen a -> Gen a
+increaseSizeBy i = Gen.scale (\(Size s) -> Size $ s + i)

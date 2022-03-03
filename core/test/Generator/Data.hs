@@ -38,7 +38,8 @@ insertAtPath (p : ps) value (JsonArray js) = case readMaybe p of
   Just i
     | i < length js ->
         let (xs, ys) = splitAt i js
-         in JsonArray $ xs ++ [insertAtPath ps value JsonNull] ++ ys
+         in -- Replacing the index with the new item, for this we need to drop 1 element at the end
+            JsonArray $ xs ++ [insertAtPath ps value JsonNull] ++ drop 1 ys
     -- Otherwise append items to the list and put it at the end
     | otherwise -> JsonArray $ js ++ replicate ((i :: Int) - length js) JsonNull ++ [insertAtPath ps value JsonNull]
 -- It is inserting along a new path, denoted with JsonNull
@@ -98,3 +99,13 @@ genSizedRandomJsonObject :: Size -> Gen Json
 genSizedRandomJsonObject size = do
   sizes <- genUnbalancedSizeList size
   JsonObject . M.fromList <$> mapM genSizedRandomJsonEntry sizes
+
+-- | Generate an array of given size that generates a range array
+genSizedJsonNumberArray :: Size -> Gen (Json, [Double])
+genSizedJsonNumberArray (Size size) = do
+  let arr = [1 .. (1.0 + fromIntegral size)] :: [Double]
+  return (JsonArray $ map JsonNumber arr, arr)
+
+-- | Generate a flat array of a given size
+genSizedFlatArray :: Size -> Gen Json
+genSizedFlatArray (Size size) = JsonArray <$> mapM (\_ -> genSizedRandomJson $ Size 0) [0 .. size]

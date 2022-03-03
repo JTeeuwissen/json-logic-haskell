@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module TestVar where
+module Operation.TestVar where
 
 import qualified Data.List as L
 import Generator.Data

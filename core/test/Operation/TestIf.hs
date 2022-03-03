@@ -1,18 +1,11 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module TestIf where
+module Operation.TestIf where
 
-import qualified Data.Map as M
-import Generator.Logic (genArithmeticOperator, genComparisonOperator, genLogicOperator)
-import Hedgehog (Gen, Size (Size), forAll, forAllWith, property, (===))
-import qualified Hedgehog.Gen as Gen
-import qualified Hedgehog.Internal.Range
-import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
 
 ifUnitTests :: TestTree
 ifUnitTests =

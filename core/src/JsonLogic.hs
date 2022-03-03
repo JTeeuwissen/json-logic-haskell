@@ -7,7 +7,7 @@ import JsonLogic.JL (JL, getFunction, getOperations, getVariables)
 import JsonLogic.Json
   ( Data,
     Function,
-    Json (JsonArray, JsonNull, JsonObject),
+    Json (JsonArray, JsonObject),
     JsonLogicEnv (JLEnv),
     Result,
     Rule,

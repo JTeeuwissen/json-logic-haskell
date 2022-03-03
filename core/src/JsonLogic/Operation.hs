@@ -6,6 +6,7 @@ import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
+import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
 import Prelude hiding (filter, map, max, min, sum, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
@@ -42,7 +43,9 @@ defaultOperations =
       filter,
       min,
       max,
-      sum
+      sum,
+      missing,
+      missingSome
     ]
 
 -- Operation type
@@ -89,10 +92,11 @@ evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 
 -- Evaluation for max/min
 evaluateDoubleArray :: ([Double] -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
-evaluateDoubleArray _ _ _ (JsonArray []) = throwError "Can't perform action on empty list"
+evaluateDoubleArray _ _ (JsonArray []) _ = throwError "Can't evaluate array action an empty list"
 evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   arr' <- mapM (\x -> evaluateNumber evaluator x vars) arr
   return $ JsonNumber $ operator arr'
+evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
 
 -- Implementation for arithmetic operators
 
@@ -118,9 +122,11 @@ evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, if', filter, min, max, sum :: Operation
+map, var, missing, missingSome, if', filter, min, max, sum :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
+missing = ("missing", evaluateMissing)
+missingSome = ("missing_some", evaluateMissingSome)
 if' = ("if", evaluateIf)
 filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)

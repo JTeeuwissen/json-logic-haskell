@@ -6,69 +6,49 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
+import Operation.TestFilter
+import Operation.TestIf
+import Operation.TestMissing
+import Operation.TestMissingSome
+import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
-import TestFilter
-import TestIf
-import TestVar
+import TestShow
 
 main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [unitTests, generatorTests, hedgehogTests]
+tests =
+  testGroup
+    "Tests"
+    [ unitTests,
+      generatorTests,
+      hedgehogTests
+    ]
 
 unitTests :: TestTree
-unitTests = testGroup "Unit tests" [simpleUnitTests, ifUnitTests, filterUnitTests, varUnitTests, mapUnitTests, showJsonUnitTests]
+unitTests =
+  testGroup
+    "Unit tests"
+    [ simpleUnitTests,
+      ifUnitTests,
+      filterUnitTests,
+      varUnitTests,
+      mapUnitTests,
+      showJsonUnitTests,
+      missingUnitTests,
+      missingSomeUnitTests
+    ]
 
 generatorTests :: TestTree
-generatorTests = testGroup "Generator tests" [varGeneratorTests]
-
-showJsonUnitTests :: TestTree
-showJsonUnitTests =
+generatorTests =
   testGroup
-    "Show json unit tests"
-    [ testCase "show null" $
-        U.assertEqual
-          "Result is correct"
-          "null"
-          (show JsonNull),
-      testCase "show true" $
-        U.assertEqual
-          "Result is correct"
-          "true"
-          (show $ JsonBool True),
-      testCase "show false" $
-        U.assertEqual
-          "Result is correct"
-          "false"
-          (show $ JsonBool False),
-      testCase "show 1" $
-        U.assertEqual
-          "Result is correct"
-          "1.0"
-          (show $ JsonNumber 1.0),
-      testCase "show \"string\"" $
-        U.assertEqual
-          "Result is correct"
-          "\"string\""
-          (show $ JsonString "string"),
-      testCase "[1,2]" $
-        U.assertEqual
-          "Result is correct"
-          "[1.0,2.0]"
-          (show $ JsonArray [JsonNumber 1, JsonNumber 2]),
-      testCase "{\"var\":\"x\"}" $
-        U.assertEqual
-          "Result is correct"
-          "{\"var\":\"x\"}"
-          (show $ JsonObject [("var", JsonString "x")]),
-      testCase "{\"var\":\"x\",\"hi\":null}" $
-        U.assertEqual
-          "Result is correct"
-          "{\"hi\":null,\"var\":\"x\"}"
-          (show $ JsonObject [("var", JsonString "x"), ("hi", JsonNull)])
+    "Generator tests"
+    [ varGeneratorTests,
+      missingGeneratorTests,
+      missingSomeGeneratorTests
     ]
 
 simpleUnitTests :: TestTree
