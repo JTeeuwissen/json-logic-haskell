@@ -12,6 +12,7 @@ import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
+import Text.Read (readMaybe)
 import Utils
 
 missingUnitTests :: TestTree
@@ -75,15 +76,21 @@ missingGeneratorTests =
           case jsonData of
             (JsonArray js) | x < length js -> Right (jArr []) === eval [] rule jsonData
             (JsonString s) | x < length s -> Right (jArr []) === eval [] rule jsonData
+            -- If the index is a number and that index is in the dict it is indexed
+            (JsonObject o) | M.member (show x) o -> Right (jArr []) === eval [] rule jsonData
             _ -> Right (jArr [jNum $ fromIntegral x]) === eval [] rule jsonData,
       H.testProperty "Using string index on array" $
         property $ do
           -- Generate random array
-          jsonData <- forAll $ Gen.sized genSizedRandomJsonArray
-          indexString <- fst <$> forAll genGenericJsonString
+          jsonData@(JsonArray js) <- forAll $ Gen.sized genSizedRandomJsonArray
+          (indexJson, indexStr) <- forAll genGenericNonEmptyJsonString
           -- Item should be in result since it cannot be present
-          let rule = jObj [("missing", jArr [indexString])]
-          Right (jArr [indexString]) === eval [] rule jsonData,
+          let rule = jObj [("missing", jArr [indexJson])]
+          case readMaybe indexStr :: Maybe Int of
+            -- The string is by chance a number, if it is within the range the index is succesful
+            Just i | i >= 0 && i < length js -> Right (jArr []) === eval [] rule jsonData
+            -- Index is not present since it is a string or outside the range
+            _ -> Right (jArr [indexJson]) === eval [] rule jsonData,
       H.testProperty "Using string index on object" $
         property $ do
           -- Generate data
@@ -97,10 +104,12 @@ missingGeneratorTests =
       H.testProperty "Using integer index on object" $
         property $ do
           -- Random data
-          jsonData <- forAll $ Gen.sized genSizedRandomJsonObject
+          jsonData@(JsonObject o) <- forAll $ Gen.sized genSizedRandomJsonObject
           -- Generate random index
           x <- forAll $ Gen.int $ Range.constant 0 30
           let rule = jObj [("missing", jArr [jNum $ fromIntegral x])]
           -- Item should be missing
-          Right (jArr [jNum $ fromIntegral x]) === eval [] rule jsonData
+          if M.member (show x) o
+            then Right (jArr []) === eval [] rule jsonData
+            else Right (jArr [jNum $ fromIntegral x]) === eval [] rule jsonData
     ]

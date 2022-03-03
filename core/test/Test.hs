@@ -15,6 +15,7 @@ import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
 import TestShow
+import TestTruthy
 
 main :: IO ()
 main = defaultMain tests
@@ -38,6 +39,7 @@ unitTests =
       varUnitTests,
       mapUnitTests,
       showJsonUnitTests,
+      truthyUnitTests,
       missingUnitTests,
       missingSomeUnitTests
     ]
@@ -46,7 +48,8 @@ generatorTests :: TestTree
 generatorTests =
   testGroup
     "Generator tests"
-    [ varGeneratorTests,
+    [ truthyGeneratorTests,
+      varGeneratorTests,
       missingGeneratorTests,
       missingSomeGeneratorTests
     ]

@@ -134,7 +134,7 @@ varGeneratorTests =
       H.testProperty "String var returns item" $
         property $ do
           -- The member to index
-          (indexJson, indexStr) <- forAll genGenericJsonString
+          (indexJson, indexStr) <- forAll genGenericNonEmptyJsonString
           let logic = JsonObject [("var", indexJson)]
           -- Generate random json and random data and inject it at the string member
           randomJson <- forAll $ Gen.sized genSizedRandomJsonArray
@@ -146,7 +146,7 @@ varGeneratorTests =
         property $ do
           -- Generate a list of strings denoting a path
           -- f.e ["aa", "bb"] is path "aa.bb" in json
-          recIndex <- forAll $ Gen.list (Range.constant 2 10) $ snd <$> genGenericJsonString
+          recIndex <- forAll $ Gen.list (Range.constant 2 10) $ snd <$> genGenericNonEmptyJsonString
           let logic = JsonObject [("var", JsonString $ L.intercalate "." recIndex)]
           -- Generate random json and random data and inject it at path
           randomJson <- forAll $ Gen.sized genSizedRandomJsonObject
@@ -157,7 +157,7 @@ varGeneratorTests =
       H.testProperty "Default var takes first value if it returns a value" $
         property $ do
           -- Use var null to always convert to a valid item
-          (stringJson, _) <- forAll genGenericJsonString
+          (stringJson, _) <- forAll genGenericNonEmptyJsonString
           let logic = JsonObject [("var", JsonArray [JsonNull, stringJson])]
           dataJson <- forAll $ Gen.sized genSizedRandomJsonArray
           -- Verify we get the entire data as result and not the default
@@ -165,7 +165,7 @@ varGeneratorTests =
       H.testProperty "Defaults correctly to second value" $
         property $ do
           -- Json bool so it always defaults to the stringJson
-          (stringJson, _) <- forAll genGenericJsonString
+          (stringJson, _) <- forAll genGenericNonEmptyJsonString
           let logic = JsonObject [("var", JsonArray [JsonBool True, stringJson])]
           randomJson <- forAll $ Gen.sized genSizedRandomJsonArray
           -- Verify the default value as the result
