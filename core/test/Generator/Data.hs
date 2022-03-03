@@ -99,3 +99,13 @@ genSizedRandomJsonObject :: Size -> Gen Json
 genSizedRandomJsonObject size = do
   sizes <- genUnbalancedSizeList size
   JsonObject . M.fromList <$> mapM genSizedRandomJsonEntry sizes
+
+-- | Generate an array of given size that generates a range array
+genSizedJsonNumberArray :: Size -> Gen (Json, [Double])
+genSizedJsonNumberArray (Size size) = do
+  let arr = [1 .. (1.0 + fromIntegral size)] :: [Double]
+  return (JsonArray $ map JsonNumber arr, arr)
+
+-- | Generate a flat array of a given size
+genSizedFlatArray :: Size -> Gen Json
+genSizedFlatArray (Size size) = JsonArray <$> mapM (\_ -> genSizedRandomJson $ Size 0) [0 .. size]

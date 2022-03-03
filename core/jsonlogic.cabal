@@ -64,8 +64,10 @@ Test-Suite jsonlogic-tests
         Generator.Utils,
         Operation.TestVar,
         Operation.TestMissing,
+        Operation.TestMissingSome,
         Operation.TestIf,
         Operation.TestFilter,
+        TestShow,
         Utils
     build-depends:
         base >= 4.15.0.0,
