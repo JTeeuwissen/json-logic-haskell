@@ -21,14 +21,16 @@ genGenericJsonNumber = do
   d <- double $ Range.constantFrom 1 10 100
   return (JsonNumber d, d)
 
--- | Generator for empty strings
-genGenericEmptyJsonString :: Gen (Json, String)
-genGenericEmptyJsonString = return (JsonString "", "")
-
 -- | Generator for a random JsonString
 genGenericJsonString :: Gen (Json, String)
 genGenericJsonString = do
-  s <- string (Range.constantFrom 1 3 10) alphaNum
+  s <- string (Range.constant 0 10) alphaNum
+  return (JsonString s, s)
+
+-- | Generator for non-empty JsonStrings
+genGenericNonEmptyJsonString :: Gen (Json, String)
+genGenericNonEmptyJsonString = do
+  s <- string (Range.constant 1 10) alphaNum
   return (JsonString s, s)
 
 -- | Generator for empty JsonArrays

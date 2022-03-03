@@ -7,6 +7,7 @@ import Generator.Generic
   ( genGenericJsonBool,
     genGenericJsonNumber,
     genGenericJsonString,
+    genGenericNonEmptyJsonString,
   )
 import Generator.Utils (genUnbalancedSizeList)
 import Hedgehog (Gen, Size (Size))
@@ -90,7 +91,7 @@ genSizedNestedJsonArray size
 -- | Generate sized Jsonobject entry (pair<key,value>)
 genSizedRandomJsonEntry :: Size -> Gen (String, Json)
 genSizedRandomJsonEntry size = do
-  str <- snd <$> genGenericJsonString
+  str <- snd <$> genGenericNonEmptyJsonString
   json <- genSizedRandomJson size
   return (str, json)
 

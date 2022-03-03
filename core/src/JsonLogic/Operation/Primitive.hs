@@ -1,7 +1,7 @@
 module JsonLogic.Operation.Primitive where
 
 import Control.Monad.Except (MonadError (throwError))
-import JsonLogic.Json (Data, Json (JsonArray, JsonBool, JsonNumber), Rule, SubEvaluator)
+import JsonLogic.Json (Data, Json (JsonArray, JsonBool, JsonNumber), Rule, SubEvaluator, isTruthy)
 
 -- Primitive evaluators
 evaluateNumber :: SubEvaluator -> Rule -> Data -> Either String Double
@@ -14,9 +14,7 @@ evaluateNumber evaluator param vars = do
 evaluateBool :: SubEvaluator -> Rule -> Data -> Either String Bool
 evaluateBool evaluator param vars = do
   res <- evaluator param vars
-  case res of
-    JsonBool b -> return b
-    j -> throwError $ "Invalid parameter type, was expecting boolean. Got: " ++ show j
+  return $ isTruthy res
 
 evaluateArray :: SubEvaluator -> Rule -> Data -> Either String [Json]
 evaluateArray evaluator param vars = do
