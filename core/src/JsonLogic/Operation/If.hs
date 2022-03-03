@@ -7,7 +7,5 @@ import JsonLogic.Operation.Primitive
 evaluateIf :: Function
 evaluateIf evaluator (JsonArray [c, x, y]) vars = do
   res <- evaluateBool evaluator c vars
-  if res
-    then evaluator x vars
-    else evaluator y vars
+  evaluator (if res then x else y) vars
 evaluateIf _ _ _ = throwError "Wrong number of arguments for if"
