@@ -43,13 +43,12 @@ missingUnitTests =
         U.assertEqual
           "missing in lists"
           (Right $ jArr [jNum 1])
-          (eval [] (jObj [("missing", jArr [jNum 0, jNum 1])]) (jArr [jStr "apple"]))
-          -- TODO: Needs truthy in order to work
-          -- testCase "logic {\"if\":[{\"missing\":[\"a\", \"b\"]}, \"Not enough fruit\", \"OK to proceed\"]} data {\"a\":\"apple\", \"b\":\"banana\"} => \"Ok to proceed\"" $
-          --   U.assertEqual
-          --     "third test case on site"
-          --     (Right $ jStr "OK to proceed")
-          --     (eval [] (jObj [("if", jArr [jObj [("missing", jArr [jStr "a", jStr "b"])], jStr "Not enough fruit", jStr "OK to proceed"])]) (jObj [("a", jStr "apple"), ("b", jStr "banana")]))
+          (eval [] (jObj [("missing", jArr [jNum 0, jNum 1])]) (jArr [jStr "apple"])),
+      testCase "logic {\"if\":[{\"missing\":[\"a\", \"b\"]}, \"Not enough fruit\", \"OK to proceed\"]} data {\"a\":\"apple\", \"b\":\"banana\"} => \"Ok to proceed\"" $
+        U.assertEqual
+          "third test case on site"
+          (Right $ jStr "OK to proceed")
+          (eval [] (jObj [("if", jArr [jObj [("missing", jArr [jStr "a", jStr "b"])], jStr "Not enough fruit", jStr "OK to proceed"])]) (jObj [("a", jStr "apple"), ("b", jStr "banana")]))
     ]
 
 missingGeneratorTests :: TestTree
