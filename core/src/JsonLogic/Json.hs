@@ -29,22 +29,19 @@ instance Show Json where
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
-jsonToBool :: Json -> Bool
-jsonToBool JsonNull = False
-jsonToBool (JsonBool b) = b
-jsonToBool (JsonNumber 0.0) = False
-jsonToBool (JsonNumber _) = True
-jsonToBool (JsonString "") = False
-jsonToBool (JsonString _) = True
-jsonToBool (JsonArray []) = False
-jsonToBool (JsonArray _) = True
-jsonToBool (JsonObject _) = True
-
 isTruthy :: Json -> Bool
-isTruthy = jsonToBool
+isTruthy JsonNull = False
+isTruthy (JsonBool b) = b
+isTruthy (JsonNumber 0.0) = False
+isTruthy (JsonNumber _) = True
+isTruthy (JsonString "") = False
+isTruthy (JsonString _) = True
+isTruthy (JsonArray []) = False
+isTruthy (JsonArray _) = True
+isTruthy (JsonObject _) = True
 
 isFalsy :: Json -> Bool
-isFalsy = not . jsonToBool
+isFalsy = not . isTruthy
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result

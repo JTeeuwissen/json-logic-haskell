@@ -61,7 +61,7 @@ truthyGeneratorTests =
     ]
 
 truthyAssertion :: Json -> Bool
-truthyAssertion json = jsonToBool json && isTruthy json && not (isFalsy json)
+truthyAssertion json = isTruthy json && not (isFalsy json)
 
 falsyAssertion :: Json -> Bool
-falsyAssertion json = not (jsonToBool json) && isFalsy json && not (isTruthy json)
+falsyAssertion json = isFalsy json && not (isTruthy json)
