@@ -2,6 +2,7 @@ module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Fixed as F
+import Data.Functor ((<&>))
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
 import JsonLogic.Operation.Filter
@@ -9,7 +10,7 @@ import JsonLogic.Operation.If
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
-import Prelude hiding (filter, map, max, min, sum, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
+import Prelude hiding (filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
 -- Initial environment with only "+" defined
@@ -36,6 +37,8 @@ defaultOperations =
       (||),
       (!=),
       (==),
+      (!),
+      (!!),
       -- Other
       var,
       map,
@@ -83,6 +86,12 @@ evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
   return $ JsonBool $ x' `operator` y'
 evaluateLogic _ _ _ _ = throwError "Wrong number of arguments for logic operator"
 
+evaluateTruthy :: SubEvaluator -> Rule -> Data -> Either String Json
+evaluateTruthy evaluator json vars = evaluateBool evaluator json vars <&> JsonBool
+
+evaluateFalsey :: SubEvaluator -> Rule -> Data -> Either String Json
+evaluateFalsey evaluator json vars = evaluateBool evaluator json vars <&> (JsonBool . not)
+
 -- Evaluation for map
 evaluateMap :: SubEvaluator -> Rule -> Data -> Either String Json
 evaluateMap evaluator (JsonArray [xs, f]) vars = do
@@ -108,11 +117,13 @@ evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on no
 (%) = ("%", evaluateMath F.mod')
 
 -- Implementation for bool -> bool -> bool operators
-(&&), (||), (==), (!=) :: Operation
+(&&), (||), (==), (!=), (!), (!!) :: Operation
 (&&) = ("and", evaluateLogic (P.&&))
 (||) = ("or", evaluateLogic (P.||))
 (==) = ("==", evaluateLogic (P.==)) -- TODO proper equality implementation.
 (!=) = ("!=", evaluateLogic (P./=))
+(!) = ("!", evaluateFalsey)
+(!!) = ("!!", evaluateTruthy)
 
 -- Implementation for double -> double -> bool operators
 (<), (>), (<=), (>=) :: Operation
