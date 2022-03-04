@@ -10,6 +10,7 @@ import Operation.TestFilter
 import Operation.TestIf
 import Operation.TestMissing
 import Operation.TestMissingSome
+import Operation.TestNegation
 import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U

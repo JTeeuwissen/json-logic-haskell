@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module Operation.TestVar where
+module Operation.TestNegation where
 
 import qualified Data.List as L
 import Generator.Data
@@ -21,9 +21,9 @@ negationGeneratorTests =
     [ H.testProperty "negation works" $
         property $ do
           paramJson <- forAll $ Gen.sized genSizedRandomJson
-          Right (JsonBool $ isTruthy paramJson) === eval [] (JsonObject [("!", paramJson)]) Nothing,
+          Right (JsonBool $ isTruthy paramJson) === eval [] (JsonObject [("!", paramJson)]) JsonNull,
       H.testProperty "double negation works" $
         property $ do
           paramJson <- forAll $ Gen.sized genSizedRandomJson
-          Right (JsonBool $ not $ isTruthy paramJson) === eval [] (JsonObject [("!!", paramJson)]) Nothing
+          Right (JsonBool $ not $ isTruthy paramJson) === eval [] (JsonObject [("!!", paramJson)]) JsonNull
     ]
