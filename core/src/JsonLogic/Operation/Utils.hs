@@ -1,14 +1,13 @@
 module JsonLogic.Operation.Utils where
 
-import qualified Data.List as L (singleton)
 import qualified Data.Map as M (lookup)
 import JsonLogic.Json (Data, Json (..), Rule)
 import Text.Read (readMaybe)
 
 -- | Index a json object using a string seperated by periods.
--- >>> indexJson "x.y" (JsonObject $ M.singleton "x" $ JsonObject $ M.singleton "y" JsonNull)
+-- >>> indexJson "x.y" (JsonObject $ singleton "x" $ JsonObject $ singleton "y" JsonNull)
 -- Just JsonNull
--- >>> indexJson "x.y" (JsonObject $ M.singleton "x" JsonNull)
+-- >>> indexJson "x.y" (JsonObject $ singleton "x" JsonNull)
 -- Nothing
 -- >>> indexJson "" (JsonNumber 1)
 -- Just (JsonNumber 1.0)
@@ -26,7 +25,7 @@ indexWithJson _ = const Nothing
 indexWithString :: [String] -> Data -> Maybe Json
 indexWithString [] vars = Just vars
 indexWithString [x] (JsonString s) =
-  readMaybe x >>= (!?) s >>= Just . JsonString . L.singleton
+  readMaybe x >>= (!?) s >>= Just . JsonString . singleton
 indexWithString (x : xs) (JsonArray js) =
   readMaybe x >>= (!?) js >>= indexWithString xs
 indexWithString (x : xs) (JsonObject o) = M.lookup x o >>= indexWithString xs
@@ -60,4 +59,12 @@ _ !? n | n < 0 = Nothing
 -- JsonString "abc"
 evaluateUnaryArgument :: Data -> Data
 evaluateUnaryArgument (JsonArray [json]) = json
-evaluateUnaryArgument json = json
+evaluateUnaryArgument json = json 
+
+-- | Put a single item in a list
+-- Included in base since: base-4.15.0.0
+-- But currently on older version.
+-- >>> singleton "single value"
+-- ["single value"]
+singleton :: a -> [a]
+singleton x = [x]

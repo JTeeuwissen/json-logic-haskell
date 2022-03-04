@@ -38,9 +38,9 @@ insertAtPath (p : ps) value (JsonArray js) = case readMaybe p of
   -- Insert it into array if it already has the length
   Just i
     | i < length js ->
-        let (xs, ys) = splitAt i js
-         in -- Replacing the index with the new item, for this we need to drop 1 element at the end
-            JsonArray $ xs ++ [insertAtPath ps value JsonNull] ++ drop 1 ys
+      let (xs, ys) = splitAt i js
+       in -- Replacing the index with the new item, for this we need to drop 1 element at the end
+          JsonArray $ xs ++ [insertAtPath ps value JsonNull] ++ drop 1 ys
     -- Otherwise append items to the list and put it at the end
     | otherwise -> JsonArray $ js ++ replicate ((i :: Int) - length js) JsonNull ++ [insertAtPath ps value JsonNull]
 -- It is inserting along a new path, denoted with JsonNull
@@ -55,18 +55,18 @@ genSizedRandomJson :: Size -> Gen Json
 genSizedRandomJson s@(Size size)
   -- If size less or equal to 0 a final item is closed
   | size <= 0 =
-      choice
-        [ return JsonNull,
-          fst <$> genGenericJsonBool,
-          fst <$> genGenericJsonNumber,
-          fst <$> genGenericJsonString
-        ]
+    choice
+      [ return JsonNull,
+        fst <$> genGenericJsonBool,
+        fst <$> genGenericJsonNumber,
+        fst <$> genGenericJsonString
+      ]
   -- If size is greater than 0 we expand with an array or object
   | otherwise =
-      choice
-        [ genSizedRandomJsonArray s,
-          genSizedRandomJsonObject s
-        ]
+    choice
+      [ genSizedRandomJsonArray s,
+        genSizedRandomJsonObject s
+      ]
 
 -- | Generate a Random sized Json array
 genSizedRandomJsonArray :: Size -> Gen Json
@@ -78,15 +78,15 @@ genSizedRandomJsonArray size = do
 genSizedNestedJsonArray :: Size -> Gen Json
 genSizedNestedJsonArray size
   | size <= 0 =
-      choice
-        [ return JsonNull,
-          fst <$> genGenericJsonBool,
-          fst <$> genGenericJsonNumber,
-          fst <$> genGenericJsonString
-        ]
+    choice
+      [ return JsonNull,
+        fst <$> genGenericJsonBool,
+        fst <$> genGenericJsonNumber,
+        fst <$> genGenericJsonString
+      ]
   | otherwise = do
-      sizes <- genUnbalancedSizeList size
-      JsonArray <$> mapM genSizedNestedJsonArray sizes
+    sizes <- genUnbalancedSizeList size
+    JsonArray <$> mapM genSizedNestedJsonArray sizes
 
 -- | Generate sized Jsonobject entry (pair<key,value>)
 genSizedRandomJsonEntry :: Size -> Gen (String, Json)
