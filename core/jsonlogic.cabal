@@ -45,7 +45,7 @@ library
     build-depends:
         base >= 4.15.0.0,
         containers,
-        mtl >= 2.2.2,
+        mtl >= 2.2.2
 
 Test-Suite jsonlogic-tests
     main-is:

@@ -51,7 +51,8 @@ generatorTests =
     [ truthyGeneratorTests,
       varGeneratorTests,
       missingGeneratorTests,
-      missingSomeGeneratorTests
+      missingSomeGeneratorTests,
+      negationGeneratorTests
     ]
 
 simpleUnitTests :: TestTree
