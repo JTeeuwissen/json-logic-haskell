@@ -2,12 +2,12 @@ module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Fixed as F
-import Data.Functor ((<&>))
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
+import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
 import Prelude hiding (filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
@@ -86,12 +86,6 @@ evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
   y' <- evaluateBool evaluator y vars
   return $ JsonBool $ x' `operator` y'
 evaluateLogic _ _ _ _ = throwError "Wrong number of arguments for logic operator"
-
-evaluateTruthy :: SubEvaluator -> Rule -> Data -> Either String Json
-evaluateTruthy evaluator json vars = evaluateBool evaluator json vars <&> JsonBool
-
-evaluateFalsey :: SubEvaluator -> Rule -> Data -> Either String Json
-evaluateFalsey evaluator json vars = evaluateBool evaluator json vars <&> (JsonBool . not)
 
 -- Evaluation for map
 evaluateMap :: SubEvaluator -> Rule -> Data -> Either String Json

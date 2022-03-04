@@ -50,3 +50,14 @@ _ !? n | n < 0 = Nothing
 [] !? _ = Nothing
 (x : _) !? 0 = Just x
 (_ : xs) !? n = xs !? (n - 1)
+
+-- | Returns the single item in a list if the argument is an array, otherwise returns the argument
+-- If you like, we support syntactic sugar to skip the array around single arguments
+-- Should only be used for unary operations.
+-- >>> evaluateUnaryArgument $ JsonArray [JsonString "abc"]
+-- JsonString "abc"
+-- >>> evaluateUnaryArgument $ JsonString "abc"
+-- JsonString "abc"
+evaluateUnaryArgument :: Data -> Data
+evaluateUnaryArgument (JsonArray [json]) = json
+evaluateUnaryArgument json = json

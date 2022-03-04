@@ -43,7 +43,8 @@ unitTests =
       showJsonUnitTests,
       truthyUnitTests,
       missingUnitTests,
-      missingSomeUnitTests
+      missingSomeUnitTests,
+      negationUnitTests
     ]
 
 generatorTests :: TestTree

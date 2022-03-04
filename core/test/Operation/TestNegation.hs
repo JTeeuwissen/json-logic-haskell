@@ -16,9 +16,9 @@ negationUnitTests :: TestTree
 negationUnitTests =
   testGroup
     "negation unit tests"
-    [ testCase "Negated true is false" $
+    [ testCase "logic: {\"!\": [true]} data: null" $
         U.assertEqual
-          "logic: {\"!\": [true]} data: null"
+          "Negated true is false"
           (Right (JsonBool False))
           (eval [] (JsonObject [("!", JsonArray [JsonBool True])]) JsonNull),
       testCase "logic: {\"!\": true} data: null" $
