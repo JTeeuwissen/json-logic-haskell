@@ -8,7 +8,7 @@ import Hedgehog.Range as Range
 -- | Splits size object into two uneven sizes
 genUnbalancedSizes :: Size -> Gen (Size, Size)
 genUnbalancedSizes (Size size) = do
-  balanceOffset <- int $ Range.constant (-size) size
+  balanceOffset <- int $ Range.constant (negate size) size
   let s1 = Size $ (size + balanceOffset) `div` 2
       s2 = Size $ (size - balanceOffset) `div` 2
   return (s1, s2)
