@@ -31,12 +31,12 @@ sizedGenNumericJson :: Size -> Gen (Json, Double)
 sizedGenNumericJson s@(Size size)
   | size <= 0 = genGenericJsonNumber
   | otherwise =
-      choice
-        [ createNumericObject "+" (Prelude.+) s,
-          createNumericObject "-" (Prelude.-) s,
-          createNumericObject "*" (Prelude.*) s,
-          createNumericObject "/" (Prelude./) s
-        ]
+    choice
+      [ createNumericObject "+" (Prelude.+) s,
+        createNumericObject "-" (Prelude.-) s,
+        createNumericObject "*" (Prelude.*) s,
+        createNumericObject "/" (Prelude./) s
+      ]
 
 -- Creates numeric Json generator given the operator
 createNumericObject :: String -> (Double -> Double -> a) -> Size -> Gen (Json, a)
@@ -54,12 +54,12 @@ sizedGenComparisonJson :: Size -> Gen (Json, Bool)
 sizedGenComparisonJson s@(Size size)
   | size <= 0 = genGenericJsonBool
   | otherwise =
-      choice
-        [ createNumericObject "<" (Prelude.<) s,
-          createNumericObject ">" (Prelude.>) s,
-          createNumericObject "<=" (Prelude.<=) s,
-          createNumericObject ">=" (Prelude.>=) s
-        ]
+    choice
+      [ createNumericObject "<" (Prelude.<) s,
+        createNumericObject ">" (Prelude.>) s,
+        createNumericObject "<=" (Prelude.<=) s,
+        createNumericObject ">=" (Prelude.>=) s
+      ]
 
 -- Generator for a Json object that evaluates to a boolean and only contains logic operations
 genLogicJson :: Gen (Json, Bool)
@@ -69,12 +69,12 @@ sizedGenLogicJson :: Size -> Gen (Json, Bool)
 sizedGenLogicJson s@(Size size)
   | size <= 0 = genGenericJsonBool
   | otherwise =
-      choice
-        [ createLogicObject "&&" (Prelude.&&) s,
-          createLogicObject "||" (Prelude.||) s,
-          createLogicObject "!=" (Prelude./=) s,
-          createLogicObject "==" (Prelude.==) s
-        ]
+    choice
+      [ createLogicObject "&&" (Prelude.&&) s,
+        createLogicObject "||" (Prelude.||) s,
+        createLogicObject "!=" (Prelude./=) s,
+        createLogicObject "==" (Prelude.==) s
+      ]
 
 -- Creates the Logic generator given the operator
 createLogicObject :: String -> (Bool -> Bool -> Bool) -> Size -> Gen (Json, Bool)
@@ -92,16 +92,16 @@ sizedGenBoolJson :: Size -> Gen (Json, Bool)
 sizedGenBoolJson s@(Size size)
   | size <= 0 = genGenericJsonBool
   | otherwise =
-      choice
-        [ createBoolObject "&&" (Prelude.&&) s,
-          createBoolObject "||" (Prelude.||) s,
-          createBoolObject "!=" (Prelude./=) s,
-          createBoolObject "==" (Prelude.==) s,
-          createBoolObject "<" (Prelude.<) s,
-          createBoolObject ">" (Prelude.>) s,
-          createBoolObject "<=" (Prelude.<=) s,
-          createBoolObject ">=" (Prelude.>=) s
-        ]
+    choice
+      [ createBoolObject "&&" (Prelude.&&) s,
+        createBoolObject "||" (Prelude.||) s,
+        createBoolObject "!=" (Prelude./=) s,
+        createBoolObject "==" (Prelude.==) s,
+        createBoolObject "<" (Prelude.<) s,
+        createBoolObject ">" (Prelude.>) s,
+        createBoolObject "<=" (Prelude.<=) s,
+        createBoolObject ">=" (Prelude.>=) s
+      ]
 
 -- Creates a generator for json logic given an operator. Can contain out of logic and comparison operators
 createBoolObject :: String -> (Bool -> Bool -> Bool) -> Size -> Gen (Json, Bool)
