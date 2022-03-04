@@ -32,9 +32,9 @@ genUnbalancedIntList ::
 genUnbalancedIntList remaining maxInt
   | remaining <= 0 = return []
   | otherwise = do
-      chunkSize <- int $ Range.constant 0 $ min remaining maxInt
-      -- Important! -1 so the size of each element will converge to 0 eventually
-      (:) chunkSize <$> genUnbalancedIntList (remaining - chunkSize - 1) maxInt
+    chunkSize <- int $ Range.constant 0 $ min remaining maxInt
+    -- Important! -1 so the size of each element will converge to 0 eventually
+    (:) chunkSize <$> genUnbalancedIntList (remaining - chunkSize - 1) maxInt
 
 increaseSizeBy :: Int -> Gen a -> Gen a
 increaseSizeBy i = Gen.scale (\(Size s) -> Size $ s + i)
