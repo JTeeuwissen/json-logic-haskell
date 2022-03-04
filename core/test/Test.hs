@@ -10,6 +10,7 @@ import Operation.TestFilter
 import Operation.TestIf
 import Operation.TestMissing
 import Operation.TestMissingSome
+import Operation.TestNegation
 import Operation.TestPreserve
 import Operation.TestVar
 import Test.Tasty
@@ -42,7 +43,8 @@ unitTests =
       showJsonUnitTests,
       truthyUnitTests,
       missingUnitTests,
-      missingSomeUnitTests
+      missingSomeUnitTests,
+      negationUnitTests
     ]
 
 generatorTests :: TestTree
@@ -53,6 +55,7 @@ generatorTests =
       varGeneratorTests,
       missingGeneratorTests,
       missingSomeGeneratorTests,
+      negationGeneratorTests,
       preserveGeneratorTests
     ]
 

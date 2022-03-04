@@ -7,9 +7,10 @@ import JsonLogic.Json
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
+import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
-import Prelude hiding (filter, map, max, min, sum, (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
+import Prelude hiding (filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
 -- Initial environment with only "+" defined
@@ -36,6 +37,8 @@ defaultOperations =
       (||),
       (!=),
       (==),
+      (!),
+      (!!),
       -- Other
       var,
       map,
@@ -109,11 +112,13 @@ evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on no
 (%) = ("%", evaluateMath F.mod')
 
 -- Implementation for bool -> bool -> bool operators
-(&&), (||), (==), (!=) :: Operation
+(&&), (||), (==), (!=), (!), (!!) :: Operation
 (&&) = ("and", evaluateLogic (P.&&))
 (||) = ("or", evaluateLogic (P.||))
 (==) = ("==", evaluateLogic (P.==)) -- TODO proper equality implementation.
 (!=) = ("!=", evaluateLogic (P./=))
+(!) = ("!", evaluateFalsey)
+(!!) = ("!!", evaluateTruthy)
 
 -- Implementation for double -> double -> bool operators
 (<), (>), (<=), (>=) :: Operation

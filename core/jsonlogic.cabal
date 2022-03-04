@@ -36,6 +36,7 @@ library
         JsonLogic.Operation.Missing,
         JsonLogic.Operation.If,
         JsonLogic.Operation.Filter,
+        JsonLogic.Operation.Negation,
         JsonLogic.Operation.Utils
     default-language:
         Haskell2010
@@ -45,7 +46,7 @@ library
     build-depends:
         base >= 4.14.3.0,
         containers,
-        mtl >= 2.2.2,
+        mtl >= 2.2.2
 
 Test-Suite jsonlogic-tests
     main-is:
@@ -67,6 +68,7 @@ Test-Suite jsonlogic-tests
         Operation.TestMissingSome,
         Operation.TestIf,
         Operation.TestFilter,
+        Operation.TestNegation,
         Operation.TestPreserve,
         TestShow,
         TestTruthy,
