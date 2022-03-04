@@ -68,6 +68,7 @@ Test-Suite jsonlogic-tests
         Operation.TestIf,
         Operation.TestFilter,
         Operation.TestNegation,
+        Operation.TestPreserve,
         TestShow,
         TestTruthy,
         Utils

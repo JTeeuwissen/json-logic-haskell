@@ -89,11 +89,11 @@ missingSomeGeneratorTests =
           missingIndexes <- forAll $ genRandomJsonIndexes (length js, length js * 2)
           -- The amount of items required is put in a rule
           nrRequired <- forAll $ fromIntegral <$> (Gen.int $ Range.constant 0 (length js * 2) :: Gen Int)
-          let rule = jObj [("missing_some", jArr [jNum nrRequired, JsonArray missingIndexes])]
+          let rule = jObj [("missing_some", jArr [jNum nrRequired, JsonArray $ presentIndexes ++ missingIndexes])]
           -- Evaluate the rule with the data
           case eval [] rule jsonData of
             -- If there are more indexes present than the number required then it returns an empty array.
-            Right (JsonArray []) -> H.assert $ fromIntegral (length presentIndexes) < nrRequired || nrRequired == 0
+            Right (JsonArray []) -> H.assert $ fromIntegral (length presentIndexes) >= nrRequired || null missingIndexes
             -- Otherwise it returns all the missing items
             res@(Right (JsonArray _)) -> Right (jArr missingIndexes) === res
             -- Should never return any other type

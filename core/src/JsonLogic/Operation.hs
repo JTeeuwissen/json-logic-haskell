@@ -48,7 +48,8 @@ defaultOperations =
       max,
       sum,
       missing,
-      missingSome
+      missingSome,
+      preserve
     ]
 
 -- Operation type
@@ -143,3 +144,6 @@ filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
+
+preserve :: Operation
+preserve = ("preserve", \_ rule _ -> return rule)
