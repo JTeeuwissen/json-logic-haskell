@@ -59,7 +59,7 @@ _ !? n | n < 0 = Nothing
 -- JsonString "abc"
 evaluateUnaryArgument :: Data -> Data
 evaluateUnaryArgument (JsonArray [json]) = json
-evaluateUnaryArgument json = json 
+evaluateUnaryArgument json = json
 
 -- | Put a single item in a list
 -- Included in base since: base-4.15.0.0
