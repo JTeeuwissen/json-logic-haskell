@@ -43,7 +43,7 @@ library
     hs-source-dirs:
         src
     build-depends:
-        base >= 4.15.0.0,
+        base >= 4.14.3.0,
         containers,
         mtl >= 2.2.2,
 
@@ -72,7 +72,7 @@ Test-Suite jsonlogic-tests
         TestTruthy,
         Utils
     build-depends:
-        base >= 4.15.0.0,
+        base >= 4.14.3.0,
         jsonlogic,
         tasty,
         tasty-hunit >= 0.10.0.3,
