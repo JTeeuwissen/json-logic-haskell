@@ -1,7 +1,7 @@
 module JsonLogic.Operation.Primitive where
 
 import Control.Monad.Except (MonadError (throwError))
-import JsonLogic.Json (Data, Json (JsonArray, JsonBool, JsonNumber), Rule, SubEvaluator, isTruthy)
+import JsonLogic.Json (Data, Json (..), Rule, SubEvaluator, isTruthy)
 
 -- Primitive evaluators
 evaluateNumber :: SubEvaluator -> Rule -> Data -> Either String Double

@@ -10,6 +10,7 @@ import Operation.TestFilter
 import Operation.TestIf
 import Operation.TestMissing
 import Operation.TestMissingSome
+import Operation.TestPreserve
 import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
@@ -51,7 +52,8 @@ generatorTests =
     [ truthyGeneratorTests,
       varGeneratorTests,
       missingGeneratorTests,
-      missingSomeGeneratorTests
+      missingSomeGeneratorTests,
+      preserveGeneratorTests
     ]
 
 simpleUnitTests :: TestTree
