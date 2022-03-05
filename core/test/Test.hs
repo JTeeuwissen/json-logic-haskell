@@ -8,6 +8,7 @@ import JsonLogic
 import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
 import Operation.TestFilter
 import Operation.TestIf
+import Operation.TestMerge
 import Operation.TestMissing
 import Operation.TestMissingSome
 import Operation.TestNegation
@@ -39,6 +40,7 @@ unitTests =
       ifUnitTests,
       filterUnitTests,
       varUnitTests,
+      mergeUnitTests,
       mapUnitTests,
       showJsonUnitTests,
       truthyUnitTests,
@@ -56,6 +58,7 @@ generatorTests =
       missingGeneratorTests,
       missingSomeGeneratorTests,
       negationGeneratorTests,
+      mergeGeneratorTests,
       preserveGeneratorTests
     ]
 

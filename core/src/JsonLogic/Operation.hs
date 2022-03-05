@@ -6,6 +6,7 @@ import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
+import JsonLogic.Operation.Merge (evaluateMerge)
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
@@ -49,6 +50,7 @@ defaultOperations =
       sum,
       missing,
       missingSome,
+      merge,
       preserve
     ]
 
@@ -128,7 +130,7 @@ evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on no
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, missing, missingSome, if', filter, min, max, sum :: Operation
+map, var, missing, missingSome, if', filter, min, max, sum, merge :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
 missing = ("missing", evaluateMissing)
@@ -138,6 +140,7 @@ filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
+merge = ("merge", evaluateMerge)
 
 preserve :: Operation
 preserve = ("preserve", \_ rule _ -> return rule)

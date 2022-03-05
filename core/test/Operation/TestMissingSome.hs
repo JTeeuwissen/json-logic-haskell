@@ -32,23 +32,22 @@ missingSomeUnitTests =
         U.assertEqual
           "second test case on site"
           (Right $ jArr [jStr "b", jStr "c"])
-          (eval [] (jObj [("missing_some", jArr [jNum 2, jArr [jStr "a", jStr "b", jStr "c"]])]) (jObj [("a", jStr "apple")]))
-          -- TODO: Needs truthy and merge in order to work
-          -- testCase
-          --   ( "logic {\"if\" :[{\"merge\": [{\"missing\":[\"first_name\", \"last_name\"]},{\"missing_some\":[1, [\"cell_phone\", \"home_phone\"] ]}]}, \"We require first name, last name, and one phone number.\",\"OK to proceed\"]}"
-          --       ++ "data {\"first_name\":\"Bruce\", \"last_name\":\"Wayne\"} => \"We require first name, last name, and one phone number.\""
-          --   )
-          --   $ U.assertEqual
-          --     "third test case on site"
-          --     (Right $ jStr "We require first name, last name, and one phone number.")
-          --     (eval [] (jObj [("if", jArr [jObj [("merge", jArr [jObj [("missing", jArr [jStr "first_name", jStr "last_name"])], jObj [("missing_some", jArr [jNum 1, jArr [jStr "cell_phone", jStr "home_phone"]])]])], jStr "We require first name, last name, and one phone number.", jStr "OK to proceed"])]) (jObj [("first_name", jStr "Bruce"), ("last_name", jStr "Wayne")]))
+          (eval [] (jObj [("missing_some", jArr [jNum 2, jArr [jStr "a", jStr "b", jStr "c"]])]) (jObj [("a", jStr "apple")])),
+      testCase
+        ( "logic {\"if\" :[{\"merge\": [{\"missing\":[\"first_name\", \"last_name\"]},{\"missing_some\":[1, [\"cell_phone\", \"home_phone\"] ]}]}, \"We require first name, last name, and one phone number.\",\"OK to proceed\"]}"
+            ++ "data {\"first_name\":\"Bruce\", \"last_name\":\"Wayne\"} => \"We require first name, last name, and one phone number.\""
+        )
+        $ U.assertEqual
+          "third test case on site"
+          (Right $ jStr "We require first name, last name, and one phone number.")
+          (eval [] (jObj [("if", jArr [jObj [("merge", jArr [jObj [("missing", jArr [jStr "first_name", jStr "last_name"])], jObj [("missing_some", jArr [jNum 1, jArr [jStr "cell_phone", jStr "home_phone"]])]])], jStr "We require first name, last name, and one phone number.", jStr "OK to proceed"])]) (jObj [("first_name", jStr "Bruce"), ("last_name", jStr "Wayne")]))
     ]
 
 missingSomeGeneratorTests :: TestTree
 missingSomeGeneratorTests =
   testGroup
     "missing_some generator tests"
-    [ H.testProperty "missing_some over emty" $
+    [ H.testProperty "missing_some over empty" $
         property $ do
           -- Missing some over random integer
           (jsonNumber, _) <- forAll genGenericJsonNumber
