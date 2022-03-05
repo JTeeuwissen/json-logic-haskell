@@ -1,7 +1,7 @@
 module JsonLogic.Operation.Cat where
 
 import Data.List (intercalate)
-import JsonLogic.Json (Function, Json (JsonArray, JsonObject, JsonString))
+import JsonLogic.Json (Function, Json (JsonArray, JsonString))
 
 evaluateCat :: Function
 evaluateCat evaluator args vars = do
@@ -9,9 +9,9 @@ evaluateCat evaluator args vars = do
   return $ JsonString $ foldShowJson res
 
 foldShowJson :: Json -> String
-foldShowJson (JsonArray js) = foldMap foldShowJson' js
+foldShowJson (JsonArray js) = foldMap foldNestedJson js
+  where
+    -- A nested array does intercalate commas, they stay in the final result
+    foldNestedJson (JsonArray xs) = intercalate "," $ map show xs
+    foldNestedJson json = show json
 foldShowJson json = show json
-
-foldShowJson' :: Json -> String
-foldShowJson' (JsonArray js) = intercalate "," $ map show js
-foldShowJson' json = show json
