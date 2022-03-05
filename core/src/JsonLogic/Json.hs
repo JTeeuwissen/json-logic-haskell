@@ -19,15 +19,25 @@ data Json
   | JsonObject (M.Map String Json)
   deriving (Eq)
 
--- Simple instance to show Json, does not format it nicely.
+-- How officially json in showed in jsonlogic
 instance Show Json where
-  show JsonNull = "null"
+  show JsonNull = ""
   show (JsonBool True) = "true"
   show (JsonBool False) = "false"
   show (JsonNumber d) = show d
-  show (JsonString s) = show s
+  show (JsonString s) = s
   show (JsonArray js) = show js
-  show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
+  show (JsonObject _) = "[object Object]"
+
+-- Pretty json print for console. Where double quotes are escaped.
+prettyJson :: Json -> String
+prettyJson JsonNull = "null"
+prettyJson (JsonBool True) = "true"
+prettyJson (JsonBool False) = "false"
+prettyJson (JsonNumber d) = show d
+prettyJson (JsonString s) = show s
+prettyJson (JsonArray js) = show js
+prettyJson (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> k ++ ":" ++ prettyJson v) $ M.toList o) ++ "}"
 
 isTruthy :: Json -> Bool
 isTruthy JsonNull = False

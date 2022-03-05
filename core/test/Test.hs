@@ -6,6 +6,7 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
+import Operation.TestCat
 import Operation.TestFilter
 import Operation.TestIf
 import Operation.TestMissing
@@ -44,7 +45,8 @@ unitTests =
       truthyUnitTests,
       missingUnitTests,
       missingSomeUnitTests,
-      negationUnitTests
+      negationUnitTests,
+      catUnitTests
     ]
 
 generatorTests :: TestTree
@@ -52,6 +54,7 @@ generatorTests =
   testGroup
     "Generator tests"
     [ truthyGeneratorTests,
+      catGeneratorTests,
       varGeneratorTests,
       missingGeneratorTests,
       missingSomeGeneratorTests,

@@ -4,6 +4,7 @@ import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Fixed as F
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
+import JsonLogic.Operation.Cat
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
@@ -21,34 +22,38 @@ createEnv fs = JLEnv (M.union fs defaultOperations)
 defaultOperations :: M.Map String Function
 defaultOperations =
   M.fromList
-    [ -- Arithmetic
+    [ -- Numeric Operations
+      -- Arithmetic
       (+),
       (-),
       (*),
       (/),
       (%),
-      -- Comparison
       (<),
       (>),
       (<=),
       (>=),
-      -- Logic
+      min,
+      max,
+      sum,
+      -- Logic and bool
       (&&),
       (||),
       (!=),
       (==),
       (!),
       (!!),
-      -- Other
-      var,
-      map,
       if',
-      filter,
-      min,
-      max,
-      sum,
+      -- Accessing data
+      var,
       missing,
       missingSome,
+      -- Array operations
+      map,
+      filter,
+      -- String operations
+      cat,
+      -- Miscellaneous
       preserve
     ]
 
@@ -138,6 +143,10 @@ filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
+
+-- String Operations
+cat :: Operation
+cat = ("cat", evaluateCat)
 
 preserve :: Operation
 preserve = ("preserve", \_ rule _ -> return rule)

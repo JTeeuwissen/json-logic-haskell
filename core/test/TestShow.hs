@@ -14,7 +14,7 @@ showJsonUnitTests =
     [ testCase "show null" $
         U.assertEqual
           "Result is correct"
-          "null"
+          ""
           (show JsonNull),
       testCase "show true" $
         U.assertEqual
@@ -34,7 +34,7 @@ showJsonUnitTests =
       testCase "show \"string\"" $
         U.assertEqual
           "Result is correct"
-          "\"string\""
+          "string"
           (show $ JsonString "string"),
       testCase "[1,2]" $
         U.assertEqual
@@ -44,11 +44,11 @@ showJsonUnitTests =
       testCase "{\"var\":\"x\"}" $
         U.assertEqual
           "Result is correct"
-          "{\"var\":\"x\"}"
+          "[object Object]"
           (show $ JsonObject [("var", JsonString "x")]),
       testCase "{\"var\":\"x\",\"hi\":null}" $
         U.assertEqual
           "Result is correct"
-          "{\"hi\":null,\"var\":\"x\"}"
+          "[object Object]"
           (show $ JsonObject [("var", JsonString "x"), ("hi", JsonNull)])
     ]
