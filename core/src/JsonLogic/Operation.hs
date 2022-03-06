@@ -1,6 +1,7 @@
 module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
+import Control.Monad.Loops (allM, anyM)
 import qualified Data.Fixed as F
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
@@ -10,7 +11,7 @@ import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
-import Prelude hiding (filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
+import Prelude hiding (all, any, filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
 -- Initial environment with only "+" defined
@@ -49,7 +50,10 @@ defaultOperations =
       sum,
       missing,
       missingSome,
-      preserve
+      preserve,
+      all,
+      some,
+      none
     ]
 
 -- Operation type
@@ -102,6 +106,12 @@ evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   return $ JsonNumber $ operator arr'
 evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
 
+evaluateArrayToBool :: ((Json -> Either String Bool) -> [Json] -> Either String Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
+  xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
+  JsonBool <$> operator (evaluateBool evaluator f) xs'
+evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
+
 -- Implementation for arithmetic operators
 
 (+), (-), (*), (/), (%) :: Operation
@@ -128,7 +138,7 @@ evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on no
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, missing, missingSome, if', filter, min, max, sum :: Operation
+map, var, missing, missingSome, if', filter, min, max, sum, all, some, none :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
 missing = ("missing", evaluateMissing)
@@ -138,6 +148,9 @@ filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
+all = ("all", evaluateArrayToBool allM)
+some = ("some", evaluateArrayToBool anyM)
+none = ("none", evaluateArrayToBool (\f xs -> fmap not (anyM f xs))) -- (mapM not . anyM))
 
 preserve :: Operation
 preserve = ("preserve", \_ rule _ -> return rule)

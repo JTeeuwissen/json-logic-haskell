@@ -40,6 +40,9 @@ unitTests =
       filterUnitTests,
       varUnitTests,
       mapUnitTests,
+      allUnitTests,
+      someUnitTests,
+      noneUnitTests,
       showJsonUnitTests,
       truthyUnitTests,
       missingUnitTests,
@@ -97,6 +100,84 @@ mapUnitTests =
           "Empty list case"
           (Right $ JsonArray [JsonNumber 3, JsonNumber 4, JsonNumber 5])
           (eval [] (JsonObject [("map", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [("+", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) (JsonObject [("x", JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3])]))
+    ]
+
+allUnitTests :: TestTree
+allUnitTests =
+  testGroup
+    "All unit tests"
+    -- logic{"all":[[], {">", 2} => True
+    [ testCase "logic{\"all\":\"[[], {\">\":[1,2]}]\"} data{}" $
+        U.assertEqual
+          "Empty list case"
+          (Right $ JsonBool True)
+          (eval [] (JsonObject [("all", JsonArray [JsonArray [], JsonObject [(">", JsonNumber 2)]])]) JsonNull),
+      -- logic{"all":[[1,2,3], {">", [{"var":""},0]} => True
+      testCase "logic{\"all\":\"[[1,2,3], {\">\":[{\"var\":\"\"}, 0]}]\"} data{}" $
+        U.assertEqual
+          "True case"
+          (Right $ JsonBool True)
+          (eval [] (JsonObject [("all", JsonArray [JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3], JsonObject [(">", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) JsonNull),
+      -- logic{"all":[{"var":"x"}, {">=", [{"var":""},0]} data[-1,2,3]=> False
+      testCase "logic{\"all\":\"[{\"var\":\"x\"}, {\">=\":[{\"var\":\"\"}, 0]}]\"} data{\"x\":[-1,2,3]\"}" $
+        U.assertEqual
+          "False case"
+          (Right $ JsonBool False)
+          (eval [] (JsonObject [("all", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [(">=", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) (JsonObject [("x", JsonArray [JsonNumber (-1), JsonNumber 2, JsonNumber 3])]))
+    ]
+
+someUnitTests :: TestTree
+someUnitTests =
+  testGroup
+    "some unit tests"
+    -- logic{"some":[[], {">", 2} => False
+    [ testCase "logic{\"some\":\"[[], {\">\":[1,2]}]\"} data{}" $
+        U.assertEqual
+          "Empty list case"
+          (Right $ JsonBool False)
+          (eval [] (JsonObject [("some", JsonArray [JsonArray [], JsonObject [(">", JsonNumber 2)]])]) JsonNull),
+      -- logic{"some":[[1,2,3], {"<", [{"var":""},0]} => True
+      testCase "logic{\"some\":\"[[1,2,3], {\"<\":[{\"var\":\"\"}, 0]}]\"} data{}" $
+        U.assertEqual
+          "False case"
+          (Right $ JsonBool False)
+          (eval [] (JsonObject [("some", JsonArray [JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3], JsonObject [("<", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) JsonNull),
+      -- logic{"some":[{"var":"x"}, {">", [{"var":""},0]} data[-1,0,1]=> False
+      testCase "logic{\"some\":\"[{\"var\":\"x\"}, {\">\":[{\"var\":\"\"}, 0]}]\"} data{\"x\":[-1,0,1]\"}" $
+        U.assertEqual
+          "True case"
+          (Right $ JsonBool True)
+          (eval [] (JsonObject [("some", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [(">", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) (JsonObject [("x", JsonArray [JsonNumber (-1), JsonNumber 0, JsonNumber 1])])),
+      -- logic{"some":[{"var":"x"}, {"<=", [{"var":""},0]} data[-1,2,3]=> False
+      testCase "logic{\"some\":\"[{\"var\":\"pies\"}, {\"==\":[{\"var\":\"filling\"}, \"apple\"]}]\"} data{\"pies\":[{\"filling\":\"pumpkin\",\"temp\":110},{\"filling\":\"rhubarb\",\"temp\":210},{\"filling\":\"apple\",\"temp\":310}]\"}" $
+        U.assertEqual
+          "Object case"
+          (Right $ JsonBool True)
+          (eval [] (JsonObject [("some", JsonArray [JsonObject [("var", JsonString "pies")], JsonObject [("==", JsonArray [JsonObject [("var", JsonString "filling")], JsonString "apple"])]])]) (JsonObject [("pies", JsonArray [JsonObject [("filling", JsonString "pumpkin"), ("temp", JsonNumber 110)], JsonObject [("filling", JsonString "rhubarb"), ("temp", JsonNumber 210)], JsonObject [("filling", JsonString "apple"), ("temp", JsonNumber 310)]])]))
+    ]
+
+noneUnitTests :: TestTree
+noneUnitTests =
+  testGroup
+    "none unit tests"
+    -- logic{"none":[[], {">", 2} => False
+    [ testCase "logic{\"none\":\"[[], {\">\":[1,2]}]\"} data{}" $
+        U.assertEqual
+          "Empty list case"
+          (Right $ JsonBool True)
+          (eval [] (JsonObject [("none", JsonArray [JsonArray [], JsonObject [(">", JsonNumber 2)]])]) JsonNull),
+      -- logic{"none":[[-3,-2,-1], {"<", [{"var":""},0]} => True
+      testCase "logic{\"none\":\"[[-3,-2,-1], {\">\":[{\"var\":\"\"}, 0]}]\"} data{}" $
+        U.assertEqual
+          "True case"
+          (Right $ JsonBool True)
+          (eval [] (JsonObject [("none", JsonArray [JsonArray [JsonNumber (-3), JsonNumber (-2), JsonNumber (-1)], JsonObject [(">", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) JsonNull),
+      -- logic{"none":[{"var":"x"}, {"<=", [{"var":""},0]} data[-1,2,3]=> False
+      testCase "logic{\"none\":\"[{\"var\":\"x\"}, {\"<=\":[{\"var\":\"\"}, 0]}]\"} data{\"x\":[-1,2,3]\"}" $
+        U.assertEqual
+          "False case"
+          (Right $ JsonBool False)
+          (eval [] (JsonObject [("none", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [("<=", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) (JsonObject [("x", JsonArray [JsonNumber (-1), JsonNumber 2, JsonNumber 3])]))
     ]
 
 hedgehogTests :: TestTree
