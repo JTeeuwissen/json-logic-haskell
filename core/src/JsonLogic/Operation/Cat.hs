@@ -9,9 +9,9 @@ evaluateCat evaluator args vars = do
   return $ JsonString $ foldShowJson res
 
 foldShowJson :: Json -> String
-foldShowJson (JsonArray js) = foldMap foldNestedJson js
+foldShowJson (JsonArray js) = foldMap intercalateItems js
   where
     -- A nested array does intercalate commas, they stay in the final result
-    foldNestedJson (JsonArray xs) = intercalate "," $ map show xs
-    foldNestedJson json = show json
+    intercalateItems (JsonArray xs) = intercalate "," $ map show xs
+    intercalateItems json = show json
 foldShowJson json = show json
