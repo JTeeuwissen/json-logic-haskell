@@ -46,8 +46,7 @@ library
     build-depends:
         base >= 4.14.3.0,
         containers,
-        mtl >= 2.2.2,
-        monad-loops
+        mtl >= 2.2.2
 
 Test-Suite jsonlogic-tests
     main-is:
@@ -64,6 +63,7 @@ Test-Suite jsonlogic-tests
         Generator.Generic,
         Generator.Logic,
         Generator.Utils,
+        Operation.TestArrayChecks,
         Operation.TestVar,
         Operation.TestMissing,
         Operation.TestMissingSome,

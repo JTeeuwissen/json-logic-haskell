@@ -1,7 +1,6 @@
 module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
-import Control.Monad.Loops (allM, anyM)
 import qualified Data.Fixed as F
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
@@ -106,10 +105,11 @@ evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   return $ JsonNumber $ operator arr'
 evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
 
-evaluateArrayToBool :: ((Json -> Either String Bool) -> [Json] -> Either String Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateArrayToBool :: ([Bool] -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
 evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
   xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
-  JsonBool <$> operator (evaluateBool evaluator f) xs'
+  bools <- mapM (evaluateBool evaluator f) xs'
+  return $ JsonBool $ operator bools
 evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
 
 -- Implementation for arithmetic operators
@@ -148,9 +148,9 @@ filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
-all = ("all", evaluateArrayToBool allM)
-some = ("some", evaluateArrayToBool anyM)
-none = ("none", evaluateArrayToBool (\f xs -> fmap not (anyM f xs))) -- (mapM not . anyM))
+all = ("all", evaluateArrayToBool and)
+some = ("some", evaluateArrayToBool or)
+none = ("none", evaluateArrayToBool (not . or))
 
 preserve :: Operation
 preserve = ("preserve", \_ rule _ -> return rule)
