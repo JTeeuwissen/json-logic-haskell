@@ -6,6 +6,7 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
+import Operation.TestArrayChecks
 import Operation.TestCat
 import Operation.TestFilter
 import Operation.TestIf
@@ -41,6 +42,9 @@ unitTests =
       filterUnitTests,
       varUnitTests,
       mapUnitTests,
+      allUnitTests,
+      someUnitTests,
+      noneUnitTests,
       showJsonUnitTests,
       truthyUnitTests,
       missingUnitTests,

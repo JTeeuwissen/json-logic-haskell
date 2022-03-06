@@ -11,7 +11,7 @@ import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
-import Prelude hiding (filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
+import Prelude hiding (all, any, filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
 -- Initial environment with only "+" defined
@@ -54,7 +54,10 @@ defaultOperations =
       -- String operations
       cat,
       -- Miscellaneous
-      preserve
+      preserve,
+      all,
+      some,
+      none
     ]
 
 -- Operation type
@@ -107,6 +110,13 @@ evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   return $ JsonNumber $ operator arr'
 evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
 
+evaluateArrayToBool :: ([Bool] -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
+  xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
+  bools <- mapM (evaluateBool evaluator f) xs'
+  return $ JsonBool $ operator bools
+evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
+
 -- Implementation for arithmetic operators
 
 (+), (-), (*), (/), (%) :: Operation
@@ -133,7 +143,7 @@ evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on no
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, missing, missingSome, if', filter, min, max, sum :: Operation
+map, var, missing, missingSome, if', filter, min, max, sum, all, some, none :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
 missing = ("missing", evaluateMissing)
@@ -143,6 +153,9 @@ filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
+all = ("all", evaluateArrayToBool and)
+some = ("some", evaluateArrayToBool or)
+none = ("none", evaluateArrayToBool (not . or))
 
 -- String Operations
 cat :: Operation

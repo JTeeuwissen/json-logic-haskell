@@ -65,6 +65,7 @@ Test-Suite jsonlogic-tests
         Generator.Logic,
         Generator.Utils,
         Operation.TestCat,
+        Operation.TestArrayChecks,
         Operation.TestVar,
         Operation.TestMissing,
         Operation.TestMissingSome,
