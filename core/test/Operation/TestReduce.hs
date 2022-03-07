@@ -30,5 +30,10 @@ reduceUnitTests =
         U.assertEqual
           "Initial value evaluates to 1"
           (Right $ jNum 6)
-          (eval [] (jObj [("reduce", jArr [jObj [("var", jStr "integers")], jObj [("+", jArr [jObj [("var", jStr "current")], jObj [("var", jStr "accumulator")]])], jObj [("var", jStr "integer")]])]) (jObj [("integer", jNum 1), ("integers", jArr [jNum 2, jNum 3])]))
+          (eval [] (jObj [("reduce", jArr [jObj [("var", jStr "integers")], jObj [("+", jArr [jObj [("var", jStr "current")], jObj [("var", jStr "accumulator")]])], jObj [("var", jStr "integer")]])]) (jObj [("integer", jNum 1), ("integers", jArr [jNum 2, jNum 3])])),
+      testCase "Empty list" $
+        U.assertEqual
+          "Returns initial value"
+          (Right $ jStr "abc")
+          (eval [] (jObj [("reduce", jArr [jObj [("var", jStr "integers")], jObj [("+", jArr [jObj [("var", jStr "current")], jObj [("var", jStr "accumulator")]])], jStr "abc"])]) (jObj [("integers", jArr [])]))
     ]
