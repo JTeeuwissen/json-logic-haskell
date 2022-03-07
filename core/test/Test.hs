@@ -16,6 +16,7 @@ import Operation.TestMissing
 import Operation.TestMissingSome
 import Operation.TestNegation
 import Operation.TestPreserve
+import Operation.TestReduce
 import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
@@ -54,7 +55,8 @@ unitTests =
       missingSomeUnitTests,
       negationUnitTests,
       catUnitTests,
-      inUnitTests
+      inUnitTests,
+      reduceUnitTests
     ]
 
 generatorTests :: TestTree
