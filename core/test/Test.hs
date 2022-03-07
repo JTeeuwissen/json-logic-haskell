@@ -7,6 +7,7 @@ import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
 import Operation.TestArrayChecks
+import Operation.TestCat
 import Operation.TestFilter
 import Operation.TestIf
 import Operation.TestMissing
@@ -17,7 +18,7 @@ import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
-import TestShow
+import TestStringify
 import TestTruthy
 
 main :: IO ()
@@ -44,11 +45,12 @@ unitTests =
       allUnitTests,
       someUnitTests,
       noneUnitTests,
-      showJsonUnitTests,
+      stringifyUnitTests,
       truthyUnitTests,
       missingUnitTests,
       missingSomeUnitTests,
-      negationUnitTests
+      negationUnitTests,
+      catUnitTests
     ]
 
 generatorTests :: TestTree
@@ -56,6 +58,7 @@ generatorTests =
   testGroup
     "Generator tests"
     [ truthyGeneratorTests,
+      catGeneratorTests,
       varGeneratorTests,
       missingGeneratorTests,
       missingSomeGeneratorTests,

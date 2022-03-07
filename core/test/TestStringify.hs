@@ -1,54 +1,53 @@
-{-# LANGUAGE OverloadedLists #-}
+module TestStringify where
 
-module TestShow where
-
-import JsonLogic.Json (Json (..))
+import JsonLogic.Json (stringify)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase)
 import qualified Test.Tasty.HUnit as U
+import Utils
 
-showJsonUnitTests :: TestTree
-showJsonUnitTests =
+stringifyUnitTests :: TestTree
+stringifyUnitTests =
   testGroup
     "Show json unit tests"
     [ testCase "show null" $
         U.assertEqual
           "Result is correct"
-          "null"
-          (show JsonNull),
+          ""
+          (stringify jNull),
       testCase "show true" $
         U.assertEqual
           "Result is correct"
           "true"
-          (show $ JsonBool True),
+          (stringify $ jBool True),
       testCase "show false" $
         U.assertEqual
           "Result is correct"
           "false"
-          (show $ JsonBool False),
+          (stringify $ jBool False),
       testCase "show 1" $
         U.assertEqual
           "Result is correct"
           "1.0"
-          (show $ JsonNumber 1.0),
+          (stringify $ jNum 1.0),
       testCase "show \"string\"" $
         U.assertEqual
           "Result is correct"
-          "\"string\""
-          (show $ JsonString "string"),
+          "string"
+          (stringify $ jStr "string"),
       testCase "[1,2]" $
         U.assertEqual
           "Result is correct"
-          "[1.0,2.0]"
-          (show $ JsonArray [JsonNumber 1, JsonNumber 2]),
+          "1.0,2.0"
+          (stringify $ jArr [jNum 1, jNum 2]),
       testCase "{\"var\":\"x\"}" $
         U.assertEqual
           "Result is correct"
-          "{\"var\":\"x\"}"
-          (show $ JsonObject [("var", JsonString "x")]),
+          "[object Object]"
+          (stringify $ jObj [("var", jStr "x")]),
       testCase "{\"var\":\"x\",\"hi\":null}" $
         U.assertEqual
           "Result is correct"
-          "{\"hi\":null,\"var\":\"x\"}"
-          (show $ JsonObject [("var", JsonString "x"), ("hi", JsonNull)])
+          "[object Object]"
+          (stringify $ jObj [("var", jStr "x"), ("hi", jNull)])
     ]
