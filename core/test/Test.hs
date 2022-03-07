@@ -16,6 +16,7 @@ import Operation.TestMissingSome
 import Operation.TestNegation
 import Operation.TestPreserve
 import Operation.TestReduce
+import Operation.TestSubstr
 import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
@@ -53,6 +54,8 @@ unitTests =
       missingUnitTests,
       missingSomeUnitTests,
       negationUnitTests,
+      -- String operations
+      substrUnitTests,
       catUnitTests,
       reduceUnitTests
     ]
@@ -62,7 +65,9 @@ generatorTests =
   testGroup
     "Generator tests"
     [ truthyGeneratorTests,
+      -- String operations
       catGeneratorTests,
+      substrGeneratorTests,
       varGeneratorTests,
       missingGeneratorTests,
       missingSomeGeneratorTests,
