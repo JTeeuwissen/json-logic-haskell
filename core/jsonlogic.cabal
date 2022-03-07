@@ -40,7 +40,8 @@ library
         JsonLogic.Operation.Merge,
         JsonLogic.Operation.Filter,
         JsonLogic.Operation.Negation,
-        JsonLogic.Operation.Utils
+        JsonLogic.Operation.Utils,
+        JsonLogic.Operation.Reduce
     default-language:
         Haskell2010
     ghc-options: -Wall
@@ -77,6 +78,7 @@ Test-Suite jsonlogic-tests
         Operation.TestFilter,
         Operation.TestNegation,
         Operation.TestPreserve,
+        Operation.TestReduce,
         TestStringify,
         TestTruthy,
         Utils
