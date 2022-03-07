@@ -12,8 +12,8 @@ type Data = Json
 -- Json is a collection of possivle JSON values.
 
 -- |
--- >>> Json True
--- Json False
+-- >>> 1 + 1
+-- 2
 data Json
   = JsonNull
   | JsonBool Bool
