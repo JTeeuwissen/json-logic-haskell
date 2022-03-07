@@ -5,7 +5,8 @@ WORKDIR /opt/project
 RUN cabal update
 
 # Install always used packages.
-RUN cabal install containers mtl tasty tasty-hunit tasty-hedgehog hedgehog aeson aeson-pretty text bytestring scientific containers vector --constraint 'mtl >= 2.2.2 && tasty-hunit >= 0.10.0.3 && hedgehog >= 1.1.1'
+RUN cabal install containers mtl tasty tasty-hunit tasty-hedgehog hedgehog aeson aeson-pretty text bytestring scientific containers vector\
+ --constraint "mtl >= 2.2.2" --constraint "tasty-hunit >= 0.10.0.3" --constraint "hedgehog >= 1.1.1"
 
 # Copy the cabal files.
 COPY cabal.project .
