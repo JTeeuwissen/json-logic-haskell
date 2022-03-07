@@ -27,7 +27,7 @@ instance Show Json where
   show (JsonNumber d) = show d
   show (JsonString s) = show s
   show (JsonArray js) = show js
-  show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> k ++ ":" ++ show v) $ M.toList o) ++ "}"
+  show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> "\"" ++ k ++ "\":" ++ show v) $ M.toList o) ++ "}"
 
 stringify :: Json -> String
 stringify JsonNull = ""
