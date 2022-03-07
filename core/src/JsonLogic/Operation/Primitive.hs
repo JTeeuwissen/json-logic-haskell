@@ -22,3 +22,10 @@ evaluateArray evaluator param vars = do
   case res of
     JsonArray xs -> return xs
     j -> throwError $ "Invalid parameter type, was expecting array. Got: " ++ show j
+
+evaluateString :: SubEvaluator -> Rule -> Data -> Either String String
+evaluateString evaluator param vars = do
+  res <- evaluator param vars
+  case res of
+    JsonString s -> return s
+    j -> throwError $ "Invalid parameter type, was expecting string. Got: " ++ show j
