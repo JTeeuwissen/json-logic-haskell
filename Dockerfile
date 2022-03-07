@@ -1,25 +1,19 @@
-FROM haskell:9.2.1-buster as build-dependencies
+FROM haskell:9.2.1-buster
 WORKDIR /opt/project
 
-# Update cabal to get the latest infex.
+# Update cabal to get the latest index.
 RUN cabal update
+
+# Install always used packages.
+RUN cabal install containers mtl tasty tasty-hunit tasty-hedgehog hedgehog aeson  aeson-pretty text bytestring scientific containers vector --constraint 'mtl >= 2.2.2 && tasty-hunit >= 0.10.0.3 && hedgehog >= 1.1.1'
 
 # Copy the cabal files.
 COPY cabal.project .
 COPY ./core/*.cabal ./core/
 COPY ./aeson/*.cabal ./aeson/
 
-# Install all the package dependencies
-RUN cabal build --only-dependencies all
-
-FROM build-dependencies as build-test-dependencies
-WORKDIR /opt/project
-
-# Build all the test dependencies
+# Build all the dependencies
 RUN cabal build --only-dependencies --enable-tests all
- 
-FROM build-test-dependencies as test
-WORKDIR /opt/project
 
 # Add and Install Application Code
 COPY . .
