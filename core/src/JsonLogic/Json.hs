@@ -21,23 +21,22 @@ data Json
 
 -- How officially json in showed in jsonlogic
 instance Show Json where
-  show JsonNull = ""
+  show JsonNull = "null"
   show (JsonBool True) = "true"
   show (JsonBool False) = "false"
   show (JsonNumber d) = show d
-  show (JsonString s) = s
+  show (JsonString s) = show s
   show (JsonArray js) = show js
-  show (JsonObject _) = "[object Object]"
+  show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
--- Pretty json print for console. Where double quotes are escaped.
-prettyJson :: Json -> String
-prettyJson JsonNull = "null"
-prettyJson (JsonBool True) = "true"
-prettyJson (JsonBool False) = "false"
-prettyJson (JsonNumber d) = show d
-prettyJson (JsonString s) = show s
-prettyJson (JsonArray js) = show js
-prettyJson (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> k ++ ":" ++ prettyJson v) $ M.toList o) ++ "}"
+stringify :: Json -> String
+stringify JsonNull = ""
+stringify (JsonBool True) = "true"
+stringify (JsonBool False) = "false"
+stringify (JsonNumber d) = show d
+stringify (JsonString s) = s
+stringify (JsonArray js) = intercalate "," $ map stringify js
+stringify (JsonObject _) = "[object Object]"
 
 isTruthy :: Json -> Bool
 isTruthy JsonNull = False

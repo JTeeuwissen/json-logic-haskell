@@ -73,7 +73,7 @@ Test-Suite jsonlogic-tests
         Operation.TestFilter,
         Operation.TestNegation,
         Operation.TestPreserve,
-        TestShow,
+        TestStringify,
         TestTruthy,
         Utils
     build-depends:

@@ -18,7 +18,7 @@ import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
-import TestShow
+import TestStringify
 import TestTruthy
 
 main :: IO ()
@@ -45,7 +45,7 @@ unitTests =
       allUnitTests,
       someUnitTests,
       noneUnitTests,
-      showJsonUnitTests,
+      stringifyUnitTests,
       truthyUnitTests,
       missingUnitTests,
       missingSomeUnitTests,
