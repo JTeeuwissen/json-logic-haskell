@@ -31,6 +31,7 @@ library
         JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
+        JsonLogic.Operation.Cat,
         JsonLogic.Operation.Primitive,
         JsonLogic.Operation.Var,
         JsonLogic.Operation.Missing,
@@ -64,6 +65,8 @@ Test-Suite jsonlogic-tests
         Generator.Generic,
         Generator.Logic,
         Generator.Utils,
+        Operation.TestCat,
+        Operation.TestArrayChecks,
         Operation.TestVar,
         Operation.TestMissing,
         Operation.TestMerge,
@@ -72,7 +75,7 @@ Test-Suite jsonlogic-tests
         Operation.TestFilter,
         Operation.TestNegation,
         Operation.TestPreserve,
-        TestShow,
+        TestStringify,
         TestTruthy,
         Utils
     build-depends:

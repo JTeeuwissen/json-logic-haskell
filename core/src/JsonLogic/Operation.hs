@@ -4,6 +4,7 @@ import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Fixed as F
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
+import JsonLogic.Operation.Cat
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
 import JsonLogic.Operation.Merge (evaluateMerge)
@@ -11,7 +12,7 @@ import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
-import Prelude hiding (filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
+import Prelude hiding (all, any, filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
 
 -- Initial environment with only "+" defined
@@ -22,36 +23,43 @@ createEnv fs = JLEnv (M.union fs defaultOperations)
 defaultOperations :: M.Map String Function
 defaultOperations =
   M.fromList
-    [ -- Arithmetic
+    [ -- Numeric Operations
+      -- Arithmetic
       (+),
       (-),
       (*),
       (/),
       (%),
-      -- Comparison
       (<),
       (>),
       (<=),
       (>=),
-      -- Logic
+      min,
+      max,
+      sum,
+      -- Logic and bool
       (&&),
       (||),
       (!=),
       (==),
       (!),
       (!!),
-      -- Other
-      var,
-      map,
       if',
-      filter,
-      min,
-      max,
-      sum,
+      -- Accessing data
+      var,
       missing,
       missingSome,
+      -- Array operations
+      map,
+      filter,
       merge,
-      preserve
+      -- String operations
+      cat,
+      -- Miscellaneous
+      preserve,
+      all,
+      some,
+      none
     ]
 
 -- Operation type
@@ -104,6 +112,13 @@ evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   return $ JsonNumber $ operator arr'
 evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
 
+evaluateArrayToBool :: ([Bool] -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
+  xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
+  bools <- mapM (evaluateBool evaluator f) xs'
+  return $ JsonBool $ operator bools
+evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
+
 -- Implementation for arithmetic operators
 
 (+), (-), (*), (/), (%) :: Operation
@@ -130,7 +145,7 @@ evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on no
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, missing, missingSome, if', filter, min, max, sum, merge :: Operation
+map, var, missing, missingSome, if', filter, min, max, sum, merge, all, some, none :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
 missing = ("missing", evaluateMissing)
@@ -141,6 +156,13 @@ min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
 merge = ("merge", evaluateMerge)
+all = ("all", evaluateArrayToBool and)
+some = ("some", evaluateArrayToBool or)
+none = ("none", evaluateArrayToBool (not . or))
+
+-- String Operations
+cat :: Operation
+cat = ("cat", evaluateCat)
 
 preserve :: Operation
 preserve = ("preserve", \_ rule _ -> return rule)

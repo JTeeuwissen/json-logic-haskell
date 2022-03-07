@@ -19,7 +19,7 @@ data Json
   | JsonObject (M.Map String Json)
   deriving (Eq)
 
--- Simple instance to show Json, does not format it nicely.
+-- | An instance to show json in clear format for users
 instance Show Json where
   show JsonNull = "null"
   show (JsonBool True) = "true"
@@ -29,6 +29,17 @@ instance Show Json where
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
+-- | Convert json to string, used in string operations
+stringify :: Json -> String
+stringify JsonNull = ""
+stringify (JsonBool True) = "true"
+stringify (JsonBool False) = "false"
+stringify (JsonNumber d) = show d
+stringify (JsonString s) = s
+stringify (JsonArray js) = intercalate "," $ map stringify js
+stringify (JsonObject _) = "[object Object]"
+
+-- | Truthy test for json
 isTruthy :: Json -> Bool
 isTruthy JsonNull = False
 isTruthy (JsonBool b) = b
