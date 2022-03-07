@@ -48,7 +48,4 @@ RUN cabal build --only-dependencies --enable-tests all
 # Add and Install Application Code
 COPY . .
 
-# Build the actual code
-RUN cabal build --enable-tests all
-
-CMD ["doctest", "."]
+CMD ["doctest", "core", "aeson"]
