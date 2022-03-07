@@ -10,6 +10,10 @@ type Rule = Json
 type Data = Json
 
 -- Json is a collection of possivle JSON values.
+
+-- |
+-- >>> Json True
+-- Json False
 data Json
   = JsonNull
   | JsonBool Bool

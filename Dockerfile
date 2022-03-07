@@ -28,3 +28,9 @@ COPY . .
 RUN cabal build --enable-tests all
 
 CMD ["cabal", "test", "--test-show-details=streaming", "all"]
+
+FROM build-test-dependencies as doctest
+
+RUN cabal install doctest
+
+CMD ["doctest", "."]

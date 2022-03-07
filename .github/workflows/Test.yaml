@@ -5,7 +5,7 @@ on:
     branches:
       - 'main'
 
-concurrency: 
+concurrency:
   group: Test-${{ github.ref }}
   cancel-in-progress: true
 
@@ -21,5 +21,18 @@ jobs:
       - name: Run Test Image
         run: docker run --rm $ACTION_ID
       - name: Remove Test Image
+        run: docker image rm $ACTION_ID
+        if: always()
+  doctest:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create action id
+        run: echo "ACTION_ID=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
+      - name: Build Doctest Image
+        run: docker build --target doctest --tag $ACTION_ID .
+      - name: Run Doctest Image
+        run: docker run --rm $ACTION_ID
+      - name: Remove Doctest Image
         run: docker image rm $ACTION_ID
         if: always()
