@@ -4,14 +4,15 @@ import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Fixed as F
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
+import JsonLogic.Operation.Cat
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
 import JsonLogic.Operation.Merge (evaluateMerge)
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
-import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
+import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateDouble)
 import JsonLogic.Operation.Reduce
-import JsonLogic.Operation.String
+import JsonLogic.Operation.Substr
 import JsonLogic.Operation.Var
 import Prelude hiding (all, any, filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
@@ -71,24 +72,24 @@ type Operation = (String, Function)
 -- Function evaluators
 evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
 evaluateMath operator evaluator (JsonArray [x, y]) vars = do
-  x' <- evaluateNumber evaluator x vars
-  y' <- evaluateNumber evaluator y vars
+  x' <- evaluateDouble evaluator x vars
+  y' <- evaluateDouble evaluator y vars
   return $ JsonNumber $ x' `operator` y'
 evaluateMath _ _ _ _ = throwError "Wrong number of arguments for math operator"
 
 evaluateComparison :: (Double -> Double -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
 evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
-  x' <- evaluateNumber evaluator x vars
-  y' <- evaluateNumber evaluator y vars
+  x' <- evaluateDouble evaluator x vars
+  y' <- evaluateDouble evaluator y vars
   return $ JsonBool $ x' `operator` y'
 evaluateComparison _ _ _ _ = throwError "Wrong number of arguments for comparison operator"
 
 -- Adds the between operator to check whether a number is between two other numbers
 evaluateBetween :: (Double -> Double -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
 evaluateBetween operator evaluator (JsonArray [x, y, z]) vars = do
-  x' <- evaluateNumber evaluator x vars
-  y' <- evaluateNumber evaluator y vars
-  z' <- evaluateNumber evaluator z vars
+  x' <- evaluateDouble evaluator x vars
+  y' <- evaluateDouble evaluator y vars
+  z' <- evaluateDouble evaluator z vars
   return $ JsonBool $ (x' `operator` y') P.&& (y' `operator` z')
 -- The regular two value case of the operator
 evaluateBetween operator evaluator json vars = evaluateComparison operator evaluator json vars
@@ -111,7 +112,7 @@ evaluateMap _ _ _ = throwError "Map received the wrong arguments"
 evaluateDoubleArray :: ([Double] -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
 evaluateDoubleArray _ _ (JsonArray []) _ = throwError "Can't evaluate array action an empty list"
 evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
-  arr' <- mapM (\x -> evaluateNumber evaluator x vars) arr
+  arr' <- mapM (\x -> evaluateDouble evaluator x vars) arr
   return $ JsonNumber $ operator arr'
 evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
 

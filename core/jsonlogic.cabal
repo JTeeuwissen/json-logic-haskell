@@ -31,7 +31,8 @@ library
         JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
-        JsonLogic.Operation.String,
+        JsonLogic.Operation.Cat,
+        JsonLogic.Operation.Substr,
         JsonLogic.Operation.Primitive,
         JsonLogic.Operation.Var,
         JsonLogic.Operation.Missing,

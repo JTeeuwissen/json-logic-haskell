@@ -4,12 +4,17 @@ import Control.Monad.Except (MonadError (throwError))
 import JsonLogic.Json (Data, Json (..), Rule, SubEvaluator, isTruthy, stringify)
 
 -- Primitive evaluators
-evaluateNumber :: SubEvaluator -> Rule -> Data -> Either String Double
-evaluateNumber evaluator param vars = do
+evaluateDouble :: SubEvaluator -> Rule -> Data -> Either String Double
+evaluateDouble evaluator param vars = do
   res <- evaluator param vars
   case res of
     JsonNumber n -> return n
     j -> throwError $ "Invalid parameter type, was expecting number. Got: " ++ show j
+
+evaluateInt :: SubEvaluator -> Rule -> Data -> Either String Int
+evaluateInt evaluator param vars = do
+  res <- evaluateDouble evaluator param vars
+  return $ floor res
 
 evaluateBool :: SubEvaluator -> Rule -> Data -> Either String Bool
 evaluateBool evaluator param vars = do
