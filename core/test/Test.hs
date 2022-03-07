@@ -15,13 +15,13 @@ import Operation.TestMissing
 import Operation.TestMissingSome
 import Operation.TestNegation
 import Operation.TestPreserve
+import Operation.TestReduce
 import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
 import TestStringify
 import TestTruthy
-import Operation.TestReduce
 
 main :: IO ()
 main = defaultMain tests
