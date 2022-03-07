@@ -7,12 +7,9 @@ evaluateMerge :: Function
 evaluateMerge evaluator params vars = do
   res <- evaluator params vars
   case res of
-    (JsonArray js) -> return $ JsonArray $ flattenJsonList js
+    (JsonArray js) -> return $ JsonArray $ foldr merge [] js
     -- If we get a single item, it gets put in an array
     json -> return $ JsonArray [json]
-
--- | Flatten the jsonarray one level
-flattenJsonList :: [Json] -> [Json]
-flattenJsonList [] = []
-flattenJsonList ((JsonArray as) : js) = as ++ flattenJsonList js
-flattenJsonList (j : js) = j : flattenJsonList js
+  where
+    merge (JsonArray as) acc = as ++ acc
+    merge j acc = j : acc
