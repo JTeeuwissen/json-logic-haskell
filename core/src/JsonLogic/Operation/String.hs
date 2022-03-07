@@ -19,20 +19,20 @@ evaluateSubstr evaluator param vars = do
     JsonArray [s, i] -> do
       str <- evaluateString evaluator s vars
       index <- evaluateNumber evaluator i vars
-      return $ JsonString $ takeSubstr index str
+      return $ JsonString $ alterSubstr drop index str
     -- Take a part of the substring between the two indexes
     JsonArray (s : startI : endI : _) -> do
       str <- evaluateString evaluator s vars
       startIndex <- evaluateNumber evaluator startI vars
       endIndex <- evaluateNumber evaluator endI vars
-      return $ JsonString $ takeSubstr endIndex $ takeSubstr startIndex str
+      return $ JsonString $ alterSubstr take endIndex $ alterSubstr drop startIndex str
     -- No proper indexing arguments given, return the full json string
     json -> do
       str <- evaluateString evaluator json vars
       return $ JsonString str
   where
     -- Takes part of the substring given a positive or negative index
-    takeSubstr :: Double -> String -> String
-    takeSubstr index str
-      | index >= 0 = drop (floor index) str
-      | otherwise = drop (length str + floor index) str
+    alterSubstr :: (Int -> String -> String) -> Double -> String -> String
+    alterSubstr f index str
+      | index >= 0 = f (floor index) str
+      | otherwise = f (length str + floor index) str
