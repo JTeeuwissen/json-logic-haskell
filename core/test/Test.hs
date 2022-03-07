@@ -15,6 +15,7 @@ import Operation.TestMissing
 import Operation.TestMissingSome
 import Operation.TestNegation
 import Operation.TestPreserve
+import Operation.TestReduce
 import Operation.TestSubstr
 import Operation.TestVar
 import Test.Tasty
@@ -55,7 +56,8 @@ unitTests =
       negationUnitTests,
       -- String operations
       substrUnitTests,
-      catUnitTests
+      catUnitTests,
+      reduceUnitTests
     ]
 
 generatorTests :: TestTree
