@@ -1,18 +1,13 @@
 module Operation.TestMerge where
 
-import qualified Data.Map as M
 import Generator.Data
-import Generator.Generic
-import Generator.Utils
-import Hedgehog (forAll, property, (===))
+import Hedgehog as H (assert, failure, forAll, property, (===))
 import qualified Hedgehog.Gen as Gen
-import qualified Hedgehog.Range as Range
 import JsonLogic
 import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
-import Text.Read (readMaybe)
 import Utils
 
 mergeUnitTests :: TestTree
@@ -51,9 +46,27 @@ mergeGeneratorTests =
   testGroup
     "merge generator tests"
     -- Merging a flat array does not change the array at all
-    [ H.testProperty "merge a flat array" $
+    [ H.testProperty "merge a flat array stays the same" $
         property $ do
           jsonData <- forAll $ Gen.sized genSizedFlatArray
           let rule = jObj [("merge", jsonData)]
-          Right jsonData === eval [] rule jsonData
+          Right jsonData === eval [] rule jsonData,
+      -- Merging flattens the array at one layer, but never returns a non-list
+      H.testProperty "merging decreases the nesting with one" $
+        property $ do
+          jsonData <- forAll $ Gen.sized genSizedNestedJsonArray
+          let rule = jObj [("merge", jsonData)]
+          case eval [] rule jsonData of
+            Right res -> do
+              -- The depth should be at least 1 (should return a list)
+              H.assert $ maxJsonDepth res >= 1
+              -- The depth of the resulting list decreases the maximum depth by 1
+              H.assert $ maxJsonDepth res == max 1 (maxJsonDepth jsonData - 1)
+            -- A nested list merge never fails
+            _ -> H.failure
     ]
+
+-- | Computes the maximum nesting of a json array
+maxJsonDepth :: Json -> Int
+maxJsonDepth (JsonArray as) = 1 + foldl (\a b -> max a $ maxJsonDepth b) 0 as
+maxJsonDepth _ = 0
