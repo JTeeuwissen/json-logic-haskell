@@ -21,6 +21,7 @@ import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
 import TestStringify
 import TestTruthy
+import Operation.TestReduce
 
 main :: IO ()
 main = defaultMain tests
@@ -52,7 +53,8 @@ unitTests =
       missingUnitTests,
       missingSomeUnitTests,
       negationUnitTests,
-      catUnitTests
+      catUnitTests,
+      reduceUnitTests
     ]
 
 generatorTests :: TestTree
