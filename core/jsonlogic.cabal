@@ -32,6 +32,7 @@ library
     other-modules:
         JsonLogic.JL,
         JsonLogic.Operation.Cat,
+        JsonLogic.Operation.In,
         JsonLogic.Operation.Primitive,
         JsonLogic.Operation.Var,
         JsonLogic.Operation.Missing,
@@ -66,7 +67,7 @@ Test-Suite jsonlogic-tests
         Generator.Logic,
         Generator.Utils,
         Operation.TestCat,
-        Operation.TestStringOps,
+        Operation.TestIn,
         Operation.TestArrayChecks,
         Operation.TestVar,
         Operation.TestMissing,

@@ -10,12 +10,12 @@ import Operation.TestArrayChecks
 import Operation.TestCat
 import Operation.TestFilter
 import Operation.TestIf
+import Operation.TestIn
 import Operation.TestMerge
 import Operation.TestMissing
 import Operation.TestMissingSome
 import Operation.TestNegation
 import Operation.TestPreserve
-import Operation.TestStringOps
 import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U

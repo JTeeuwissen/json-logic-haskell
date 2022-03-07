@@ -2,16 +2,16 @@ module JsonLogic.Operation where
 
 import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Fixed as F
-import qualified Data.List as L
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
 import JsonLogic.Operation.Cat
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
+import JsonLogic.Operation.In
 import JsonLogic.Operation.Merge (evaluateMerge)
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
-import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber, evaluateString)
+import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
 import JsonLogic.Operation.Var
 import Prelude hiding (all, any, filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
@@ -120,13 +120,6 @@ evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
   bools <- mapM (evaluateBool evaluator f) xs'
   return $ JsonBool $ operator bools
 evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
-
-evaluateIn :: Function
-evaluateIn evaluator (JsonArray [x, y]) vars = do
-  x' <- evaluateString evaluator x vars
-  y' <- evaluateString evaluator y vars
-  return $ JsonBool $ L.isInfixOf x' y'
-evaluateIn _ _ _ = throwError "In received wrong agruments"
 
 -- Implementation for arithmetic operators
 

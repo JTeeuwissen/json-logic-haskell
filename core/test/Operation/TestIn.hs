@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module Operation.TestStringOps where
+module Operation.TestIn where
 
 import qualified Data.List as L
 import Generator.Generic
