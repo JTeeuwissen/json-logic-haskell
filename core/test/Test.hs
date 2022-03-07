@@ -10,6 +10,7 @@ import Operation.TestArrayChecks
 import Operation.TestCat
 import Operation.TestFilter
 import Operation.TestIf
+import Operation.TestMerge
 import Operation.TestMissing
 import Operation.TestMissingSome
 import Operation.TestNegation
@@ -41,6 +42,7 @@ unitTests =
       ifUnitTests,
       filterUnitTests,
       varUnitTests,
+      mergeUnitTests,
       mapUnitTests,
       allUnitTests,
       someUnitTests,
@@ -63,6 +65,7 @@ generatorTests =
       missingGeneratorTests,
       missingSomeGeneratorTests,
       negationGeneratorTests,
+      mergeGeneratorTests,
       preserveGeneratorTests
     ]
 

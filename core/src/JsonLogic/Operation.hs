@@ -7,6 +7,7 @@ import JsonLogic.Json
 import JsonLogic.Operation.Cat
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
+import JsonLogic.Operation.Merge (evaluateMerge)
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
@@ -51,6 +52,7 @@ defaultOperations =
       -- Array operations
       map,
       filter,
+      merge,
       -- String operations
       cat,
       -- Miscellaneous
@@ -143,7 +145,7 @@ evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
 (>=) = (">=", evaluateComparison (P.>=))
 
 -- Implementation for other operators
-map, var, missing, missingSome, if', filter, min, max, sum, all, some, none :: Operation
+map, var, missing, missingSome, if', filter, min, max, sum, merge, all, some, none :: Operation
 map = ("map", evaluateMap)
 var = ("var", evaluateVar)
 missing = ("missing", evaluateMissing)
@@ -153,6 +155,7 @@ filter = ("filter", evaluateFilter)
 min = ("min", evaluateDoubleArray P.minimum)
 max = ("max", evaluateDoubleArray P.maximum)
 sum = ("sum", evaluateDoubleArray P.sum)
+merge = ("merge", evaluateMerge)
 all = ("all", evaluateArrayToBool and)
 some = ("some", evaluateArrayToBool or)
 none = ("none", evaluateArrayToBool (not . or))

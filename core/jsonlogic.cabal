@@ -36,6 +36,7 @@ library
         JsonLogic.Operation.Var,
         JsonLogic.Operation.Missing,
         JsonLogic.Operation.If,
+        JsonLogic.Operation.Merge,
         JsonLogic.Operation.Filter,
         JsonLogic.Operation.Negation,
         JsonLogic.Operation.Utils
@@ -68,6 +69,7 @@ Test-Suite jsonlogic-tests
         Operation.TestArrayChecks,
         Operation.TestVar,
         Operation.TestMissing,
+        Operation.TestMerge,
         Operation.TestMissingSome,
         Operation.TestIf,
         Operation.TestFilter,
