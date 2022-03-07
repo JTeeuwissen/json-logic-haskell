@@ -1,8 +1,11 @@
-FROM haskell:9.2.1-buster as build-dependencies
-WORKDIR /opt/project
+FROM haskell:9.2.1-buster as cabal
 
-# Update cabal to get the latest infex.
+# Update cabal to get the latest index.
 RUN cabal update
+
+
+FROM cabal as build-dependencies
+WORKDIR /opt/project
 
 # Copy the cabal files.
 COPY cabal.project .
@@ -29,8 +32,23 @@ RUN cabal build --enable-tests all
 
 CMD ["cabal", "test", "--test-show-details=streaming", "all"]
 
-FROM build-test-dependencies as doctest
+FROM cabal as doctest
+WORKDIR /opt/project
 
 RUN cabal install doctest
+
+# Copy the cabal files.
+COPY cabal.project .
+COPY ./core/*.cabal ./core/
+COPY ./aeson/*.cabal ./aeson/
+
+# Install all the package dependencies
+RUN cabal build --only-dependencies --enable-tests all
+
+# Add and Install Application Code
+COPY . .
+
+# Build the actual code
+RUN cabal build --enable-tests all
 
 CMD ["doctest", "."]
