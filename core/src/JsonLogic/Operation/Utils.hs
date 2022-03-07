@@ -1,21 +1,24 @@
+{-# OPTIONS_GHC -Wno-unused-imports #-}
+
 module JsonLogic.Operation.Utils where
 
-import qualified Data.Map as M (lookup)
+-- IMPORTANT!! Needs singleton import for doctests
+import qualified Data.Map as M (lookup, singleton)
 import JsonLogic.Json (Data, Json (..), Rule)
 import Text.Read (readMaybe)
 
 -- | Index a json object using a string seperated by periods.
--- >>> indexJson "x.y" (JsonObject $ singleton "x" $ JsonObject $ singleton "y" JsonNull)
--- Just JsonNull
--- >>> indexJson "x.y" (JsonObject $ singleton "x" JsonNull)
+-- >>> indexWithJson (JsonString "x.y") (JsonObject $ M.singleton "x" $ JsonObject $ M.singleton "y" JsonNull)
+-- Just null
+-- >>> indexWithJson (JsonString "x.y") (JsonObject $ M.singleton "x" JsonNull)
 -- Nothing
--- >>> indexJson "" (JsonNumber 1)
--- Just (JsonNumber 1.0)
--- >>> indexJson "1" (JsonArray [JsonString "abc", JsonString "def"])
--- Just (JsonString "def")
--- >>> indexJson "1.0" (JsonArray [JsonString "abc", JsonString "def"])
--- Just (JsonString "d")
--- >>> indexJson "abs" (JsonArray [JsonString "abc", JsonString "def"])
+-- >>> indexWithJson (JsonString "") (JsonNumber 1)
+-- Just 1.0
+-- >>> indexWithJson (JsonString "1") (JsonArray [JsonString "abc", JsonString "def"])
+-- Just "def"
+-- >>> indexWithJson (JsonString "1.0") (JsonArray [JsonString "abc", JsonString "def"])
+-- Just "d"
+-- >>> indexWithJson (JsonString "abs") (JsonArray [JsonString "abc", JsonString "def"])
 -- Nothing
 indexWithJson :: Rule -> Data -> Maybe Json
 indexWithJson (JsonString indexString) = indexWithString (splitOnPeriod indexString)
@@ -54,9 +57,9 @@ _ !? n | n < 0 = Nothing
 -- If you like, we support syntactic sugar to skip the array around single arguments
 -- Should only be used for unary operations.
 -- >>> evaluateUnaryArgument $ JsonArray [JsonString "abc"]
--- JsonString "abc"
+-- "abc"
 -- >>> evaluateUnaryArgument $ JsonString "abc"
--- JsonString "abc"
+-- "abc"
 evaluateUnaryArgument :: Data -> Data
 evaluateUnaryArgument (JsonArray [json]) = json
 evaluateUnaryArgument json = json
