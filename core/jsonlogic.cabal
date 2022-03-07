@@ -31,7 +31,7 @@ library
         JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
-        JsonLogic.Operation.Cat,
+        JsonLogic.Operation.String,
         JsonLogic.Operation.Primitive,
         JsonLogic.Operation.Var,
         JsonLogic.Operation.Missing,
@@ -61,11 +61,14 @@ Test-Suite jsonlogic-tests
     hs-source-dirs:
         test
     other-modules:
+        -- Generators
         Generator.Data,
         Generator.Generic,
         Generator.Logic,
         Generator.Utils,
+        -- String operations
         Operation.TestCat,
+        Operation.TestSubstr
         Operation.TestArrayChecks,
         Operation.TestVar,
         Operation.TestMissing,

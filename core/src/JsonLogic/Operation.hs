@@ -4,13 +4,13 @@ import Control.Monad.Except (MonadError (throwError))
 import qualified Data.Fixed as F
 import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
-import JsonLogic.Operation.Cat
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
 import JsonLogic.Operation.Merge (evaluateMerge)
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
 import JsonLogic.Operation.Primitive (evaluateArray, evaluateBool, evaluateNumber)
+import JsonLogic.Operation.String
 import JsonLogic.Operation.Var
 import Prelude hiding (all, any, filter, map, max, min, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 import qualified Prelude as P
@@ -55,6 +55,7 @@ defaultOperations =
       merge,
       -- String operations
       cat,
+      substr,
       -- Miscellaneous
       preserve,
       all,
@@ -161,8 +162,9 @@ some = ("some", evaluateArrayToBool or)
 none = ("none", evaluateArrayToBool (not . or))
 
 -- String Operations
-cat :: Operation
+cat, substr :: Operation
 cat = ("cat", evaluateCat)
+substr = ("substr", evaluateSubstr)
 
 preserve :: Operation
 preserve = ("preserve", \_ rule _ -> return rule)
