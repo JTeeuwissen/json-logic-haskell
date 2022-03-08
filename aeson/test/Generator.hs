@@ -52,18 +52,18 @@ genJson :: Size -> Gen (Json, String)
 genJson s@(Size size)
   -- If size less or equal to 0 a final item is closed
   | size <= 0 =
-      choice
-        [ genNull,
-          genBool,
-          genNumber,
-          genString
-        ]
+    choice
+      [ genNull,
+        genBool,
+        genNumber,
+        genString
+      ]
   -- If size is greater than 0 we expand with an array or object
   | otherwise =
-      choice
-        [ genArray s,
-          genObject s
-        ]
+    choice
+      [ genArray s,
+        genObject s
+      ]
 
 -- | Generates a list of uneven sizes
 genUnbalancedSizeList :: Size -> Gen [Size]
@@ -84,6 +84,6 @@ genUnbalancedIntList ::
 genUnbalancedIntList remaining maxInt
   | remaining <= 0 = return []
   | otherwise = do
-      chunkSize <- int $ Range.constant 0 $ min remaining maxInt
-      -- Important! -1 so the size of each element will converge to 0 eventually
-      (:) chunkSize <$> genUnbalancedIntList (remaining - chunkSize - 1) maxInt
+    chunkSize <- int $ Range.constant 0 $ min remaining maxInt
+    -- Important! -1 so the size of each element will converge to 0 eventually
+    (:) chunkSize <$> genUnbalancedIntList (remaining - chunkSize - 1) maxInt

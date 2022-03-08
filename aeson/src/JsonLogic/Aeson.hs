@@ -33,12 +33,8 @@ instance FromJSON Json where
   parseJSON (Bool b) = return $ JsonBool b
   parseJSON (Number n) = return $ JsonNumber $ toRealFloat n
   parseJSON (String s) = return $ JsonString $ DT.unpack s
-  parseJSON (Array xs) = do
-    res <- mapM parseJSON $ toList xs
-    return $ JsonArray res
-  parseJSON (Object o) = do
-    res <- mapM parseJSON $ toMap o
-    return (JsonObject $ M.mapKeys toString res)
+  parseJSON (Array xs) = JsonArray <$> mapM parseJSON (toList xs)
+  parseJSON (Object o) = JsonObject . M.mapKeys toString <$> mapM parseJSON (toMap o)
 
 -- | Read json from string and decode it into a Json object
 readJson :: String -> Maybe Json
