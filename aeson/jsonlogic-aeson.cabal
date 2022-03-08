@@ -45,7 +45,6 @@ library
         containers,
         vector
 
-
 Test-Suite jsonlogic-aeson-tests
     main-is:
         Test.hs
@@ -56,9 +55,12 @@ Test-Suite jsonlogic-aeson-tests
         exitcode-stdio-1.0
     hs-source-dirs:
         test
+    other-modules:
+        Generator
     build-depends:
         base >= 4.14.3.0,
         jsonlogic,
+        jsonlogic-aeson,
         tasty,
         tasty-hunit >= 0.10.0.3,
         tasty-hedgehog,
