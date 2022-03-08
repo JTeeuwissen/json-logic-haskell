@@ -7,14 +7,14 @@ import JsonLogic.Json (Data, Json (..), Rule, SubEvaluator, isTruthy, stringify,
 evaluateDouble :: SubEvaluator -> Rule -> Data -> Either String Double
 evaluateDouble evaluator param vars = do
   res <- evaluator param vars
-  case toNumber res of
-    Just n -> return n
-    Nothing -> throwError "TODO be able to handle NaN"
+  return $ toNumber res
 
 evaluateInt :: SubEvaluator -> Rule -> Data -> Either String Int
 evaluateInt evaluator param vars = do
   res <- evaluateDouble evaluator param vars
-  return $ floor res
+  if isNaN res
+    then throwError "NotImplemented: NaN to int evaluation"
+    else return $ floor res
 
 evaluateBool :: SubEvaluator -> Rule -> Data -> Either String Bool
 evaluateBool evaluator param vars = do
