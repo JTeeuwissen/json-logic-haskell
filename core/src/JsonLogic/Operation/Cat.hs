@@ -1,7 +1,6 @@
 module JsonLogic.Operation.Cat where
 
 import JsonLogic.Json (Function, Json (JsonArray, JsonString), stringify)
-import JsonLogic.Operation.Primitive
 
 evaluateCat :: Function
 evaluateCat evaluator args vars = do
