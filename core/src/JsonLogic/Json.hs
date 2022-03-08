@@ -2,6 +2,7 @@ module JsonLogic.Json where
 
 import Data.List (intercalate)
 import qualified Data.Map as M (Map, toList)
+import Text.Read (readMaybe)
 
 -- A rule can be any kind of JSON value, but object will be evaluated.
 type Rule = Json
@@ -53,6 +54,19 @@ isTruthy (JsonObject _) = True
 
 isFalsy :: Json -> Bool
 isFalsy = not . isTruthy
+
+-- | Convert json to a numeric value, nothing is represented by NaN
+toNumber :: Json -> Maybe Double
+toNumber JsonNull = Nothing
+toNumber (JsonBool True) = Just 1.0
+toNumber (JsonBool False) = Just 0.0
+toNumber (JsonNumber n) = Just n
+toNumber (JsonString "") = Just 0.0
+toNumber (JsonString s) = readMaybe s
+toNumber (JsonArray []) = Just 0
+toNumber (JsonArray [a]) = toNumber a
+toNumber (JsonArray _) = Nothing
+toNumber (JsonObject _) = Nothing
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result

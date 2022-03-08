@@ -1,15 +1,15 @@
 module JsonLogic.Operation.Primitive where
 
 import Control.Monad.Except (MonadError (throwError))
-import JsonLogic.Json (Data, Json (..), Rule, SubEvaluator, isTruthy, stringify)
+import JsonLogic.Json (Data, Json (..), Rule, SubEvaluator, isTruthy, stringify, toNumber)
 
 -- Primitive evaluators
 evaluateDouble :: SubEvaluator -> Rule -> Data -> Either String Double
 evaluateDouble evaluator param vars = do
   res <- evaluator param vars
-  case res of
-    JsonNumber n -> return n
-    j -> throwError $ "Invalid parameter type, was expecting number. Got: " ++ show j
+  case toNumber res of
+    Just n -> return n
+    Nothing -> throwError "TODO be able to handle NaN"
 
 evaluateInt :: SubEvaluator -> Rule -> Data -> Either String Int
 evaluateInt evaluator param vars = do
