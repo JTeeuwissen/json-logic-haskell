@@ -21,7 +21,7 @@ jobs:
       - name: Run Test Image
         run: docker run --rm $ACTION_ID
       - name: Remove Test Image
-        run: docker image rm $ACTION_ID
+        run: docker image rm --no-prune $ACTION_ID
         if: always()
   doctest:
     runs-on: self-hosted
@@ -34,5 +34,5 @@ jobs:
       - name: Run Doctest Image
         run: docker run --rm $ACTION_ID
       - name: Remove Doctest Image
-        run: docker image rm $ACTION_ID
+        run: docker image rm --no-prune $ACTION_ID
         if: always()
