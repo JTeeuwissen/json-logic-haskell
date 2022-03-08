@@ -82,6 +82,7 @@ Test-Suite jsonlogic-tests
         Operation.TestPreserve,
         Operation.TestReduce,
         TestStringify,
+        TestToNumber,
         TestTruthy,
         Utils
     build-depends:

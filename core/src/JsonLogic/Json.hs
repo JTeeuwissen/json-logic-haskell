@@ -2,6 +2,8 @@ module JsonLogic.Json where
 
 import Data.List (intercalate)
 import qualified Data.Map as M (Map, toList)
+import Data.Maybe (fromMaybe)
+import Text.Read (readMaybe)
 
 -- A rule can be any kind of JSON value, but object will be evaluated.
 type Rule = Json
@@ -53,6 +55,26 @@ isTruthy (JsonObject _) = True
 
 isFalsy :: Json -> Bool
 isFalsy = not . isTruthy
+
+-- | Convert json to a numeric value, including NaN
+-- Same as the Number object in JS
+-- Number source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+-- NaN source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+toNumber :: Json -> Double
+toNumber JsonNull = notANumber
+toNumber (JsonBool True) = 1.0
+toNumber (JsonBool False) = 0.0
+toNumber (JsonNumber n) = n
+toNumber (JsonString "") = 0.0
+toNumber (JsonString s) = fromMaybe notANumber $ readMaybe s
+toNumber (JsonArray []) = 0.0
+toNumber (JsonArray [a]) = toNumber a
+toNumber (JsonArray _) = notANumber
+toNumber (JsonObject _) = notANumber
+
+-- | Gives a NaN
+notANumber :: Double
+notANumber = 0 / 0
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result
