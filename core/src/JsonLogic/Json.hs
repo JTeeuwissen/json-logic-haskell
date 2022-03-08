@@ -12,6 +12,10 @@ type Rule = Json
 type Data = Json
 
 -- Json is a collection of possivle JSON values.
+
+-- |
+-- >>> 1 + 1
+-- 2
 data Json
   = JsonNull
   | JsonBool Bool

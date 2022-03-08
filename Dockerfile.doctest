@@ -6,7 +6,9 @@ RUN cabal update
 
 # Install always used packages.
 RUN cabal install containers mtl tasty tasty-hunit tasty-hedgehog hedgehog aeson aeson-pretty text bytestring scientific containers vector\
- --constraint "mtl >= 2.2.2" --constraint "tasty-hunit >= 0.10.0.3" --constraint "hedgehog >= 1.1.1"
+  --constraint "mtl >= 2.2.2" --constraint "tasty-hunit >= 0.10.0.3" --constraint "hedgehog >= 1.1.1"
+
+RUN cabal install doctest
 
 # Copy the cabal files.
 COPY cabal.project .
@@ -20,6 +22,7 @@ RUN cabal build --only-dependencies --enable-tests all
 COPY . .
 
 # Build the actual code
-RUN cabal build --enable-tests all
+# Include the environment so packages can be found by doctest
+RUN cabal build --enable-tests --write-ghc-environment-files=always all
 
-CMD ["cabal", "test", "--test-show-details=streaming", "all"]
+CMD ["doctest","core","aeson"]
