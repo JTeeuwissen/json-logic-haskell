@@ -17,11 +17,13 @@ import Operation.TestMissingSome
 import Operation.TestNegation
 import Operation.TestPreserve
 import Operation.TestReduce
+import Operation.TestSubstr
 import Operation.TestVar
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H
 import TestStringify
+import TestToNumber
 import TestTruthy
 
 main :: IO ()
@@ -49,14 +51,18 @@ unitTests =
       allUnitTests,
       someUnitTests,
       noneUnitTests,
-      stringifyUnitTests,
-      truthyUnitTests,
       missingUnitTests,
       missingSomeUnitTests,
       negationUnitTests,
+      -- String operations
+      substrUnitTests,
       catUnitTests,
       inUnitTests,
-      reduceUnitTests
+      reduceUnitTests,
+      -- JS casting tests
+      stringifyUnitTests,
+      toNumberUnitTests,
+      truthyUnitTests
     ]
 
 generatorTests :: TestTree
@@ -64,8 +70,11 @@ generatorTests =
   testGroup
     "Generator tests"
     [ truthyGeneratorTests,
+      toNumberGeneratorTests,
+      -- String operations
       catGeneratorTests,
       inGeneratorTests,
+      substrGeneratorTests,
       varGeneratorTests,
       missingGeneratorTests,
       missingSomeGeneratorTests,

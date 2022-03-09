@@ -2,6 +2,8 @@ module JsonLogic.Json where
 
 import Data.List (intercalate)
 import qualified Data.Map as M (Map, toList)
+import Data.Maybe (fromMaybe)
+import Text.Read (readMaybe)
 
 -- A rule can be any kind of JSON value, but object will be evaluated.
 type Rule = Json
@@ -29,6 +31,41 @@ instance Show Json where
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
+-- | A pretty formatted show for the json, with identation and depth
+-- Use putStr so the newline characters will be interpreted in console
+-- >>> putStr $ prettyShow JsonNull
+-- null
+-- >>> putStr $ prettyShow $ JsonNumber 3.0
+-- 3.0
+-- >>> prettyShow (JsonArray [JsonNumber 1, JsonNumber 2])
+-- "[\n  1.0,\n  2.0\n]"
+-- >>> putStr $ prettyShow (JsonArray [JsonNumber 1, JsonBool True])
+-- [
+--   1.0,
+--   true
+-- ]
+prettyShow :: Json -> String
+prettyShow = prettyShow' 0
+  where
+    -- Pretty show with the number of spaces included
+    prettyShow' :: Int -> Json -> String
+    prettyShow' nrSpaces (JsonArray js) =
+      "[\n"
+        ++ commaSeparate (map (\j -> tab nrSpaces ++ prettyShow' (nrSpaces + 2) j) js)
+        ++ closingBracket nrSpaces ']'
+    prettyShow' nrSpaces (JsonObject o) =
+      "{\n"
+        ++ commaSeparate (map (\(k, v) -> tab nrSpaces ++ show k ++ ": " ++ prettyShow' (nrSpaces + 2) v) $ M.toList o)
+        ++ closingBracket nrSpaces '}'
+    prettyShow' _ json = show json
+    -- Helper functions for clarity
+    commaSeparate :: [String] -> String
+    commaSeparate = intercalate ",\n"
+    closingBracket :: Int -> Char -> String
+    closingBracket depth c = "\n" ++ replicate depth ' ' ++ [c]
+    tab :: Int -> String
+    tab depth = replicate (depth + 2) ' '
+
 -- | Convert json to string, used in string operations
 stringify :: Json -> String
 stringify JsonNull = ""
@@ -53,6 +90,26 @@ isTruthy (JsonObject _) = True
 
 isFalsy :: Json -> Bool
 isFalsy = not . isTruthy
+
+-- | Convert json to a numeric value, including NaN
+-- Same as the Number object in JS
+-- Number source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+-- NaN source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+toNumber :: Json -> Double
+toNumber JsonNull = notANumber
+toNumber (JsonBool True) = 1.0
+toNumber (JsonBool False) = 0.0
+toNumber (JsonNumber n) = n
+toNumber (JsonString "") = 0.0
+toNumber (JsonString s) = fromMaybe notANumber $ readMaybe s
+toNumber (JsonArray []) = 0.0
+toNumber (JsonArray [a]) = toNumber a
+toNumber (JsonArray _) = notANumber
+toNumber (JsonObject _) = notANumber
+
+-- | Gives a NaN
+notANumber :: Double
+notANumber = 0 / 0
 
 -- Subevaluator, with rule, its context and retulting json.
 type SubEvaluator = Rule -> Data -> Result
