@@ -38,8 +38,31 @@ library
         aeson,
         aeson-pretty,
         text,
-        bytestring,
+        bytestring >= 0.11.2.0,
+        utf8-string,
         jsonlogic,
         scientific,
         containers,
         vector
+
+Test-Suite jsonlogic-aeson-tests
+    main-is:
+        Test.hs
+    default-language:
+        Haskell2010
+    ghc-options: -Wall
+    type:
+        exitcode-stdio-1.0
+    hs-source-dirs:
+        test
+    other-modules:
+        Generator
+    build-depends:
+        base >= 4.14.3.0,
+        jsonlogic,
+        jsonlogic-aeson,
+        tasty,
+        tasty-hunit >= 0.10.0.3,
+        tasty-hedgehog,
+        hedgehog >= 1.1.1,
+        containers
