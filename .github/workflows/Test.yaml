@@ -32,7 +32,7 @@ jobs:
       - name: Build Doctest Image
         run: docker build --tag $ACTION_ID -f Dockerfile.doctest .
       - name: Run Doctest Image
-        run: docker run --rm $ACTION_ID
+        run: docker run --rm $ACTION_ID core && docker run --rm $ACTION_ID aeson
       - name: Remove Doctest Image
         run: docker image rm --no-prune $ACTION_ID
         if: always()

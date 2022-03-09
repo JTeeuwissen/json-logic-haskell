@@ -25,4 +25,4 @@ COPY . .
 # Include the environment so packages can be found by doctest
 RUN cabal build --enable-tests --write-ghc-environment-files=always all
 
-CMD ["doctest","core","aeson"]
+CMD ["doctest"]
