@@ -1,12 +1,15 @@
 module JsonLogic.Operation.In where
 
 import qualified Data.List as L
-import JsonLogic.Json (Function, Json (JsonArray, JsonBool))
-import JsonLogic.Operation.Primitive (evaluateString)
+import JsonLogic.Json (Function, Json (JsonArray, JsonBool, JsonString))
 
 evaluateIn :: Function
-evaluateIn evaluator (JsonArray (sub : string : _)) vars = do
-  sub' <- evaluateString evaluator sub vars
-  string' <- evaluateString evaluator string vars
-  return $ JsonBool $ L.isInfixOf sub' string'
+evaluateIn evaluator (JsonArray (sub : arr : _)) vars = do
+  sub' <- evaluator sub vars
+  arr' <- evaluator arr vars
+  return $
+    JsonBool $ case (sub', arr') of
+      (el, JsonArray xs) -> el `elem` xs
+      (JsonString substr, JsonString s) -> substr `L.isInfixOf` s
+      _ -> False
 evaluateIn _ _ _ = return $ JsonBool False
