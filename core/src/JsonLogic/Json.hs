@@ -32,13 +32,18 @@ instance Show Json where
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
 -- | A pretty formatted show for the json, with identation and depth
--- Use putStrLn so the newline characters will be interpreted in console
--- >>> prettyShow JsonNull
--- "null"
--- >>> prettyShow $ JsonNumber 3.0
--- "3.0"
+-- Use putStr so the newline characters will be interpreted in console
+-- >>> putStr $ prettyShow JsonNull
+-- null
+-- >>> putStr $ prettyShow $ JsonNumber 3.0
+-- 3.0
 -- >>> prettyShow (JsonArray [JsonNumber 1, JsonNumber 2])
 -- "[\n  1.0,\n  2.0\n]"
+-- >>> putStr $ prettyShow (JsonArray [JsonNumber 1, JsonBool True])
+-- [
+--   1.0,
+--   true
+-- ]
 prettyShow :: Json -> String
 prettyShow = prettyShow' 0
   where
@@ -50,7 +55,7 @@ prettyShow = prettyShow' 0
         ++ closingBracket nrSpaces ']'
     prettyShow' nrSpaces (JsonObject o) =
       "{\n"
-        ++ commaSeparate (map (\(k, v) -> tab nrSpaces ++ show k ++ ":" ++ prettyShow' (nrSpaces + 2) v) $ M.toList o)
+        ++ commaSeparate (map (\(k, v) -> tab nrSpaces ++ show k ++ ": " ++ prettyShow' (nrSpaces + 2) v) $ M.toList o)
         ++ closingBracket nrSpaces '}'
     prettyShow' _ json = show json
     -- Helper functions for clarity
