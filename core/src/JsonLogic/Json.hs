@@ -32,7 +32,13 @@ instance Show Json where
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
 -- | A pretty formatted show for the json, with identation and depth
--- print using putStrLn to interpret newline characters
+-- Use putStrLn so the newline characters will be interpreted in console
+-- >>> prettyShow JsonNull
+-- "null"
+-- >>> prettyShow $ JsonNumber 3.0
+-- "3.0"
+-- >>> prettyShow (JsonArray [JsonNumber 1, JsonNumber 2])
+-- "[\n  1.0,\n  2.0\n]"
 prettyShow :: Json -> String
 prettyShow = prettyShow' 0
   where
