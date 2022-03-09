@@ -12,10 +12,6 @@ type Rule = Json
 type Data = Json
 
 -- Json is a collection of possivle JSON values.
-
--- |
--- >>> 1 + 1
--- 2
 data Json
   = JsonNull
   | JsonBool Bool
@@ -34,6 +30,30 @@ instance Show Json where
   show (JsonString s) = show s
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
+
+-- | A pretty formatted show for the json, with identation and depth
+-- print using putStrLn to interpret newline characters
+prettyShow :: Json -> String
+prettyShow = prettyShow' 0
+  where
+    -- Pretty show with the number of spaces included
+    prettyShow' :: Int -> Json -> String
+    prettyShow' nrSpaces (JsonArray js) =
+      "[\n"
+        ++ commaSeparate (map (\j -> tab nrSpaces ++ prettyShow' (nrSpaces + 2) j) js)
+        ++ closingBracket nrSpaces ']'
+    prettyShow' nrSpaces (JsonObject o) =
+      "{\n"
+        ++ commaSeparate (map (\(k, v) -> tab nrSpaces ++ show k ++ ":" ++ prettyShow' (nrSpaces + 2) v) $ M.toList o)
+        ++ closingBracket nrSpaces '}'
+    prettyShow' _ json = show json
+    -- Helper functions for clarity
+    commaSeparate :: [String] -> String
+    commaSeparate = intercalate ",\n"
+    closingBracket :: Int -> Char -> String
+    closingBracket depth c = "\n" ++ replicate depth ' ' ++ [c]
+    tab :: Int -> String
+    tab depth = replicate (depth + 2) ' '
 
 -- | Convert json to string, used in string operations
 stringify :: Json -> String
