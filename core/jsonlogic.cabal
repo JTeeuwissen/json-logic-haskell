@@ -31,18 +31,15 @@ library
         JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
-        JsonLogic.Operation.Cat,
-        JsonLogic.Operation.In,
-        JsonLogic.Operation.Substr,
+        JsonLogic.Operation.Array,
+        JsonLogic.Operation.Boolean,
+        JsonLogic.Operation.Misc,
+        JsonLogic.Operation.Numeric,
+        JsonLogic.Operation.Object,
         JsonLogic.Operation.Primitive,
-        JsonLogic.Operation.Var,
-        JsonLogic.Operation.Missing,
-        JsonLogic.Operation.If,
-        JsonLogic.Operation.Merge,
-        JsonLogic.Operation.Filter,
-        JsonLogic.Operation.Negation,
-        JsonLogic.Operation.Utils,
-        JsonLogic.Operation.Reduce
+        JsonLogic.Operation.String,
+        JsonLogic.Operation.Utils
+
     default-language:
         Haskell2010
     ghc-options:

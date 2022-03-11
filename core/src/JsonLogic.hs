@@ -1,18 +1,11 @@
 module JsonLogic where
 
-import Control.Monad.Except (MonadError (throwError))
-import Control.Monad.Reader (runReader)
-import Data.Map as M (Map, foldr, fromList, traverseWithKey)
-import JsonLogic.JL (JL, getFunction, getOperations, getVariables)
+import Control.Monad.Except
+import Control.Monad.Reader
+import Data.Map as M
+import JsonLogic.JL
 import JsonLogic.Json
-  ( Data,
-    Function,
-    Json (JsonArray, JsonObject),
-    JsonLogicEnv (JLEnv),
-    Result,
-    Rule,
-  )
-import JsonLogic.Operation (Operation, createEnv)
+import JsonLogic.Operation
 
 -- evaluate JsonLogic without bothering about monads
 eval :: [Operation] -> Rule -> Data -> Result
