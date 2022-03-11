@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module Operation.TestNegation where
+module Operation.Boolean.TestNegation where
 
 import Generator.Data
 import Hedgehog (forAll, property, (===))

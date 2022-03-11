@@ -1,4 +1,4 @@
-module Operation.TestCat where
+module Operation.String.TestCat where
 
 import Data.List (intersperse)
 import Generator.Data (genSizedFlatArray)

@@ -7,10 +7,6 @@ import qualified Data.Map as M
 import JsonLogic.Json
 import Text.Read
 
--- Implementation for other operators
-preserve :: Operation
-preserve = ("preserve", \_ rule _ -> return rule)
-
 -- | Index a json object using a string seperated by periods.
 -- >>> indexWithJson (JsonString "x.y") (JsonObject $ M.singleton "x" $ JsonObject $ M.singleton "y" JsonNull)
 -- Just null

@@ -3,9 +3,9 @@ module JsonLogic.Operation
   ( createEnv, defaultOperations,
     arrayOperations, map, reduce, filter, all, none, some, merge, in',
     booleanOperations, if', (==), (===), (!=), (!==), (!), (!!), and, or,
+    dataOperations, var, missing, missingSome, preserve,
     miscOperations, log, trace,
     numericOperations, (>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%),
-    objectOperations, var, missing, missingSome,
     stringOperations, cat, substr
   )
 where
@@ -15,9 +15,9 @@ import qualified Data.Map as M hiding (map)
 import JsonLogic.Json
 import JsonLogic.Operation.Array
 import JsonLogic.Operation.Boolean
+import JsonLogic.Operation.Data
 import JsonLogic.Operation.Misc
 import JsonLogic.Operation.Numeric
-import JsonLogic.Operation.Object
 import JsonLogic.Operation.String
 import Prelude hiding (all, and, any, filter, log, map, max, min, or, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 
@@ -27,12 +27,4 @@ createEnv fs = JLEnv (M.union fs defaultOperations)
 
 -- Default operators
 defaultOperations :: M.Map String Function
-defaultOperations =
-  M.unions
-    [ arrayOperations,
-      booleanOperations,
-      miscOperations,
-      numericOperations,
-      objectOperations,
-      stringOperations
-    ]
+defaultOperations = M.unions [arrayOperations, booleanOperations, dataOperations, miscOperations, numericOperations, stringOperations]

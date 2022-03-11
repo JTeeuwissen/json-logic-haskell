@@ -5,20 +5,20 @@ import Hedgehog (Gen, forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import JsonLogic
-import JsonLogic.Json (Json (JsonArray, JsonBool, JsonNull, JsonNumber, JsonObject, JsonString))
-import Operation.TestArrayChecks
-import Operation.TestCat
-import Operation.TestFilter
-import Operation.TestIf
-import Operation.TestIn
-import Operation.TestMerge
-import Operation.TestMissing
-import Operation.TestMissingSome
-import Operation.TestNegation
-import Operation.TestPreserve
-import Operation.TestReduce
-import Operation.TestSubstr
-import Operation.TestVar
+import JsonLogic.Json
+import Operation.Array.TestArrayChecks
+import Operation.Array.TestFilter
+import Operation.Array.TestIn
+import Operation.Array.TestMerge
+import Operation.Array.TestReduce
+import Operation.Boolean.TestIf
+import Operation.Boolean.TestNegation
+import Operation.Data.TestMissing
+import Operation.Data.TestMissingSome
+import Operation.Data.TestPreserve
+import Operation.Data.TestVar
+import Operation.String.TestCat
+import Operation.String.TestSubstr
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Test.Tasty.Hedgehog as H

@@ -1,19 +1,22 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module JsonLogic.Operation.Object (objectOperations, var, missing, missingSome) where
+module JsonLogic.Operation.Data (dataOperations, var, missing, missingSome, preserve) where
 
 import Control.Monad.Except
 import Data.Maybe
 import JsonLogic.Json
 import JsonLogic.Operation.Utils
 
-objectOperations :: Operations
-objectOperations = [var, missing, missingSome]
+dataOperations :: Operations
+dataOperations = [var, missing, missingSome, preserve]
 
 var, missing, missingSome :: Operation
 var = ("var", evaluateVar)
 missing = ("missing", evaluateMissing)
 missingSome = ("missing_some", evaluateMissingSome)
+
+preserve :: Operation
+preserve = ("preserve", \_ rule _ -> return rule)
 
 -- Evaluates a var
 evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
@@ -58,13 +61,13 @@ evaluateMissingSome :: Function
 evaluateMissingSome evaluator (JsonArray [JsonNumber x, y]) vars = do
   params <- evaluator y vars
   missingArr <- evaluateMissing evaluator params vars
-  let (JsonArray missing) = missingArr
+  let (JsonArray miss) = missingArr
   case params of
     -- Return result if at least x elements are missing or else an empty array
-    JsonArray js | length js - length missing >= floor x -> return $ JsonArray []
+    JsonArray js | length js - length miss >= floor x -> return $ JsonArray []
     JsonArray _ -> return missingArr
     -- If there is only a singleton as parameter, the length is 1
-    _ | 1 - length missing >= floor x -> return $ JsonArray []
+    _ | 1 - length miss >= floor x -> return $ JsonArray []
     _ -> return missingArr
 -- The parameters are invalid
 evaluateMissingSome _ json _ = throwError $ "Error: missing_some expects an array of two arguments, instead it got: " ++ show json
