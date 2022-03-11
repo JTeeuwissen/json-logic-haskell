@@ -7,6 +7,7 @@ import JsonLogic.Json
 import JsonLogic.Operation.Cat
 import JsonLogic.Operation.Filter
 import JsonLogic.Operation.If
+import JsonLogic.Operation.In
 import JsonLogic.Operation.Merge (evaluateMerge)
 import JsonLogic.Operation.Missing (evaluateMissing, evaluateMissingSome)
 import JsonLogic.Operation.Negation
@@ -58,6 +59,7 @@ defaultOperations =
       merge,
       -- String operations
       cat,
+      in',
       substr,
       -- Miscellaneous
       preserve,
@@ -166,8 +168,9 @@ some = ("some", evaluateArrayToBool or)
 none = ("none", evaluateArrayToBool (not . or))
 
 -- String Operations
-cat, substr :: Operation
+cat, in', substr :: Operation
 cat = ("cat", evaluateCat)
+in' = ("in", evaluateIn)
 substr = ("substr", evaluateSubstr)
 
 preserve :: Operation

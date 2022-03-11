@@ -10,6 +10,7 @@ import Operation.TestArrayChecks
 import Operation.TestCat
 import Operation.TestFilter
 import Operation.TestIf
+import Operation.TestIn
 import Operation.TestMerge
 import Operation.TestMissing
 import Operation.TestMissingSome
@@ -56,6 +57,7 @@ unitTests =
       -- String operations
       substrUnitTests,
       catUnitTests,
+      inUnitTests,
       reduceUnitTests,
       -- JS casting tests
       stringifyUnitTests,
@@ -71,6 +73,7 @@ generatorTests =
       toNumberGeneratorTests,
       -- String operations
       catGeneratorTests,
+      inGeneratorTests,
       substrGeneratorTests,
       varGeneratorTests,
       missingGeneratorTests,
