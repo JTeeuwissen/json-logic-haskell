@@ -8,7 +8,7 @@ import JsonLogic.Json
 evaluateDouble :: SubEvaluator -> Rule -> Data -> Either String Double
 evaluateDouble evaluator param vars = do
   res <- evaluator param vars
-  return $ toNumber res
+  return $ parseFloat res
 
 evaluateInt :: SubEvaluator -> Rule -> Data -> Either String Int
 evaluateInt evaluator param vars = do

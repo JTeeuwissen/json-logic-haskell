@@ -1,5 +1,6 @@
 module JsonLogic.Json where
 
+import Data.Char (isSpace)
 import Data.List (intercalate)
 import qualified Data.Map as M (Map, toList)
 import Data.Maybe (fromMaybe)
@@ -93,19 +94,26 @@ isFalsy = not . isTruthy
 
 -- | Convert json to a numeric value, including NaN
 -- Same as the Number object in JS
--- Number source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+-- Number source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat
 -- NaN source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
-toNumber :: Json -> Double
-toNumber JsonNull = notANumber
-toNumber (JsonBool True) = 1.0
-toNumber (JsonBool False) = 0.0
-toNumber (JsonNumber n) = n
-toNumber (JsonString "") = 0.0
-toNumber (JsonString s) = fromMaybe notANumber $ readMaybe s
-toNumber (JsonArray []) = 0.0
-toNumber (JsonArray [a]) = toNumber a
-toNumber (JsonArray _) = notANumber
-toNumber (JsonObject _) = notANumber
+parseFloat :: Json -> Double
+parseFloat (JsonNumber n) = n
+parseFloat (JsonString "Infinity") = infinity
+parseFloat (JsonString s) = fromMaybe notANumber $ readMaybe $ dropAfterSecondPoint $ takeWhile isValid $ dropWhile isSpace s
+  where
+    isValid x
+      | x `elem` valids = True
+      | otherwise = False
+    valids = ['0' .. '9'] ++ ['.', 'e', 'E', '+', '-']
+    dropAfterSecondPoint t = case break (== '.') t of
+      (l, '.' : r) -> case break (== '.') r of (l', _) -> l ++ "." ++ l'
+      (l, _) -> l
+parseFloat (JsonArray (a : _)) = parseFloat a
+parseFloat _ = notANumber
+
+-- | Gives a Infinity
+infinity :: Double
+infinity = 1 / 0
 
 -- | Gives a NaN
 notANumber :: Double
