@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module Operation.TestReduce where
+module Operation.Array.TestReduce where
 
 import JsonLogic
 import Test.Tasty

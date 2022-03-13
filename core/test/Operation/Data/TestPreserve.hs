@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module Operation.TestPreserve where
+module Operation.Data.TestPreserve where
 
 import Generator.Data
 import Hedgehog (forAll, property, (===))

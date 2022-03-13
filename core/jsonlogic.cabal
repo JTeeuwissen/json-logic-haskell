@@ -31,18 +31,15 @@ library
         JsonLogic.Operation
     other-modules:
         JsonLogic.JL,
-        JsonLogic.Operation.Cat,
-        JsonLogic.Operation.In,
-        JsonLogic.Operation.Substr,
+        JsonLogic.Operation.Array,
+        JsonLogic.Operation.Boolean,
+        JsonLogic.Operation.Data,
+        JsonLogic.Operation.Misc,
+        JsonLogic.Operation.Numeric,
         JsonLogic.Operation.Primitive,
-        JsonLogic.Operation.Var,
-        JsonLogic.Operation.Missing,
-        JsonLogic.Operation.If,
-        JsonLogic.Operation.Merge,
-        JsonLogic.Operation.Filter,
-        JsonLogic.Operation.Negation,
-        JsonLogic.Operation.Utils,
-        JsonLogic.Operation.Reduce
+        JsonLogic.Operation.String,
+        JsonLogic.Operation.Utils
+
     default-language:
         Haskell2010
     ghc-options:
@@ -70,20 +67,20 @@ Test-Suite jsonlogic-tests
         Generator.Generic,
         Generator.Logic,
         Generator.Utils,
-        -- String operations
-        Operation.TestCat,
-        Operation.TestIn,
-        Operation.TestSubstr
-        Operation.TestArrayChecks,
-        Operation.TestVar,
-        Operation.TestMissing,
-        Operation.TestMerge,
-        Operation.TestMissingSome,
-        Operation.TestIf,
-        Operation.TestFilter,
-        Operation.TestNegation,
-        Operation.TestPreserve,
-        Operation.TestReduce,
+        -- Operation Tests
+        Operation.Array.TestArrayChecks,
+        Operation.Array.TestFilter,
+        Operation.Array.TestIn,
+        Operation.Array.TestMerge,
+        Operation.Array.TestReduce,
+        Operation.Boolean.TestIf,
+        Operation.Boolean.TestNegation,
+        Operation.Data.TestMissing,
+        Operation.Data.TestMissingSome,
+        Operation.Data.TestPreserve,
+        Operation.Data.TestVar,
+        Operation.String.TestCat,
+        Operation.String.TestSubstr,
         TestStringify,
         TestToNumber,
         TestTruthy,

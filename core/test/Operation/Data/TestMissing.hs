@@ -1,4 +1,4 @@
-module Operation.TestMissing where
+module Operation.Data.TestMissing where
 
 import qualified Data.Map as M
 import Generator.Data

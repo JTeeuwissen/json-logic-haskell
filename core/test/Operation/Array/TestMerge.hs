@@ -1,4 +1,4 @@
-module Operation.TestMerge where
+module Operation.Array.TestMerge where
 
 import Generator.Data
 import Hedgehog as H (assert, failure, forAll, property, (===))

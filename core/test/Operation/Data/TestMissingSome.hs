@@ -1,4 +1,4 @@
-module Operation.TestMissingSome (missingSomeUnitTests, missingSomeGeneratorTests) where
+module Operation.Data.TestMissingSome (missingSomeUnitTests, missingSomeGeneratorTests) where
 
 import Generator.Data
 import Generator.Generic (genGenericJsonNumber)

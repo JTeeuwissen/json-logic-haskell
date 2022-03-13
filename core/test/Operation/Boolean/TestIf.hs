@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module Operation.TestIf where
+module Operation.Boolean.TestIf where
 
 import JsonLogic
 import JsonLogic.Json

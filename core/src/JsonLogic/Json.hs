@@ -118,6 +118,9 @@ type Function = SubEvaluator -> Rule -> Data -> Result
 
 type Operations = M.Map String Function
 
+-- Operation type
+type Operation = (String, Function)
+
 -- Contains the functions are variables our environment has currently
 data JsonLogicEnv = JLEnv
   { operations :: Operations, -- All the operations (plus custom ones)

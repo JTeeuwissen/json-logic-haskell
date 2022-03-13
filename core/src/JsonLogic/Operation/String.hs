@@ -1,7 +1,24 @@
-module JsonLogic.Operation.Substr where
+{-# LANGUAGE OverloadedLists #-}
 
-import JsonLogic.Json (Function, Json (JsonArray, JsonString), stringify)
+module JsonLogic.Operation.String (stringOperations, cat, substr) where
+
+import JsonLogic.Json
 import JsonLogic.Operation.Primitive
+
+stringOperations :: Operations
+stringOperations = [cat, substr]
+
+-- String Operations
+cat, substr :: Operation
+cat = ("cat", evaluateCat)
+substr = ("substr", evaluateSubstr)
+
+evaluateCat :: Function
+evaluateCat evaluator args vars = do
+  res <- evaluator args vars
+  case res of
+    (JsonArray js) -> return $ JsonString $ foldMap stringify js
+    json -> return $ JsonString $ stringify json
 
 -- | Evaluate substr operation
 evaluateSubstr :: Function

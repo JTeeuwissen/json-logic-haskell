@@ -1,4 +1,4 @@
-module Operation.TestSubstr where
+module Operation.String.TestSubstr where
 
 import Generator.Generic
 import Hedgehog as H (assert, failure, forAll, property, (===))
