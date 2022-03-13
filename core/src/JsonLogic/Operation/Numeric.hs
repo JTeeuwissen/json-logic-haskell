@@ -16,7 +16,7 @@ numericOperations = [(>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%
 -- Implementation for double -> double -> bool operators
 (>), (>=), (<), (<=) :: Operation
 (>) = (">", evaluateComparison (P.>))
-(>=) = (">=", evaluateComparison (P.>=)) -- TODO check if this needs to be between as well.
+(>=) = (">=", evaluateComparison (P.>=))
 (<) = ("<", evaluateBetween (P.<))
 (<=) = ("<=", evaluateBetween (P.<=))
 
