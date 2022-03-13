@@ -50,7 +50,10 @@ toNumberGeneratorTests =
         property $ do
           -- Array with more than 1 item always results in nothing
           arr@(JsonArray as) <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedNestedJsonArray
-          case as of
-            [] -> H.assert $ isNaN $ parseFloat arr
-            (x : _) -> H.assert $ parseFloat x == parseFloat arr
+          H.assert $ case as of
+            [] -> isNaN $ parseFloat arr
+            (x : _) ->
+              let x' = parseFloat x
+                  arr' = parseFloat arr
+               in (isNaN x' && isNaN arr') || (x' == arr')
     ]
