@@ -61,7 +61,7 @@ substrGeneratorTests =
       hTestProperty "substr with negative value" $
         property $ do
           (jsonStr, str) <- forAll genGenericNonEmptyJsonString
-          index <- forAll $ Gen.int (Range.constant (-1) (- length str))
+          index <- forAll $ Gen.int (Range.constant (-1) (-length str))
           let rule = jObj [("substr", jArr [jsonStr, jNum $ fromIntegral index])]
           case eval [] rule jsonStr of
             -- Length is the equal to the negative index
