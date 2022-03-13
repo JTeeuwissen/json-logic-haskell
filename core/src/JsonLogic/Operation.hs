@@ -1,3 +1,4 @@
+-- Prevent Ormolu from putting everything on a separate line.
 {- ORMOLU_DISABLE -}
 module JsonLogic.Operation
   ( createEnv, defaultOperations,
