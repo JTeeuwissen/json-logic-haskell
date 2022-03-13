@@ -51,7 +51,7 @@ inGeneratorTests :: TestTree
 inGeneratorTests =
   testGroup
     "In generator tests"
-    [ H.testProperty "in strings" $
+    [ hTestProperty "in strings" $
         property $ do
           (jsonString1, string1) <- forAll genGenericJsonString
           (jsonString2, string2) <- forAll genGenericJsonString

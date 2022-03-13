@@ -11,7 +11,6 @@ import JsonLogic
 import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
 import Text.Read (readMaybe)
 import Utils
 
@@ -55,7 +54,7 @@ missingGeneratorTests :: TestTree
 missingGeneratorTests =
   testGroup
     "missing generator tests"
-    [ H.testProperty "missing over emty" $
+    [ hTestProperty "missing over emty" $
         property $ do
           -- Create rule and data
           let missingEmpty = jObj [("missing", jArr [])]
@@ -64,7 +63,7 @@ missingGeneratorTests =
           -- Empty rule over any data returns empty array
           Right (jArr []) === eval [] missingEmpty dataJsonArray
           Right (jArr []) === eval [] missingEmpty dataJsonObject,
-      H.testProperty "Using integer index on array" $
+      hTestProperty "Using integer index on array" $
         property $ do
           -- Generate random data
           jsonData <- forAll $ Gen.sized genSizedRandomJson
@@ -78,7 +77,7 @@ missingGeneratorTests =
             -- If the index is a number and that index is in the dict it is indexed
             (JsonObject o) | M.member (show x) o -> Right (jArr []) === eval [] rule jsonData
             _ -> Right (jArr [jNum $ fromIntegral x]) === eval [] rule jsonData,
-      H.testProperty "Using string index on array" $
+      hTestProperty "Using string index on array" $
         property $ do
           -- Generate random array
           jsonData@(JsonArray js) <- forAll $ Gen.sized genSizedRandomJsonArray
@@ -90,7 +89,7 @@ missingGeneratorTests =
             Just i | i >= 0 && i < length js -> Right (jArr []) === eval [] rule jsonData
             -- Index is not present since it is a string or outside the range
             _ -> Right (jArr [indexJson]) === eval [] rule jsonData,
-      H.testProperty "Using string index on object" $
+      hTestProperty "Using string index on object" $
         property $ do
           -- Generate data
           jsonData <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedRandomJsonObject
@@ -100,7 +99,7 @@ missingGeneratorTests =
           let rule = jObj [("missing", jArr [jStr indexStr])]
           -- The item should not be missing
           Right (jArr []) === eval [] rule jsonData,
-      H.testProperty "Using integer index on object" $
+      hTestProperty "Using integer index on object" $
         property $ do
           -- Random data
           jsonData@(JsonObject o) <- forAll $ Gen.sized genSizedRandomJsonObject

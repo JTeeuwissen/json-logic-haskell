@@ -46,13 +46,13 @@ mergeGeneratorTests =
   testGroup
     "merge generator tests"
     -- Merging a flat array does not change the array at all
-    [ H.testProperty "merge a flat array stays the same" $
+    [ hTestProperty "merge a flat array stays the same" $
         property $ do
           jsonData <- forAll $ Gen.sized genSizedFlatArray
           let rule = jObj [("merge", jsonData)]
           Right jsonData === eval [] rule jsonData,
       -- Merging flattens the array at one layer, but never returns a non-list
-      H.testProperty "merging decreases the nesting with one" $
+      hTestProperty "merging decreases the nesting with one" $
         property $ do
           jsonData <- forAll $ Gen.sized genSizedNestedJsonArray
           let rule = jObj [("merge", jsonData)]

@@ -2,7 +2,10 @@
 module Utils where
 
 import qualified Data.Map as M (fromList)
+import Hedgehog.Internal.Property
 import JsonLogic.Json (Json (..))
+import Test.Tasty
+import qualified Test.Tasty.Hedgehog as H
 
 jNull :: Json
 jNull = JsonNull
@@ -21,3 +24,6 @@ jArr = JsonArray
 
 jObj :: [(String, Json)] -> Json
 jObj = JsonObject . M.fromList
+
+hTestProperty :: TestName -> Property -> TestTree
+hTestProperty name = H.testPropertyNamed name (PropertyName name)

@@ -10,7 +10,6 @@ import JsonLogic (eval)
 import JsonLogic.Json (Json (..))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit as U (assertEqual, testCase)
-import Test.Tasty.Hedgehog as H
 import Utils
 
 catUnitTests :: TestTree
@@ -59,33 +58,33 @@ catGeneratorTests =
   testGroup
     "Cat generator tests"
     -- List of nulls results in an empty list
-    [ H.testProperty "cat null objects" $
+    [ hTestProperty "cat null objects" $
         property $ do
           jsonNulls <- forAll $ Gen.list (Range.constant 0 20) $ return JsonNull
           let rule = jObj [("cat", jArr jsonNulls)]
           Right (jStr "") === eval [] rule jNull,
       -- Flat array of strings simply concatinates them
-      H.testProperty "cat strings" $
+      hTestProperty "cat strings" $
         property $ do
           jsonStrings <- forAll $ Gen.list (Range.constant 0 20) genGenericJsonString
           let rule = jObj [("cat", jArr $ map fst jsonStrings)]
               expected = jStr (concatMap snd jsonStrings)
           Right expected === eval [] rule jNull,
       -- Concatinate list of numbers
-      H.testProperty "cat numbers" $
+      hTestProperty "cat numbers" $
         property $ do
           jsonNumbers <- forAll $ Gen.list (Range.constant 0 20) genGenericJsonNumber
           let rule = jObj [("cat", jArr $ map fst jsonNumbers)]
               expected = jStr (concatMap (show . snd) jsonNumbers)
           Right expected === eval [] rule jNull,
       -- A nested array of nulls, we know the number of comma's to be n-1
-      H.testProperty "cat nested arrays" $
+      hTestProperty "cat nested arrays" $
         property $ do
           jsonNulls <- forAll $ Gen.list (Range.constant 0 20) $ return JsonNull
           let rule = jObj [("cat", jArr [jArr jsonNulls])]
           Right (jStr $ replicate (length jsonNulls - 1) ',') === eval [] rule jNull,
       -- Any random object string representation should not change with empty lists interleaved
-      H.testProperty "cat nested arrays with inserted empty lists" $
+      hTestProperty "cat nested arrays with inserted empty lists" $
         property $ do
           jsonArray@(JsonArray js) <- forAll $ Gen.sized genSizedFlatArray
           let rule = jObj [("cat", jsonArray)]

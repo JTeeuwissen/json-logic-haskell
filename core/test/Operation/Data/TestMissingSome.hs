@@ -11,7 +11,6 @@ import JsonLogic
 import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
 import Utils
 
 missingSomeUnitTests :: TestTree
@@ -47,7 +46,7 @@ missingSomeGeneratorTests :: TestTree
 missingSomeGeneratorTests =
   testGroup
     "missing_some generator tests"
-    [ H.testProperty "missing_some over empty" $
+    [ hTestProperty "missing_some over empty" $
         property $ do
           -- Missing some over random integer
           (jsonNumber, _) <- forAll genGenericJsonNumber
@@ -58,7 +57,7 @@ missingSomeGeneratorTests =
           -- Indexing empty missing_some over random data returns empty array
           Right (jArr []) === eval [] missingSomeEmpty dataJsonArray
           Right (jArr []) === eval [] missingSomeEmpty dataJsonObject,
-      H.testProperty "missing_some when all keys are present" $
+      hTestProperty "missing_some when all keys are present" $
         property $ do
           -- Generate flat array as data
           jsonData@(JsonArray js) <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedFlatArray
@@ -68,7 +67,7 @@ missingSomeGeneratorTests =
           x <- forAll $ Gen.int $ Range.constant 0 30
           let rule = jObj [("missing_some", jArr [jNum $ fromIntegral x, jArr indexes])]
           Right (jArr []) === eval [] rule jsonData,
-      H.testProperty "missing_some when no keys are present" $
+      hTestProperty "missing_some when no keys are present" $
         property $ do
           -- Generate a flat array as data
           jsonData@(JsonArray js) <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedFlatArray
@@ -79,7 +78,7 @@ missingSomeGeneratorTests =
           let rule = jObj [("missing_some", jArr [jNum $ fromIntegral nrMissing, JsonArray missingIndexes])]
           -- Always should return entire list of missing items
           Right (jArr missingIndexes) === eval [] rule jsonData,
-      H.testProperty "missing_some when some keys are present" $
+      hTestProperty "missing_some when some keys are present" $
         property $ do
           -- Generate a flat array as data
           jsonData@(JsonArray js) <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedFlatArray

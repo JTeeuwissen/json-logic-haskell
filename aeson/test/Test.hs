@@ -76,7 +76,7 @@ generatorTests :: TestTree
 generatorTests =
   testGroup
     "Generator tests"
-    [ H.testProperty "Json parsed correctly" $
+    [ hTestProperty "Json parsed correctly" $
         withTests 500 $
           property $ do
             (json, jsonString) <- forAll $ Gen.sized genJson

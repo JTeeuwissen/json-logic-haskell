@@ -8,7 +8,6 @@ import JsonLogic (eval)
 import JsonLogic.Json (Json (..))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit as U (assertEqual, testCase)
-import Test.Tasty.Hedgehog as H
 import Utils
 
 substrUnitTests :: TestTree
@@ -52,24 +51,24 @@ substrGeneratorTests =
   testGroup
     "substr generator tests"
     -- Indexing using positive does same as drop
-    [ H.testProperty "substr with positive value" $
+    [ hTestProperty "substr with positive value" $
         property $ do
           (jsonStr, str) <- forAll genGenericJsonString
           index <- forAll $ Gen.int (Range.constant 0 $ length str)
           let rule = jObj [("substr", jArr [jsonStr, jNum $ fromIntegral index])]
           Right (jStr $ drop index str) === eval [] rule jsonStr,
       -- Indexing with negative values returns end
-      H.testProperty "substr with negative value" $
+      hTestProperty "substr with negative value" $
         property $ do
           (jsonStr, str) <- forAll genGenericNonEmptyJsonString
-          index <- forAll $ Gen.int (Range.constant (-1) (-length str))
+          index <- forAll $ Gen.int (Range.constant (-1) (- length str))
           let rule = jObj [("substr", jArr [jsonStr, jNum $ fromIntegral index])]
           case eval [] rule jsonStr of
             -- Length is the equal to the negative index
             Right (JsonString res) -> H.assert $ length res == -index
             _ -> H.failure,
       -- The evaluation returns the same result as take . drop
-      H.testProperty "substr with start and final index works like take . drop" $
+      hTestProperty "substr with start and final index works like take . drop" $
         property $ do
           (jsonStr, str) <- forAll genGenericJsonString
           -- Take and drop value
@@ -79,7 +78,7 @@ substrGeneratorTests =
           let rule = jObj [("substr", jArr [jsonStr, jNum $ fromIntegral index, jNum $ fromIntegral endIndex])]
           Right (jStr $ take endIndex $ drop index str) === eval [] rule jsonStr,
       -- The take part also works with negative indexes
-      H.testProperty "substr with start and final negative index" $
+      hTestProperty "substr with start and final negative index" $
         property $ do
           (jsonStr, str) <- forAll genGenericNonEmptyJsonString
           -- Positive start index, negative end index

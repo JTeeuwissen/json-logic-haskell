@@ -21,10 +21,10 @@ import Operation.String.TestCat
 import Operation.String.TestSubstr
 import Test.Tasty
 import Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
 import TestStringify
 import TestToNumber
 import TestTruthy
+import Utils
 
 main :: IO ()
 main = defaultMain tests
@@ -127,37 +127,37 @@ hedgehogTests :: TestTree
 hedgehogTests =
   testGroup
     "Hedgehog tests"
-    [ H.testProperty "Simple math operations" $
+    [ hTestProperty "Simple math operations" $
         property $ do
           (f, n) <- forAllWith snd genArithmeticOperator
           l <- forAll genDouble
           r <- forAll genDouble1
           Right (JsonNumber (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
-      H.testProperty "Simple comparison operations" $
+      hTestProperty "Simple comparison operations" $
         property $ do
           (f, n) <- forAllWith snd genComparisonOperator
           l <- forAll genDouble
           r <- forAll genDouble
           Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
-      H.testProperty "Between comparison operations" $
+      hTestProperty "Between comparison operations" $
         property $ do
           (f, n) <- forAllWith snd genBetweenOperator
           l <- forAll genDouble
           m <- forAll genDouble
           r <- forAll genDouble
           Right (JsonBool (f l m && f m r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber m, JsonNumber r])]) JsonNull,
-      H.testProperty "Simple logic operations" $
+      hTestProperty "Simple logic operations" $
         property $ do
           (f, n) <- forAllWith snd genLogicOperator
           l <- forAll Gen.bool
           r <- forAll Gen.bool
           Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonBool l, JsonBool r])]) JsonNull,
-      H.testProperty "Simple double array operations" $
+      hTestProperty "Simple double array operations" $
         property $ do
           (f, n) <- forAllWith snd genArrayOperator
           arr <- forAll genDoubleArray
           Right (JsonNumber (f arr)) === eval [] (JsonObject [(n, JsonArray (map JsonNumber arr))]) JsonNull,
-      H.testProperty "Nested arihmetic operations" $
+      hTestProperty "Nested arihmetic operations" $
         property $ do
           (f1, n1) <- forAllWith snd genArithmeticOperator
           (f2, n2) <- forAllWith snd genArithmeticOperator
@@ -167,7 +167,7 @@ hedgehogTests =
           rl <- forAll genDouble
           rr <- forAll genDouble1
           Right (JsonNumber (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonNumber rl, JsonNumber rr])]])]) JsonNull,
-      H.testProperty "Nested boolean operations" $
+      hTestProperty "Nested boolean operations" $
         property $ do
           (f1, n1) <- forAllWith snd genLogicOperator
           (f2, n2) <- forAllWith snd genComparisonOperator

@@ -12,7 +12,7 @@ import JsonLogic
 import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
+import Utils
 
 varUnitTests :: TestTree
 varUnitTests =
@@ -96,7 +96,7 @@ varGeneratorTests :: TestTree
 varGeneratorTests =
   testGroup
     "Var generator tests"
-    [ H.testProperty "null, empty string, and empty array return entire data" $
+    [ hTestProperty "null, empty string, and empty array return entire data" $
         property $ do
           -- Logic that all returns the entire data
           let nullVar = JsonObject [("var", JsonNull)]
@@ -107,7 +107,7 @@ varGeneratorTests =
           Right dataJson === eval [] nullVar dataJson
           Right dataJson === eval [] emptyStringVar dataJson
           Right dataJson === eval [] emptyArrayVar dataJson,
-      H.testProperty "bool, nested array, and empty object var return nothing" $
+      hTestProperty "bool, nested array, and empty object var return nothing" $
         property $ do
           -- Logic that all returns null
           boolJson <- forAll genGenericJsonBool
@@ -120,7 +120,7 @@ varGeneratorTests =
           Right JsonNull === eval [] boolVar dataJson
           Right JsonNull === eval [] arrVar dataJson
           Right JsonNull === eval [] objVar dataJson,
-      H.testProperty "Number var returns index" $
+      hTestProperty "Number var returns index" $
         property $ do
           -- Insert json data at index
           index <- forAll $ Gen.int $ Range.constant 0 15
@@ -131,7 +131,7 @@ varGeneratorTests =
           resultJson <- forAll $ return $ insertAtPath [show index] dataJson randomJson
           -- Check that the index returns the data
           Right dataJson === eval [] logic resultJson,
-      H.testProperty "String var returns item" $
+      hTestProperty "String var returns item" $
         property $ do
           -- The member to index
           (indexJson, indexStr) <- forAll genGenericNonEmptyJsonString
@@ -142,7 +142,7 @@ varGeneratorTests =
           resultJson <- forAll $ return $ insertAtPath [indexStr] dataJson randomJson
           -- Check that the data is found at the index
           Right dataJson === eval [] logic resultJson,
-      H.testProperty "Nested indexing for strings returns item correctly" $
+      hTestProperty "Nested indexing for strings returns item correctly" $
         property $ do
           -- Generate a list of strings denoting a path
           -- f.e ["aa", "bb"] is path "aa.bb" in json
@@ -154,7 +154,7 @@ varGeneratorTests =
           resultJson <- forAll $ return $ insertAtPath recIndex dataJson randomJson
           -- Verify the data is found at the path in the Json
           Right dataJson === eval [] logic resultJson,
-      H.testProperty "Default var takes first value if it returns a value" $
+      hTestProperty "Default var takes first value if it returns a value" $
         property $ do
           -- Use var null to always convert to a valid item
           (stringJson, _) <- forAll genGenericNonEmptyJsonString
@@ -162,7 +162,7 @@ varGeneratorTests =
           dataJson <- forAll $ Gen.sized genSizedRandomJsonArray
           -- Verify we get the entire data as result and not the default
           Right dataJson === eval [] logic dataJson,
-      H.testProperty "Defaults correctly to second value" $
+      hTestProperty "Defaults correctly to second value" $
         property $ do
           -- Json bool so it always defaults to the stringJson
           (stringJson, _) <- forAll genGenericNonEmptyJsonString

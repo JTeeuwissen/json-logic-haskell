@@ -10,7 +10,7 @@ import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit
 import qualified Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
+import Utils
 
 negationUnitTests :: TestTree
 negationUnitTests =
@@ -42,11 +42,11 @@ negationGeneratorTests :: TestTree
 negationGeneratorTests =
   testGroup
     "negation generator tests"
-    [ H.testProperty "negation works" $
+    [ hTestProperty "negation works" $
         property $ do
           paramJson <- forAll $ Gen.sized genSizedRandomJson
           Right (JsonBool $ isFalsy paramJson) === eval [] (JsonObject [("!", JsonObject [("preserve", paramJson)])]) JsonNull,
-      H.testProperty "double negation works" $
+      hTestProperty "double negation works" $
         property $ do
           paramJson <- forAll $ Gen.sized genSizedRandomJson
           Right (JsonBool $ isTruthy paramJson) === eval [] (JsonObject [("!!", JsonObject [("preserve", paramJson)])]) JsonNull
