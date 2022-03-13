@@ -66,7 +66,7 @@ substrGeneratorTests =
           let rule = jObj [("substr", jArr [jsonStr, jNum $ fromIntegral index])]
           case eval [] rule jsonStr of
             -- Length is the equal to the negative index
-            Right (JsonString res) -> H.assert $ length res == - index
+            Right (JsonString res) -> H.assert $ length res == -index
             _ -> H.failure,
       -- The evaluation returns the same result as take . drop
       H.testProperty "substr with start and final index works like take . drop" $
