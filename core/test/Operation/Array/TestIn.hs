@@ -9,7 +9,7 @@ import JsonLogic
 import JsonLogic.Json (Json (..))
 import Test.Tasty
 import Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
+import Utils
 
 inUnitTests :: TestTree
 inUnitTests =

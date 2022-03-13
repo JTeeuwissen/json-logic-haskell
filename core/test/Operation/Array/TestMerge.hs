@@ -7,7 +7,6 @@ import JsonLogic
 import JsonLogic.Json
 import Test.Tasty
 import Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H
 import Utils
 
 mergeUnitTests :: TestTree
