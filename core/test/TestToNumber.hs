@@ -1,6 +1,5 @@
 module TestToNumber where
 
-import Control.Monad (when)
 import Generator.Data (genSizedNestedJsonArray)
 import Generator.Generic (genGenericJsonNumber)
 import Generator.Utils (increaseSizeBy)
@@ -27,7 +26,7 @@ toNumberUnitTests =
       testCase "test for string" $ assertEqual "2 == 2" 2 $ parseFloat $ jStr "2",
       testCase "test for string" $ assertEqual "1.2 == 1.2" 1.2 $ parseFloat $ jStr "1.2",
       testCase "test for string" $ assertEqual "1.2 == 1.2.3 " 1.2 $ parseFloat $ jStr "1.2.3 ",
-      testCase "test for string" $ assertEqual "1 == 1abc " 1.2 $ parseFloat $ jStr "1abc",
+      testCase "test for string" $ assertEqual "1 == 1abc " 1 $ parseFloat $ jStr "1abc",
       testCase "test for string" $ assertEqual "100 == 1e2 " 100 $ parseFloat $ jStr "1e2",
       testCase "test for array" $ assertBool "0 == []" (isNaN $ parseFloat $ jArr []),
       testCase "test for array" $ assertEqual "2 == [2]" 2 $ parseFloat $ jArr [jNum 2],
@@ -47,9 +46,11 @@ toNumberGeneratorTests =
           -- Generate string that only contains letters
           s <- forAll $ Gen.string (Range.constant 1 10) Gen.alpha
           H.assert $ isNaN $ parseFloat $ jStr s,
-      H.testProperty "parsing always returns nothing for list with more than 1 item" $
+      H.testProperty "parsing always returns value of first item." $
         property $ do
           -- Array with more than 1 item always results in nothing
           arr@(JsonArray as) <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedNestedJsonArray
-          when (length as > 1) $ H.assert $ isNaN $ parseFloat arr
+          case as of
+            [] -> H.assert $ isNaN $ parseFloat arr
+            (x : _) -> H.assert $ parseFloat x == parseFloat arr
     ]
