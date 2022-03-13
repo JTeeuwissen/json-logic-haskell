@@ -8,7 +8,7 @@ import JsonLogic.Aeson (readJson)
 import JsonLogic.Json (Json (..))
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit as U (assertEqual, testCase)
-import Test.Tasty.Hedgehog as H (testProperty)
+import Utils
 
 main :: IO ()
 main = defaultMain tests

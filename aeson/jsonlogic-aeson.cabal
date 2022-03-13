@@ -56,7 +56,8 @@ Test-Suite jsonlogic-aeson-tests
     hs-source-dirs:
         test
     other-modules:
-        Generator
+        Generator,
+        Utils
     build-depends:
         base >= 4.14.3.0,
         jsonlogic,
