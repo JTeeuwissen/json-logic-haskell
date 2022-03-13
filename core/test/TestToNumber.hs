@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module TestToNumber where
 
 import Control.Monad (when)
