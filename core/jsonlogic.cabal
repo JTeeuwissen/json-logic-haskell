@@ -28,10 +28,6 @@ flag error
   description: Error on ghc warnings
   default: False
 
-flag nocode
-  description: Don't generate any code
-  default: False
-
 library
     exposed-modules:
         JsonLogic,
@@ -62,9 +58,6 @@ library
     if flag(error)
         ghc-options:
             -Werror
-    if flag(nocode)
-        ghc-options:
-            -fno-code
 
 Test-Suite jsonlogic-tests
     main-is:
@@ -113,6 +106,3 @@ Test-Suite jsonlogic-tests
     if flag(error)
         ghc-options:
             -Werror
-    if flag(nocode)
-        ghc-options:
-            -fno-code
