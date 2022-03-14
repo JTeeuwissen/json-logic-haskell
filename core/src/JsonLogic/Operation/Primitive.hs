@@ -1,8 +1,17 @@
 module JsonLogic.Operation.Primitive where
 
 import Control.Monad.Except
-import qualified Data.Map as M
 import JsonLogic.Json
+import JsonLogic.Json
+  ( Data,
+    Json (JsonArray, JsonObject),
+    JsonObject,
+    Rule,
+    SubEvaluator,
+    isTruthy,
+    parseFloat,
+    stringify,
+  )
 
 -- Primitive evaluators
 evaluateDouble :: SubEvaluator -> Rule -> Data -> Either String Double
@@ -29,7 +38,7 @@ evaluateArray evaluator param vars = do
     JsonArray xs -> return xs
     j -> throwError $ "Invalid parameter type, was expecting array. Got: " ++ show j
 
-evaluateObject :: SubEvaluator -> Rule -> Data -> Either String (M.Map String Json)
+evaluateObject :: SubEvaluator -> Rule -> Data -> Either String JsonObject
 evaluateObject evaluator param vars = do
   res <- evaluator param vars
   case res of

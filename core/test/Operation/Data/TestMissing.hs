@@ -62,7 +62,7 @@ missingGeneratorTests =
           dataJsonObject <- forAll $ Gen.sized genSizedRandomJsonObject
           -- Empty rule over any data returns empty array
           Right (jArr []) === eval [] missingEmpty dataJsonArray
-          Right (jArr []) === eval [] missingEmpty dataJsonObject,
+          Right (jArr []) === eval [] missingEmpty (JsonObject dataJsonObject),
       hTestProperty "Using integer index on array" $
         property $ do
           -- Generate random data
@@ -93,21 +93,20 @@ missingGeneratorTests =
         property $ do
           -- Generate data
           jsonData <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedRandomJsonObject
-          let (JsonObject dict) = jsonData
           -- Choose a random item from the object
-          indexStr <- forAll $ Gen.element $ M.keys dict
+          indexStr <- forAll $ Gen.element $ M.keys jsonData
           let rule = jObj [("missing", jArr [jStr indexStr])]
           -- The item should not be missing
-          Right (jArr []) === eval [] rule jsonData,
+          Right (jArr []) === eval [] rule (JsonObject jsonData),
       hTestProperty "Using integer index on object" $
         property $ do
           -- Random data
-          jsonData@(JsonObject o) <- forAll $ Gen.sized genSizedRandomJsonObject
+          jsonData <- forAll $ Gen.sized genSizedRandomJsonObject
           -- Generate random index
           x <- forAll $ Gen.int $ Range.constant 0 30
           let rule = jObj [("missing", jArr [jNum $ fromIntegral x])]
           -- Item should be missing
-          if M.member (show x) o
-            then Right (jArr []) === eval [] rule jsonData
-            else Right (jArr [jNum $ fromIntegral x]) === eval [] rule jsonData
+          if M.member (show x) jsonData
+            then Right (jArr []) === eval [] rule (JsonObject jsonData)
+            else Right (jArr [jNum $ fromIntegral x]) === eval [] rule (JsonObject jsonData)
     ]

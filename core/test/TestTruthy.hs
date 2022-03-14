@@ -56,7 +56,7 @@ truthyGeneratorTests =
       hTestProperty "truthy for objects" $
         property $ do
           jsonObj <- forAll $ Gen.sized genSizedRandomJsonObject
-          H.assert $ truthyAssertion jsonObj
+          H.assert $ truthyAssertion (JsonObject jsonObj)
     ]
 
 truthyAssertion :: Json -> Bool
