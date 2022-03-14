@@ -56,7 +56,7 @@ missingSomeGeneratorTests =
           dataJsonObject <- forAll $ Gen.sized genSizedRandomJsonObject
           -- Indexing empty missing_some over random data returns empty array
           Right (jArr []) === eval [] missingSomeEmpty dataJsonArray
-          Right (jArr []) === eval [] missingSomeEmpty dataJsonObject,
+          Right (jArr []) === eval [] missingSomeEmpty (JsonObject dataJsonObject),
       hTestProperty "missing_some when all keys are present" $
         property $ do
           -- Generate flat array as data
