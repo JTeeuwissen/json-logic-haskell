@@ -62,6 +62,7 @@ Test-Suite jsonlogic-tests
     ghc-options: -Wall
 if flag(err)
     ghc-options: -Werr
+
     type:
         exitcode-stdio-1.0
     hs-source-dirs:
