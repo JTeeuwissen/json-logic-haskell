@@ -24,6 +24,14 @@ extra-source-files:
     CHANGELOG.md
     README.md
 
+flag error
+  description: Error on ghc warnings
+  default: False
+
+flag nocode
+  description: Don't generate any code
+  default: False
+
 library
     exposed-modules:
         JsonLogic,
@@ -51,9 +59,12 @@ library
         containers,
         mtl >= 2.2.2
 
-if flag(err)
+if flag(error)
     ghc-options:
         -Werr
+if flag(nocode)
+    ghc-options:
+        -fno-code
 
 Test-Suite jsonlogic-tests
     main-is:
@@ -98,7 +109,10 @@ Test-Suite jsonlogic-tests
         tasty-hedgehog >= 1.2.0.0,
         hedgehog >= 1.1.1,
         containers
-
-if flag(err)
+        
+if flag(error)
     ghc-options:
         -Werr
+if flag(nocode)
+    ghc-options:
+        -fno-code
