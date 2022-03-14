@@ -44,6 +44,9 @@ library
         Haskell2010
     ghc-options:
         -Wall
+if flag(llvm)
+    ghc-options: -Werr
+
     hs-source-dirs:
         src
     build-depends:
@@ -57,6 +60,8 @@ Test-Suite jsonlogic-tests
     default-language:
         Haskell2010
     ghc-options: -Wall
+if flag(llvm)
+    ghc-options: -Werr
     type:
         exitcode-stdio-1.0
     hs-source-dirs:

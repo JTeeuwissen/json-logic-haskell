@@ -17,7 +17,7 @@ jobs:
       - name: Create action id
         run: echo "ACTION_ID=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
       - name: Build Test Image
-        run: docker build --force-rm --tag $ACTION_ID -f Dockerfile.test .
+        run: docker build --force-rm --tag $ACTION_ID -f Docker/Dockerfile.test .
       - name: Run Test Image
         run: docker run --rm $ACTION_ID
       - name: Remove Test Image
@@ -30,7 +30,7 @@ jobs:
       - name: Create action id
         run: echo "ACTION_ID=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
       - name: Build Doctest Image
-        run: docker build --force-rm --tag $ACTION_ID -f Dockerfile.doctest .
+        run: docker build --force-rm --tag $ACTION_ID -f Docker/Dockerfile.doctest .
       - name: Run Doctest core dir
         run: docker run --rm $ACTION_ID doctest core
       - name: Run Doctest aeson dir
