@@ -93,22 +93,29 @@ isFalsy :: Json -> Bool
 isFalsy = not . isTruthy
 
 -- | Convert json to a numeric value, including NaN
--- Same as the Number object in JS
--- Number source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat
+-- Same as the Parsefloat function in JS
+-- Parsefloat source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat
 -- NaN source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
 parseFloat :: Json -> Double
+-- Numbers stay just numbers
 parseFloat (JsonNumber n) = n
+-- The string "Infinity" is parsed as actual infinity
 parseFloat (JsonString "Infinity") = infinity
+-- First drop all whitespace, then take all "valid" characters. Drop everything after the second point and then try to parse it to a double.
 parseFloat (JsonString s) = fromMaybe notANumber $ readMaybe $ dropAfterSecondPoint $ takeWhile isValid $ dropWhile isSpace s
   where
+    -- Numbers, decimal point, +/- for sign and e/E for exponent are valid characters.
     isValid x
       | x `elem` valids = True
       | otherwise = False
     valids = ['0' .. '9'] ++ ['.', 'e', 'E', '+', '-']
+    -- Break on the first decimal point, then the second, and glue the first parts together to drop evertyhing after the second point.
     dropAfterSecondPoint t = case break (== '.') t of
       (l, '.' : r) -> case break (== '.') r of (l', _) -> l ++ "." ++ l'
       (l, _) -> l
+-- For an array always take the first element.
 parseFloat (JsonArray (a : _)) = parseFloat a
+-- Everything else is NaN
 parseFloat _ = notANumber
 
 -- | Gives a Infinity
