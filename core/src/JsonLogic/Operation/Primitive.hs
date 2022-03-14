@@ -2,6 +2,7 @@ module JsonLogic.Operation.Primitive where
 
 import Control.Monad.Except
 import JsonLogic.Json
+import JsonLogic.Type
 
 -- Primitive evaluators
 evaluateDouble :: SubEvaluator -> Rule -> Data -> Either String Double

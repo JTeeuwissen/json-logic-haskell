@@ -6,13 +6,7 @@ import qualified Data.Map as M (Map, toList)
 import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
 
--- A rule can be any kind of JSON value, but object will be evaluated.
-type Rule = Json
-
--- Data can be any kind of JSON value.
-type Data = Json
-
--- Json is a collection of possivle JSON values.
+-- Json is a collection of possible JSON values.
 data Json
   = JsonNull
   | JsonBool Bool
@@ -127,25 +121,3 @@ infinity = 1 / 0
 -- | Gives a NaN
 notANumber :: Double
 notANumber = 0 / 0
-
--- Subevaluator, with rule, its context and retulting json.
-type SubEvaluator = Rule -> Data -> Result
-
-type Function = SubEvaluator -> Rule -> Data -> Result
-
-type Operations = M.Map String Function
-
--- Operation type
-type Operation = (String, Function)
-
--- Contains the functions are variables our environment has currently
-data JsonLogicEnv = JLEnv
-  { operations :: Operations, -- All the operations (plus custom ones)
-    variables :: Json -- Variables defined in rules
-  }
-
--- Cannot derive itself, so empty instance
-instance Show JsonLogicEnv where
-  show (JLEnv _ vs) = "JLEnv " ++ show vs
-
-type Result = Either String Json

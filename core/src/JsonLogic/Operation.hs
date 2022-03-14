@@ -20,6 +20,7 @@ import JsonLogic.Operation.Data
 import JsonLogic.Operation.Misc
 import JsonLogic.Operation.Numeric
 import JsonLogic.Operation.String
+import JsonLogic.Type
 import Prelude hiding (all, and, any, filter, log, map, max, min, or, sum, (!!), (&&), (*), (+), (-), (/), (/=), (<), (<=), (==), (>), (>=), (||))
 
 -- Initial environment with only "+" defined

@@ -3,7 +3,7 @@
 module JsonLogic.Operation.Misc (miscOperations, log, trace) where
 
 import Debug.Trace (traceShow)
-import JsonLogic.Json
+import JsonLogic.Type
 import Prelude hiding (log)
 
 miscOperations :: Operations

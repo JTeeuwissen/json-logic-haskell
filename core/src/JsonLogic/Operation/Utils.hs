@@ -5,6 +5,7 @@ module JsonLogic.Operation.Utils where
 -- IMPORTANT!! Needs singleton import for doctests
 import qualified Data.Map as M
 import JsonLogic.Json
+import JsonLogic.Type
 import Text.Read
 
 -- | Index a json object using a string seperated by periods.
