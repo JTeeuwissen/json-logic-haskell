@@ -59,12 +59,12 @@ library
         containers,
         mtl >= 2.2.2
 
-if flag(error)
-    ghc-options:
-        -Werr
-if flag(nocode)
-    ghc-options:
-        -fno-code
+    if flag(error)
+        ghc-options:
+            -Werr
+    if flag(nocode)
+        ghc-options:
+            -fno-code
 
 Test-Suite jsonlogic-tests
     main-is:
@@ -109,10 +109,10 @@ Test-Suite jsonlogic-tests
         tasty-hedgehog >= 1.2.0.0,
         hedgehog >= 1.1.1,
         containers
-        
-if flag(error)
-    ghc-options:
-        -Werr
-if flag(nocode)
-    ghc-options:
-        -fno-code
+            
+    if flag(error)
+        ghc-options:
+            -Werr
+    if flag(nocode)
+        ghc-options:
+            -fno-code

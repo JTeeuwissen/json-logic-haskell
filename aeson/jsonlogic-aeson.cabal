@@ -53,12 +53,13 @@ library
         scientific,
         containers,
         vector
-if flag(error)
-    ghc-options:
-        -Werr
-if flag(nocode)
-    ghc-options:
-        -fno-code
+
+    if flag(error)
+        ghc-options:
+            -Werr
+    if flag(nocode)
+        ghc-options:
+            -fno-code
 
 Test-Suite jsonlogic-aeson-tests
     main-is:
@@ -83,9 +84,10 @@ Test-Suite jsonlogic-aeson-tests
         tasty-hedgehog >= 1.2.0.0,
         hedgehog >= 1.1.1,
         containers
-if flag(error)
-    ghc-options:
-        -Werr
-if flag(nocode)
-    ghc-options:
-        -fno-code
+
+    if flag(error)
+        ghc-options:
+            -Werr
+    if flag(nocode)
+        ghc-options:
+            -fno-code
