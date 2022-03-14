@@ -2,6 +2,7 @@
 
 module JsonLogic.Operation.String (stringOperations, cat, substr) where
 
+import qualified Data.Fixed as F
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
 
