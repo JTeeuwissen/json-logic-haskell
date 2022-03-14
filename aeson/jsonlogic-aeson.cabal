@@ -56,13 +56,14 @@ Test-Suite jsonlogic-aeson-tests
     hs-source-dirs:
         test
     other-modules:
-        Generator
+        Generator,
+        Utils
     build-depends:
         base >= 4.14.3.0,
         jsonlogic,
         jsonlogic-aeson,
         tasty,
         tasty-hunit >= 0.10.0.3,
-        tasty-hedgehog,
+        tasty-hedgehog >= 1.2.0.0,
         hedgehog >= 1.1.1,
         containers
