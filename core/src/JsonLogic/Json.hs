@@ -1,5 +1,6 @@
 module JsonLogic.Json where
 
+import Data.Char (isSpace)
 import Data.List (intercalate)
 import qualified Data.Map as M (Map, toList)
 import Data.Maybe (fromMaybe)
@@ -92,20 +93,34 @@ isFalsy :: Json -> Bool
 isFalsy = not . isTruthy
 
 -- | Convert json to a numeric value, including NaN
--- Same as the Number object in JS
--- Number source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+-- Same as the Parsefloat function in JS
+-- Parsefloat source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat
 -- NaN source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
-toNumber :: Json -> Double
-toNumber JsonNull = notANumber
-toNumber (JsonBool True) = 1.0
-toNumber (JsonBool False) = 0.0
-toNumber (JsonNumber n) = n
-toNumber (JsonString "") = 0.0
-toNumber (JsonString s) = fromMaybe notANumber $ readMaybe s
-toNumber (JsonArray []) = 0.0
-toNumber (JsonArray [a]) = toNumber a
-toNumber (JsonArray _) = notANumber
-toNumber (JsonObject _) = notANumber
+parseFloat :: Json -> Double
+-- Numbers stay just numbers
+parseFloat (JsonNumber n) = n
+-- The string "Infinity" is parsed as actual infinity
+parseFloat (JsonString "Infinity") = infinity
+-- First drop all whitespace, then take all "valid" characters. Drop everything after the second point and then try to parse it to a double.
+parseFloat (JsonString s) = fromMaybe notANumber $ readMaybe $ dropAfterSecondPoint $ takeWhile isValid $ dropWhile isSpace s
+  where
+    -- Numbers, decimal point, +/- for sign and e/E for exponent are valid characters.
+    isValid x
+      | x `elem` valids = True
+      | otherwise = False
+    valids = ['0' .. '9'] ++ ['.', 'e', 'E', '+', '-']
+    -- Break on the first decimal point, then the second, and glue the first parts together to drop evertyhing after the second point.
+    dropAfterSecondPoint t = case break (== '.') t of
+      (l, '.' : r) -> case break (== '.') r of (l', _) -> l ++ "." ++ l'
+      (l, _) -> l
+-- For an array always take the first element.
+parseFloat (JsonArray (a : _)) = parseFloat a
+-- Everything else is NaN
+parseFloat _ = notANumber
+
+-- | Gives a Infinity
+infinity :: Double
+infinity = 1 / 0
 
 -- | Gives a NaN
 notANumber :: Double
