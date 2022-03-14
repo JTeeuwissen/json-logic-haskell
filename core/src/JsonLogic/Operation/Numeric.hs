@@ -6,6 +6,7 @@ import Control.Monad.Except
 import qualified Data.Fixed as F
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
+import JsonLogic.Type
 import Prelude hiding (max, min, sum, (*), (+), (-), (/), (<), (<=), (>), (>=))
 import qualified Prelude hiding (max, min, sum)
 import qualified Prelude as P
