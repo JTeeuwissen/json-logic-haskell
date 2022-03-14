@@ -4,6 +4,7 @@ module JsonLogic.Operation.String (stringOperations, cat, substr) where
 
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
+import JsonLogic.Type
 
 stringOperations :: Operations
 stringOperations = [cat, substr]

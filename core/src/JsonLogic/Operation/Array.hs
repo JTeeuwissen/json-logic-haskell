@@ -8,6 +8,7 @@ import Control.Monad.Except
 import qualified Data.List as L
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
+import JsonLogic.Type
 import Prelude hiding (all, filter, map)
 
 arrayOperations :: Operations

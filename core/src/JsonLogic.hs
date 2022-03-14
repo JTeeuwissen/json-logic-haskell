@@ -6,6 +6,7 @@ import Data.Map as M
 import JsonLogic.JL
 import JsonLogic.Json
 import JsonLogic.Operation
+import JsonLogic.Type
 
 -- evaluate JsonLogic without bothering about monads
 eval :: [Operation] -> Rule -> Data -> Result
