@@ -14,7 +14,7 @@ allUnitTests =
     [ testCase "logic{\"all\":\"[[], {\">\":[1,2]}]\"} data{}" $
         U.assertEqual
           "Empty list case"
-          (Right $ JsonBool True)
+          (Right $ JsonBool False)
           (eval [] (JsonObject [("all", JsonArray [JsonArray [], JsonObject [(">", JsonNumber 2)]])]) JsonNull),
       testCase "logic{\"all\":\"[[1,2,3], {\">\":[{\"var\":\"\"}, 0]}]\"} data{}" $
         U.assertEqual

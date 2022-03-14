@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedLists #-}
 
 module JsonLogic.Operation.Array (arrayOperations, map, reduce, filter, all, none, some, merge, in') where
@@ -19,7 +20,7 @@ reduce = ("reduce", evaluateReduce)
 filter = ("filter", evaluateFilter)
 
 all, none, some :: Operation
-all = ("all", evaluateArrayToBool and)
+all = ("all", evaluateArrayToBool (\case [] -> False; bools -> and bools))
 none = ("none", evaluateArrayToBool (not . or))
 some = ("some", evaluateArrayToBool or)
 
