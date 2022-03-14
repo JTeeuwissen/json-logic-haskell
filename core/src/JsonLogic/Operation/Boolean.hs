@@ -6,6 +6,7 @@ import Control.Monad.Except
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
 import JsonLogic.Operation.Utils
+import JsonLogic.Type
 import Prelude hiding (all, and, any, filter, map, max, min, or, sum, (!!), (&&), (==), (||))
 import qualified Prelude as P hiding (and, or)
 

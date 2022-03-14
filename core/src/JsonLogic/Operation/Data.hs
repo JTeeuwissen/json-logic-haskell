@@ -6,6 +6,7 @@ import Control.Monad.Except
 import Data.Maybe
 import JsonLogic.Json
 import JsonLogic.Operation.Utils
+import JsonLogic.Type
 
 dataOperations :: Operations
 dataOperations = [var, missing, missingSome, preserve]
