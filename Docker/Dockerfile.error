@@ -19,4 +19,4 @@ RUN cabal build --only-dependencies --enable-tests all
 # Add and Install Application Code
 COPY . .
 
-CMD ["cabal", "build", "--enable-tests", "all", "--flags=\"error nocode\""]
+CMD ["cabal", "build", "--enable-tests", "all", "--flags=error nocode"]

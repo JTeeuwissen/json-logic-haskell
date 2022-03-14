@@ -56,7 +56,7 @@ library
 
     if flag(error)
         ghc-options:
-            -Werr
+            -Werror
     if flag(nocode)
         ghc-options:
             -fno-code
@@ -87,7 +87,7 @@ Test-Suite jsonlogic-aeson-tests
 
     if flag(error)
         ghc-options:
-            -Werr
+            -Werror
     if flag(nocode)
         ghc-options:
             -fno-code
