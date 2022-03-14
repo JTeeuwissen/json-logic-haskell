@@ -51,7 +51,9 @@ evaluateArrayToBool :: ([Bool] -> Bool) -> SubEvaluator -> Rule -> Data -> Eithe
 evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
   xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
   bools <- mapM (evaluateBool evaluator f) xs'
-  return $ JsonBool $ operator bools
+  return . JsonBool $ case bools of
+    [] -> False -- Always return false on an empty list, even for all.
+    _ -> do operator bools
 evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
 
 -- | Merge operations flattens the array in the top level
