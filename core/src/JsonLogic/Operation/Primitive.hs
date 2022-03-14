@@ -2,16 +2,6 @@ module JsonLogic.Operation.Primitive where
 
 import Control.Monad.Except
 import JsonLogic.Json
-import JsonLogic.Json
-  ( Data,
-    Json (JsonArray, JsonObject),
-    JsonObject,
-    Rule,
-    SubEvaluator,
-    isTruthy,
-    parseFloat,
-    stringify,
-  )
 
 -- Primitive evaluators
 evaluateDouble :: SubEvaluator -> Rule -> Data -> Either String Double
