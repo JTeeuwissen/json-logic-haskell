@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedLists #-}
 
 module JsonLogic.Operation.Array (arrayOperations, map, reduce, filter, all, none, some, merge, in') where
@@ -18,7 +19,7 @@ reduce = ("reduce", evaluateReduce)
 filter = ("filter", evaluateFilter)
 
 all, none, some :: Operation
-all = ("all", evaluateArrayToBool and)
+all = ("all", evaluateArrayToBool (\case [] -> False; bools -> and bools))
 none = ("none", evaluateArrayToBool (not . or))
 some = ("some", evaluateArrayToBool or)
 
@@ -51,9 +52,7 @@ evaluateArrayToBool :: ([Bool] -> Bool) -> SubEvaluator -> Rule -> Data -> Eithe
 evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
   xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
   bools <- mapM (evaluateBool evaluator f) xs'
-  return . JsonBool $ case bools of
-    [] -> False -- Always return false on an empty list, even for all.
-    _ -> do operator bools
+  return $ JsonBool $ operator bools
 evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
 
 -- | Merge operations flattens the array in the top level
