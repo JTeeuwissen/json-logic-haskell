@@ -10,7 +10,6 @@ import Hedgehog.Range as Range
 import JsonLogic.Json (Json (JsonArray), parseFloat)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (assertBool, assertEqual, testCase)
-import Test.Tasty.Hedgehog as H (testProperty)
 import Utils
 
 toNumberUnitTests :: TestTree
@@ -37,16 +36,16 @@ toNumberGeneratorTests :: TestTree
 toNumberGeneratorTests =
   testGroup
     "toNumber generator tests"
-    [ H.testProperty "parsing works for integer strings" $
+    [ hTestProperty "parsing works for integer strings" $
         property $ do
           (json, n) <- forAll genGenericJsonNumber
           H.assert $ parseFloat (jStr $ show json) == n,
-      H.testProperty "parsing does not work for non integer strings" $
+      hTestProperty "parsing does not work for non integer strings" $
         property $ do
           -- Generate string that only contains letters
           s <- forAll $ Gen.string (Range.constant 1 10) Gen.alpha
           H.assert $ isNaN $ parseFloat $ jStr s,
-      H.testProperty "parsing always returns value of first item." $
+      hTestProperty "parsing always returns value of first item." $
         property $ do
           -- Array with more than 1 item always results in nothing
           arr@(JsonArray as) <- forAll $ increaseSizeBy 1 $ Gen.sized genSizedNestedJsonArray

@@ -90,6 +90,6 @@ Test-Suite jsonlogic-tests
         jsonlogic,
         tasty,
         tasty-hunit >= 0.10.0.3,
-        tasty-hedgehog,
+        tasty-hedgehog >= 1.2.0.0,
         hedgehog >= 1.1.1,
         containers

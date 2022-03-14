@@ -8,7 +8,7 @@ import JsonLogic.Aeson (readJson)
 import JsonLogic.Json (Json (..))
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit as U (assertEqual, testCase)
-import Test.Tasty.Hedgehog as H (testProperty)
+import Utils
 
 main :: IO ()
 main = defaultMain tests
@@ -76,7 +76,7 @@ generatorTests :: TestTree
 generatorTests =
   testGroup
     "Generator tests"
-    [ H.testProperty "Json parsed correctly" $
+    [ hTestProperty "Json parsed correctly" $
         withTests 500 $
           property $ do
             (json, jsonString) <- forAll $ Gen.sized genJson

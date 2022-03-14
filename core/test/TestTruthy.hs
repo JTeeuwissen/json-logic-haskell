@@ -8,7 +8,6 @@ import qualified Hedgehog.Gen as Gen
 import JsonLogic.Json
 import Test.Tasty
 import qualified Test.Tasty.HUnit as U
-import Test.Tasty.Hedgehog as H (testProperty)
 import Utils
 
 truthyUnitTests :: TestTree
@@ -30,31 +29,31 @@ truthyGeneratorTests :: TestTree
 truthyGeneratorTests =
   testGroup
     "Truthy generator tests"
-    [ H.testProperty "truthy for bools" $
+    [ hTestProperty "truthy for bools" $
         property $ do
           (json, b) <- forAll genGenericJsonBool
           if b
             then H.assert $ truthyAssertion json
             else H.assert $ falsyAssertion json,
-      H.testProperty "truthy for numbers" $
+      hTestProperty "truthy for numbers" $
         property $ do
           (json, n) <- forAll genGenericJsonNumber
           case n of
             0.0 -> H.assert $ falsyAssertion json
             _ -> H.assert $ truthyAssertion json,
-      H.testProperty "truthy for strings" $
+      hTestProperty "truthy for strings" $
         property $ do
           (json, s) <- forAll genGenericJsonString
           case s of
             "" -> H.assert $ falsyAssertion json
             _ -> H.assert $ truthyAssertion json,
-      H.testProperty "truthy for arrays" $
+      hTestProperty "truthy for arrays" $
         property $ do
           jsonArr <- forAll $ Gen.sized genSizedRandomJsonArray
           case jsonArr of
             JsonArray [] -> H.assert $ falsyAssertion jsonArr
             _ -> H.assert $ truthyAssertion jsonArr,
-      H.testProperty "truthy for objects" $
+      hTestProperty "truthy for objects" $
         property $ do
           jsonObj <- forAll $ Gen.sized genSizedRandomJsonObject
           H.assert $ truthyAssertion jsonObj
