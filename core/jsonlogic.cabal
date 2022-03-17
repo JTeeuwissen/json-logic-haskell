@@ -24,6 +24,10 @@ extra-source-files:
     CHANGELOG.md
     README.md
 
+flag error
+  description: Error on ghc warnings
+  default: False
+
 library
     exposed-modules:
         JsonLogic,
@@ -52,12 +56,17 @@ library
         containers,
         mtl >= 2.2.2
 
+    if flag(error)
+        ghc-options:
+            -Werror
+
 Test-Suite jsonlogic-tests
     main-is:
         Test.hs
     default-language:
         Haskell2010
-    ghc-options: -Wall
+    ghc-options:
+        -Wall
     type:
         exitcode-stdio-1.0
     hs-source-dirs:
@@ -94,3 +103,7 @@ Test-Suite jsonlogic-tests
         tasty-hedgehog >= 1.2.0.0,
         hedgehog >= 1.1.1,
         containers
+            
+    if flag(error)
+        ghc-options:
+            -Werror

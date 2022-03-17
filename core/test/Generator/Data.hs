@@ -12,7 +12,7 @@ import Generator.Generic
 import Generator.Utils (genUnbalancedSizeList)
 import Hedgehog (Gen, Size (Size))
 import Hedgehog.Gen (choice)
-import JsonLogic.Json (Json (..))
+import JsonLogic.Json (Json (..), JsonObject)
 import Text.Read (readMaybe)
 
 -- | Inserts Json into a specific path and returns it
@@ -65,7 +65,7 @@ genSizedRandomJson s@(Size size)
   | otherwise =
     choice
       [ genSizedRandomJsonArray s,
-        genSizedRandomJsonObject s
+        JsonObject <$> genSizedRandomJsonObject s
       ]
 
 -- | Generate a Random sized Json array
@@ -96,10 +96,10 @@ genSizedRandomJsonEntry size = do
   return (str, json)
 
 -- | Generate random Json object with a given size
-genSizedRandomJsonObject :: Size -> Gen Json
+genSizedRandomJsonObject :: Size -> Gen JsonObject
 genSizedRandomJsonObject size = do
   sizes <- genUnbalancedSizeList size
-  JsonObject . M.fromList <$> mapM genSizedRandomJsonEntry sizes
+  M.fromList <$> mapM genSizedRandomJsonEntry sizes
 
 -- | Generate an array of given size that generates a range array
 genSizedJsonNumberArray :: Size -> Gen (Json, [Double])

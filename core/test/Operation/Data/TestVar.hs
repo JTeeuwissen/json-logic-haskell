@@ -151,7 +151,7 @@ varGeneratorTests =
           -- Generate random json and random data and inject it at path
           randomJson <- forAll $ Gen.sized genSizedRandomJsonObject
           dataJson <- forAll $ Gen.sized genSizedRandomJson
-          resultJson <- forAll $ return $ insertAtPath recIndex dataJson randomJson
+          resultJson <- forAll $ return $ insertAtPath recIndex dataJson (JsonObject randomJson)
           -- Verify the data is found at the path in the Json
           Right dataJson === eval [] logic resultJson,
       hTestProperty "Default var takes first value if it returns a value" $

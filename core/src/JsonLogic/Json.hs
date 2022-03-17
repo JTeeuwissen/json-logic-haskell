@@ -13,8 +13,10 @@ data Json
   | JsonNumber Double
   | JsonString String
   | JsonArray [Json]
-  | JsonObject (M.Map String Json)
+  | JsonObject JsonObject
   deriving (Eq)
+
+type JsonObject = M.Map String Json
 
 -- | An instance to show json in clear format for users
 instance Show Json where

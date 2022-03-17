@@ -5,6 +5,7 @@ module JsonLogic.Operation.Data (dataOperations, var, missing, missingSome, pres
 import Control.Monad.Except
 import Data.Maybe
 import JsonLogic.Json
+import JsonLogic.Operation.Primitive
 import JsonLogic.Operation.Utils
 import JsonLogic.Type
 
@@ -44,31 +45,35 @@ getJsonWithDefault j = (j, JsonNull)
 
 -- | Evaluates which elements are missing from the Json
 evaluateMissing :: Function
-evaluateMissing evaluator param vars = do
-  res <- evaluator param vars
+evaluateMissing evaluator keys' vars = do
+  keys <- evaluator keys' vars
   -- Only keep the missing values in the json array
-  return $ JsonArray [a | a <- keys res, isNothing $ indexWithJson a vars]
-  where
-    -- The keys used for our search
-    keys :: Json -> [Json]
-    keys (JsonArray (JsonArray js : _)) = js
-    keys (JsonArray js) = js
-    keys j = [j]
+  return . JsonArray $ missingKeys keys vars
 
 -- | Evaluates whether more than x items are missing from the original array
 -- If so, it returns the entire list of missing items
 -- Otherwise it returns an empty list
 evaluateMissingSome :: Function
-evaluateMissingSome evaluator (JsonArray [JsonNumber x, y]) vars = do
-  params <- evaluator y vars
-  missingArr <- evaluateMissing evaluator params vars
-  let (JsonArray miss) = missingArr
-  case params of
+evaluateMissingSome evaluator (JsonArray [minKeys', keys']) vars = do
+  minKeys <- evaluateInt evaluator minKeys' vars
+  keys <- evaluator keys' vars
+  let miss = missingKeys keys vars
+  case keys of
     -- Return result if at least x elements are missing or else an empty array
-    JsonArray js | length js - length miss >= floor x -> return $ JsonArray []
-    JsonArray _ -> return missingArr
+    JsonArray js | length js - length miss >= minKeys -> return $ JsonArray []
+    JsonArray _ -> return $ JsonArray miss
     -- If there is only a singleton as parameter, the length is 1
-    _ | 1 - length miss >= floor x -> return $ JsonArray []
-    _ -> return missingArr
+    _ | 1 - length miss >= minKeys -> return $ JsonArray []
+    _ -> return $ JsonArray miss
 -- The parameters are invalid
 evaluateMissingSome _ json _ = throwError $ "Error: missing_some expects an array of two arguments, instead it got: " ++ show json
+
+-- | Returns the missing keys from the original array
+missingKeys :: Json -> Data -> [Json]
+missingKeys keys vars = [key | key <- getKeys keys, isNothing $ indexWithJson key vars]
+  where
+    -- The keys used for our search
+    getKeys :: Json -> [Json]
+    getKeys (JsonArray (arr@(JsonArray _) : _)) = getKeys arr
+    getKeys (JsonArray js) = js
+    getKeys j = [j]

@@ -25,12 +25,17 @@ extra-source-files:
     CHANGELOG.md
     README.md
 
+flag error
+  description: Error on ghc warnings
+  default: False
+
 library
     exposed-modules:
         JsonLogic.Aeson
     default-language:
         Haskell2010
-    ghc-options: -Wall -Wno-orphans
+    ghc-options:
+        -Wall -Wno-orphans
     hs-source-dirs:
         src
     build-depends:
@@ -45,12 +50,17 @@ library
         containers,
         vector
 
+    if flag(error)
+        ghc-options:
+            -Werror
+
 Test-Suite jsonlogic-aeson-tests
     main-is:
         Test.hs
     default-language:
         Haskell2010
-    ghc-options: -Wall
+    ghc-options:
+        -Wall
     type:
         exitcode-stdio-1.0
     hs-source-dirs:
@@ -67,3 +77,7 @@ Test-Suite jsonlogic-aeson-tests
         tasty-hedgehog >= 1.2.0.0,
         hedgehog >= 1.1.1,
         containers
+
+    if flag(error)
+        ghc-options:
+            -Werror
