@@ -1,4 +1,4 @@
-module JsonLogic where
+module JsonLogic.Evaluator where
 
 import Control.Monad.Except
 import Control.Monad.Reader
