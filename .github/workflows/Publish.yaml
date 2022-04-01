@@ -1,0 +1,13 @@
+name: publish
+on:
+  push:
+    tags:
+      - '*.*.*.*'
+
+jobs:
+  publish:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Echo github ref name
+        run: echo GITHUB_REF_NAME
