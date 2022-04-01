@@ -9,19 +9,19 @@ import JsonLogic.Operation.Primitive
 import JsonLogic.Operation.Utils
 import JsonLogic.Type
 
-dataOperations :: Operations
+dataOperations :: Monad m => Operations m
 dataOperations = [var, missing, missingSome, preserve]
 
-var, missing, missingSome :: Operation
+var, missing, missingSome :: Monad m => Operation m
 var = ("var", evaluateVar)
 missing = ("missing", evaluateMissing)
 missingSome = ("missing_some", evaluateMissingSome)
 
-preserve :: Operation
+preserve :: Monad m => Operation m
 preserve = ("preserve", \_ rule _ -> return rule)
 
 -- Evaluates a var
-evaluateVar :: SubEvaluator -> Rule -> Data -> Either String Json
+evaluateVar :: Monad m => SubEvaluator m -> Rule -> Data -> ExceptT String m Json
 evaluateVar evaluator param vars = do
   res <- evaluator param vars
   -- Extracts default value from array if it has one
@@ -44,7 +44,7 @@ getJsonWithDefault (JsonArray (x : y : _)) = (x, y)
 getJsonWithDefault j = (j, JsonNull)
 
 -- | Evaluates which elements are missing from the Json
-evaluateMissing :: Function
+evaluateMissing :: Monad m => Function m
 evaluateMissing evaluator keys' vars = do
   keys <- evaluator keys' vars
   -- Only keep the missing values in the json array
@@ -53,7 +53,7 @@ evaluateMissing evaluator keys' vars = do
 -- | Evaluates whether more than x items are missing from the original array
 -- If so, it returns the entire list of missing items
 -- Otherwise it returns an empty list
-evaluateMissingSome :: Function
+evaluateMissingSome :: Monad m => Function m
 evaluateMissingSome evaluator (JsonArray [minKeys', keys']) vars = do
   minKeys <- evaluateInt evaluator minKeys' vars
   keys <- evaluator keys' vars

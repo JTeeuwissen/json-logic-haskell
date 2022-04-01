@@ -2,7 +2,7 @@
 
 module Operation.Array.TestReduce where
 
-import JsonLogic
+import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Utils

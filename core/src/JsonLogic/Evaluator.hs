@@ -1,20 +1,19 @@
-module JsonLogic where
+module JsonLogic.Evaluator (eval) where
 
 import Control.Monad.Except
 import Control.Monad.Reader
 import Data.Map as M
 import JsonLogic.JL
 import JsonLogic.Json
-import JsonLogic.Operation
 import JsonLogic.Type
 
 -- evaluate JsonLogic without bothering about monads
-eval :: [Operation] -> Rule -> Data -> Result
-eval ops rule d = runReader (evalRule rule) $ createEnv (M.fromList ops) d
+eval :: Monad m => Operations m -> Rule -> Data -> m (Either String Json)
+eval ops rule d = runExceptT $ runReader (evalRule rule) $ JLEnv ops d
 
 -- | Evaluate a rule
 -- Evaluate an object or array, return other items.
-evalRule :: Rule -> JL Result
+evalRule :: Monad m => Rule -> JL (Result m) m
 evalRule o@(JsonObject rule) = do
   result <- sequenceA <$> traverseWithKey evalFunc rule
   -- An empty rule returns itself
@@ -24,7 +23,7 @@ evalRule (JsonArray rules) = do
   return $ JsonArray <$> result
 evalRule x = return $ return x
 
-evalFunc :: String -> Json -> JL Result
+evalFunc :: Monad m => String -> Json -> JL (Result m) m
 evalFunc fName param = do
   ops <- getOperations
   vars <- getVariables
@@ -33,5 +32,5 @@ evalFunc fName param = do
     Nothing -> throwError $ "Function: " ++ fName ++ " not found"
     Just f -> f (subEval ops) param vars
 
-subEval :: M.Map String Function -> Rule -> Data -> Result
+subEval :: Monad m => M.Map String (Function m) -> Rule -> Data -> Result m
 subEval ops rule d = runReader (evalRule rule) $ JLEnv ops d

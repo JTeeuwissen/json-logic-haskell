@@ -2,8 +2,8 @@
 
 module Operation.Array.TestArrayChecks where
 
-import JsonLogic
 import JsonLogic.Json (Json (..))
+import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
 

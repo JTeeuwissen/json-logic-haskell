@@ -5,8 +5,8 @@ module Operation.Array.TestIn where
 import qualified Data.List as L
 import Generator.Generic
 import Hedgehog (forAll, property, (===))
-import JsonLogic
 import JsonLogic.Json (Json (..))
+import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Utils

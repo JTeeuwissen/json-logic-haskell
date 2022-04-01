@@ -6,15 +6,15 @@ import JsonLogic.Json
 import JsonLogic.Operation.Primitive
 import JsonLogic.Type
 
-stringOperations :: Operations
+stringOperations :: Monad m => Operations m
 stringOperations = [cat, substr]
 
 -- String Operations
-cat, substr :: Operation
+cat, substr :: Monad m => Operation m
 cat = ("cat", evaluateCat)
 substr = ("substr", evaluateSubstr)
 
-evaluateCat :: Function
+evaluateCat :: Monad m => Function m
 evaluateCat evaluator args vars = do
   res <- evaluator args vars
   case res of
@@ -22,7 +22,7 @@ evaluateCat evaluator args vars = do
     json -> return $ JsonString $ stringify json
 
 -- | Evaluate substr operation
-evaluateSubstr :: Function
+evaluateSubstr :: Monad m => Function m
 evaluateSubstr evaluator param vars = do
   res <- evaluator param vars
   JsonString <$> case res of

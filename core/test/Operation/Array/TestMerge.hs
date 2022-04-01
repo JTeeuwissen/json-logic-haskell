@@ -3,8 +3,8 @@ module Operation.Array.TestMerge where
 import Generator.Data
 import Hedgehog as H (assert, failure, forAll, property, (===))
 import qualified Hedgehog.Gen as Gen
-import JsonLogic
 import JsonLogic.Json
+import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Utils

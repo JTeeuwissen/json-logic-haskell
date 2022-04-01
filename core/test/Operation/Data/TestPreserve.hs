@@ -5,8 +5,8 @@ module Operation.Data.TestPreserve where
 import Generator.Data
 import Hedgehog (forAll, property, (===))
 import qualified Hedgehog.Gen as Gen
-import JsonLogic
 import JsonLogic.Json
+import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Utils
 

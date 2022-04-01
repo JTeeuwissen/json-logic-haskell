@@ -2,8 +2,8 @@
 
 module Operation.Boolean.TestIf where
 
-import JsonLogic
 import JsonLogic.Json
+import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
 
