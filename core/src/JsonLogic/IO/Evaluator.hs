@@ -1,22 +1,32 @@
-module JsonLogic.IO.Evaluator where
+module JsonLogic.IO.Evaluator (eval) where
 
-import Data.Map as M
+import Control.Monad.Except
 import qualified JsonLogic.Evaluator as E
-import JsonLogic.IO.JL
-import JsonLogic.IO.Type
+import qualified JsonLogic.IO.Type as T
 import JsonLogic.Json
 
--- evaluate JsonLogic without bothering about monads
-eval :: [Operation] -> Rule -> Data -> IO (Either String Json)
-eval = E.eval
+type Result = IO (Either String Json)
 
--- | Evaluate a rule
--- Evaluate an object or array, return other items.
-evalRule :: Rule -> JL Result
-evalRule = E.evalRule
+type SubEvaluator = Rule -> Data -> Result
 
-evalFunc :: String -> Json -> JL Result
-evalFunc = E.evalFunc
+type Function = SubEvaluator -> Rule -> Data -> Result
 
-subEval :: M.Map String Function -> Rule -> Data -> Result
-subEval = E.subEval
+type Operation = (String, Function)
+
+eval :: [Operation] -> Rule -> Data -> Result
+eval ops = E.eval (map fromOperation ops)
+
+fromOperation :: Operation -> T.Operation
+fromOperation (s, f) = (s, fromFunction f)
+
+fromFunction :: Function -> T.Function
+fromFunction f s r d = fromResult $ f (toSubEvaluator s) r d
+
+fromResult :: Result -> T.Result
+fromResult = ExceptT
+
+toSubEvaluator :: T.SubEvaluator -> SubEvaluator
+toSubEvaluator s r d = toResult $ s r d
+
+toResult :: T.Result -> Result
+toResult = runExceptT
