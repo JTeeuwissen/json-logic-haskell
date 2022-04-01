@@ -1,10 +1,11 @@
 module JsonLogic.Json where
 
+import Control.Applicative
 import Data.Char (isSpace)
 import Data.List (intercalate)
-import qualified Data.Map as M (Map, toList)
+import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
-import Text.Read (readMaybe)
+import Text.Read
 
 -- | Json is a collection of possible JSON values.
 data Json
@@ -34,6 +35,9 @@ instance Show Json where
   show (JsonString s) = show s
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
+
+instance Read Json where
+  readPrec = parens readValue
 
 -- | A pretty formatted show for the json, with identation and depth
 -- Use putStr so the newline characters will be interpreted in console
@@ -128,3 +132,110 @@ infinity = 1 / 0
 -- | Gives a NaN
 notANumber :: Double
 notANumber = 0 / 0
+
+-- Parsing
+-- See https://www.json.org/json-en.html
+
+readObject :: ReadPrec JsonObject
+readObject = do
+  Char '{' <- lexP
+  xs <-
+    ( do
+        readWhitespace
+        return []
+      )
+      +++ ( do
+              h <- readKvp
+              t <- many $ do
+                Char ',' <- lexP
+                readKvp
+              return $ h : t
+          )
+  Char '}' <- lexP
+  return $ M.fromList xs
+  where
+    readKvp = do
+      readWhitespace
+      key <- readString
+      readWhitespace
+      Char ':' <- lexP
+      value <- readValue
+      return (key, value)
+
+readArray :: ReadPrec [Json]
+readArray = do
+  Char '[' <- lexP
+  xs <-
+    ( do
+        readWhitespace
+        return []
+      )
+      +++ ( do
+              h <- readValue
+              t <- many $ do
+                Char ',' <- lexP
+                readValue
+              return $ h : t
+          )
+  Char ']' <- lexP
+  return xs
+
+readValue :: ReadPrec Json
+readValue = do
+  readWhitespace
+  v <-
+    ( JsonString <$> readString
+      )
+      +++ ( JsonNumber <$> readNumber
+          )
+      +++ ( JsonObject <$> readObject
+          )
+      +++ ( JsonArray <$> readArray
+          )
+      +++ ( do
+              Symbol "true" <- lexP
+              return $ JsonBool True
+          )
+      +++ ( do
+              Symbol "false" <- lexP
+              return $ JsonBool False
+          )
+      +++ ( do
+              Ident "null" <- lexP
+              return JsonNull
+          )
+  readWhitespace
+  return v
+
+readString :: ReadPrec String
+readString = do
+  Char '\"' <- lexP
+  xs <- many $ do
+    undefined -- TODO
+  Char '\"' <- lexP
+  return xs
+
+readNumber :: ReadPrec Double
+readNumber = undefined -- TODO
+
+readWhitespace :: ReadPrec ()
+readWhitespace =
+  ()
+    <$ many
+      ( ( do
+            Symbol " " <- lexP
+            readWhitespace
+        )
+          +++ ( do
+                  Symbol "\n" <- lexP
+                  readWhitespace
+              )
+          +++ ( do
+                  Symbol "\t" <- lexP
+                  readWhitespace
+              )
+          +++ ( do
+                  Symbol "\r" <- lexP
+                  readWhitespace
+              )
+      )
