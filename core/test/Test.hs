@@ -4,8 +4,8 @@ import Generator.Logic (genArithmeticOperator, genArrayOperator, genBetweenOpera
 import Hedgehog (Gen, forAll, forAllWith, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import JsonLogic
 import JsonLogic.Json
+import JsonLogic.Pure.Evaluator
 import Operation.Array.TestArrayChecks
 import Operation.Array.TestFilter
 import Operation.Array.TestIn

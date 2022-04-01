@@ -11,29 +11,29 @@ import Prelude hiding (max, min, sum, (*), (+), (-), (/), (<), (<=), (>), (>=))
 import qualified Prelude hiding (max, min, sum)
 import qualified Prelude as P
 
-numericOperations :: Operations
+numericOperations :: Monad m => Operations m
 numericOperations = [(>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%)]
 
 -- Implementation for double -> double -> bool operators
-(>), (>=), (<), (<=) :: Operation
+(>), (>=), (<), (<=) :: Monad m => Operation m
 (>) = (">", evaluateComparison (P.>))
 (>=) = (">=", evaluateComparison (P.>=))
 (<) = ("<", evaluateBetween (P.<))
 (<=) = ("<=", evaluateBetween (P.<=))
 
-max, min, sum :: Operation
+max, min, sum :: Monad m => Operation m
 max = ("max", evaluateDoubleArray P.maximum)
 min = ("min", evaluateDoubleArray P.minimum)
 sum = ("sum", evaluateDoubleArray P.sum)
 
-(+), (-), (*), (/), (%) :: Operation
+(+), (-), (*), (/), (%) :: Monad m => Operation m
 (+) = ("+", evaluateMath (P.+))
 (-) = ("-", evaluateMath (P.-))
 (*) = ("*", evaluateMath (P.*))
 (/) = ("/", evaluateMath (P./))
 (%) = ("%", evaluateMath F.mod')
 
-evaluateComparison :: (Double -> Double -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateComparison :: Monad m => (Double -> Double -> Bool) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
 evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
   x' <- evaluateDouble evaluator x vars
   y' <- evaluateDouble evaluator y vars
@@ -41,7 +41,7 @@ evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
 evaluateComparison _ _ _ _ = throwError "Wrong number of arguments for comparison operator"
 
 -- Adds the between operator to check whether a number is between two other numbers
-evaluateBetween :: (Double -> Double -> Bool) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateBetween :: Monad m => (Double -> Double -> Bool) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
 evaluateBetween operator evaluator (JsonArray [x, y, z]) vars = do
   x' <- evaluateDouble evaluator x vars
   y' <- evaluateDouble evaluator y vars
@@ -51,7 +51,7 @@ evaluateBetween operator evaluator (JsonArray [x, y, z]) vars = do
 evaluateBetween operator evaluator json vars = evaluateComparison operator evaluator json vars
 
 -- Function evaluators
-evaluateMath :: (Double -> Double -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateMath :: Monad m => (Double -> Double -> Double) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
 evaluateMath operator evaluator (JsonArray [x, y]) vars = do
   x' <- evaluateDouble evaluator x vars
   y' <- evaluateDouble evaluator y vars
@@ -59,7 +59,7 @@ evaluateMath operator evaluator (JsonArray [x, y]) vars = do
 evaluateMath _ _ _ _ = throwError "Wrong number of arguments for math operator"
 
 -- Evaluation for max/min
-evaluateDoubleArray :: ([Double] -> Double) -> SubEvaluator -> Rule -> Data -> Either String Json
+evaluateDoubleArray :: Monad m => ([Double] -> Double) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
 evaluateDoubleArray _ _ (JsonArray []) _ = throwError "Can't evaluate array action an empty list"
 evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   arr' <- mapM (\x -> evaluateDouble evaluator x vars) arr

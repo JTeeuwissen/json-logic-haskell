@@ -1,19 +1,18 @@
 {-# LANGUAGE OverloadedLists #-}
 
-module JsonLogic.Operation.Misc (miscOperations, log, trace) where
+module JsonLogic.Operation.Misc (miscOperations, trace) where
 
 import Debug.Trace (traceShow)
 import JsonLogic.Type
 import Prelude hiding (log)
 
-miscOperations :: Operations
-miscOperations = [log, trace]
+miscOperations :: Monad m => Operations m
+miscOperations = [trace]
 
-log, trace :: Operation
-log = ("log", undefined) -- TODO log
+trace :: Monad m => Operation m
 trace = ("trace", evaluateTrace)
 
-evaluateTrace :: Function
+evaluateTrace :: Monad m => Function m
 evaluateTrace evaluator args vars = do
   res <- evaluator args vars
   traceShow res return res

@@ -1,14 +1,15 @@
-module JsonLogic.IO.Evaluator where
+module JsonLogic.Pure.Evaluator where
 
-import Data.Map as M
+import Control.Monad.Identity
+import qualified Data.Map as M
 import qualified JsonLogic.Evaluator as E
-import JsonLogic.IO.JL
-import JsonLogic.IO.Type
 import JsonLogic.Json
+import JsonLogic.Pure.JL
+import JsonLogic.Pure.Type
 
 -- evaluate JsonLogic without bothering about monads
-eval :: [Operation] -> Rule -> Data -> IO (Either String Json)
-eval = E.eval
+eval :: [Operation] -> Rule -> Data -> Either String Json
+eval ops rule d = runIdentity $ E.eval ops rule d
 
 -- | Evaluate a rule
 -- Evaluate an object or array, return other items.

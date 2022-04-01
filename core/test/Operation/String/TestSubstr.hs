@@ -4,8 +4,8 @@ import Generator.Generic
 import Hedgehog as H (assert, failure, forAll, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import JsonLogic (eval)
 import JsonLogic.Json (Json (..))
+import JsonLogic.Pure.Evaluator (eval)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit as U (assertEqual, testCase)
 import Utils
@@ -61,11 +61,11 @@ substrGeneratorTests =
       hTestProperty "substr with negative value" $
         property $ do
           (jsonStr, str) <- forAll genGenericNonEmptyJsonString
-          index <- forAll $ Gen.int (Range.constant (-1) (-length str))
+          index <- forAll $ Gen.int (Range.constant (-1) (- length str))
           let rule = jObj [("substr", jArr [jsonStr, jNum $ fromIntegral index])]
           case eval [] rule jsonStr of
             -- Length is the equal to the negative index
-            Right (JsonString res) -> H.assert $ length res == -index
+            Right (JsonString res) -> H.assert $ length res == - index
             _ -> H.failure,
       -- The evaluation returns the same result as take . drop
       hTestProperty "substr with start and final index works like take . drop" $
@@ -83,7 +83,7 @@ substrGeneratorTests =
           (jsonStr, str) <- forAll genGenericNonEmptyJsonString
           -- Positive start index, negative end index
           index <- forAll $ Gen.int (Range.constant 0 $ length str - 1)
-          endIndex <- forAll $ Gen.int (Range.constant (-1) (-length str))
+          endIndex <- forAll $ Gen.int (Range.constant (-1) (- length str))
           -- Create rule and evaluate
           let rule = jObj [("substr", jArr [jsonStr, jNum $ fromIntegral index, jNum $ fromIntegral endIndex])]
           case eval [] rule jsonStr of

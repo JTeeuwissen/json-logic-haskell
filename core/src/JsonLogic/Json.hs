@@ -6,7 +6,7 @@ import qualified Data.Map as M (Map, toList)
 import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
 
--- Json is a collection of possible JSON values.
+-- | Json is a collection of possible JSON values.
 data Json
   = JsonNull
   | JsonBool Bool
@@ -16,7 +16,14 @@ data Json
   | JsonObject JsonObject
   deriving (Eq)
 
+-- | A Json object is a collection of key-value pairs.
 type JsonObject = M.Map String Json
+
+-- | A rule can be any kind of JSON value, but objects and arrays will be evaluated.
+type Rule = Json
+
+-- | Data can be any kind of JSON value.
+type Data = Json
 
 -- | An instance to show json in clear format for users
 instance Show Json where

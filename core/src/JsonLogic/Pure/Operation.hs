@@ -1,22 +1,21 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 {- ORMOLU_DISABLE -}
-module JsonLogic.IO.Operation
+module JsonLogic.Pure.Operation
   ( createEnv, defaultOperations,
     arrayOperations, map, reduce, filter, all, none, some, merge, in',
     booleanOperations, if', (==), (===), (!=), (!==), (!), (!!), and, or,
     dataOperations, var, missing, missingSome, preserve,
-    miscOperations, trace, log,
+    miscOperations, trace,
     numericOperations, (>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%),
     stringOperations, cat, substr
   )
 where
 {- ORMOLU_ENABLE -}
 import qualified Data.Map as M
-import JsonLogic.IO.Operation.Misc
-import JsonLogic.IO.Type
 import JsonLogic.Json
 import qualified JsonLogic.Operation as O
+import JsonLogic.Pure.Type
 import Prelude (String)
 
 -- Initial environment
@@ -27,10 +26,11 @@ createEnv = O.createEnv
 defaultOperations :: M.Map String Function
 defaultOperations = O.defaultOperations
 
-arrayOperations, booleanOperations, dataOperations, numericOperations, stringOperations :: Operations
+arrayOperations, booleanOperations, dataOperations, miscOperations, numericOperations, stringOperations :: Operations
 arrayOperations = O.arrayOperations
 booleanOperations = O.arrayOperations
 dataOperations = O.arrayOperations
+miscOperations = O.arrayOperations
 numericOperations = O.arrayOperations
 stringOperations = O.arrayOperations
 
@@ -60,6 +60,9 @@ var = O.var
 missing = O.missing
 missingSome = O.missingSome
 preserve = O.preserve
+
+trace :: Operation
+trace = O.trace
 
 (>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%) :: Operation
 (>) = (O.>)

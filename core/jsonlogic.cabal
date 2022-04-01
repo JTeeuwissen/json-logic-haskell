@@ -31,15 +31,20 @@ flag error
 library
     exposed-modules:
         JsonLogic.Evaluator,
+        JsonLogic.JL,
         JsonLogic.Json,
         JsonLogic.Operation,
         JsonLogic.Type,
-        JsonLogic.IO.JL,
         JsonLogic.IO.Evaluator,
+        JsonLogic.IO.JL,
         JsonLogic.IO.Operation,
-        JsonLogic.IO.Type
+        JsonLogic.IO.Type,
+        JsonLogic.Pure.Evaluator,
+        JsonLogic.Pure.JL,
+        JsonLogic.Pure.Operation,
+        JsonLogic.Pure.Type
     other-modules:
-        JsonLogic.JL,
+        JsonLogic.IO.Operation.Misc,
         JsonLogic.Operation.Array,
         JsonLogic.Operation.Boolean,
         JsonLogic.Operation.Data,

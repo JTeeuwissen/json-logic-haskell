@@ -6,8 +6,8 @@ import Generator.Generic
 import Hedgehog (forAll, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import JsonLogic (eval)
 import JsonLogic.Json (Json (..))
+import JsonLogic.Pure.Evaluator (eval)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit as U (assertEqual, testCase)
 import Utils
