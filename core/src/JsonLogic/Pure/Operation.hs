@@ -2,7 +2,7 @@
 
 {- ORMOLU_DISABLE -}
 module JsonLogic.Pure.Operation
-  ( createEnv, defaultOperations,
+  ( defaultOperations,
     arrayOperations, map, reduce, filter, all, none, some, merge, in',
     booleanOperations, if', (==), (===), (!=), (!==), (!), (!!), and, or,
     dataOperations, var, missing, missingSome, preserve,
@@ -13,14 +13,9 @@ module JsonLogic.Pure.Operation
 where
 {- ORMOLU_ENABLE -}
 import qualified Data.Map as M
-import JsonLogic.Json
 import qualified JsonLogic.Operation as O
 import JsonLogic.Pure.Type
 import Prelude (String)
-
--- Initial environment
-createEnv :: Operations -> Json -> JsonLogicEnv
-createEnv = O.createEnv
 
 -- Default operators
 defaultOperations :: M.Map String Function

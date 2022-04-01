@@ -1,16 +1,15 @@
-module JsonLogic.Evaluator where
+module JsonLogic.Evaluator (eval) where
 
 import Control.Monad.Except
 import Control.Monad.Reader
 import Data.Map as M
 import JsonLogic.JL
 import JsonLogic.Json
-import JsonLogic.Operation
 import JsonLogic.Type
 
 -- evaluate JsonLogic without bothering about monads
-eval :: Monad m => [Operation m] -> Rule -> Data -> m (Either String Json)
-eval ops rule d = runExceptT $ runReader (evalRule rule) $ createEnv (M.fromList ops) d
+eval :: Monad m => Operations m -> Rule -> Data -> m (Either String Json)
+eval ops rule d = runExceptT $ runReader (evalRule rule) $ JLEnv ops d
 
 -- | Evaluate a rule
 -- Evaluate an object or array, return other items.
