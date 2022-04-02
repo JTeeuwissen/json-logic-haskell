@@ -266,7 +266,7 @@ readNumber = do
             do
               nonZeroDigit <- getNonZeroDigit
               digits <- many getDigit
-              return $ combineDigits $ nonZeroDigit : digits
+              return $ foldl (\l r -> l * 10 + r) nonZeroDigit digits
           )
   -- Numbers after the optional decimal
   afterDecimal <-
@@ -275,7 +275,8 @@ readNumber = do
               -- After decimal single or more digits
               '.' <- get
               digits <- some getDigit
-              return $ (+) (fractionDigit $ combineDigits digits)
+              -- Added 0 to the front of the digits to make it below 1
+              return $ (+) $ foldr1 (\l r -> l + r / 10) (0 : digits)
           )
   -- Or zero if no decimal
   -- The number exponent
@@ -306,7 +307,7 @@ readNumber = do
       expDigits <-
         ( do
             digits <- some getDigit
-            return $ combineDigits digits
+            return $ foldl1 (\l r -> l * 10 + r) digits
           )
       return $ expBase $ 10 ** expDigits
   -- Then combine everything.
@@ -314,12 +315,6 @@ readNumber = do
   where
     getDigit = readMap $ zip ['0' .. '9'] [0 .. 9]
     getNonZeroDigit = readMap $ zip ['1' .. '9'] [1 .. 9]
-    combineDigits :: [Double] -> Double
-    combineDigits = foldl (\l r -> l * 10 + r) 0
-    fractionDigit :: Double -> Double
-    fractionDigit x
-      | x < 1 = x
-      | otherwise = fractionDigit $ x / 10
 
 -- | Reads whitespace and throws it away.
 readWhitespace :: ReadPrec ()
