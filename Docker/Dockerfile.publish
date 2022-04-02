@@ -23,4 +23,4 @@ COPY . .
 RUN cabal sdist all
 
 # Upload the code
-CMD [ "cabal", "upload", "--username=$username", "--password=$password", "$(find . -name \"*.tar.gz\")"] 
+CMD ["sh", "-c", "cabal upload --username=$username --password=$password $(find . -name \"*.tar.gz\""]
