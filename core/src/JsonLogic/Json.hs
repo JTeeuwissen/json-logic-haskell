@@ -5,7 +5,6 @@ import Data.Char (isSpace)
 import Data.List (intercalate)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
-import Debug.Trace
 import Text.Read
 
 -- | Json is a collection of possible JSON values.
