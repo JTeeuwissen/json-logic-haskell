@@ -257,7 +257,7 @@ readNumber = do
     return id
       +++ ( do
               '-' <- get
-              return ((-1) *)
+              return negate
           )
   -- Numbers before the optional decimal.
   beforeDecimal <-
