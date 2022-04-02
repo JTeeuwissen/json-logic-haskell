@@ -187,14 +187,10 @@ readValue :: ReadPrec Json
 readValue = do
   readWhitespace
   value <-
-    ( JsonString <$> readString
-      )
-      +++ ( JsonNumber <$> readNumber
-          )
-      +++ ( JsonObject <$> readObject
-          )
-      +++ ( JsonArray <$> readArray
-          )
+    (JsonString <$> readString)
+      +++ (JsonNumber <$> readNumber)
+      +++ (JsonObject <$> readObject)
+      +++ (JsonArray <$> readArray)
       +++ ( do
               "true" <- many get
               return $ JsonBool True
@@ -274,14 +270,14 @@ readNumber = do
           )
   -- Numbers after the optional decimal
   afterDecimal <-
-    ( do
-        -- After decimal single or more digits
-        '.' <- get
-        digits <- some getDigit
-        return $ fractionDigit $ combineDigits digits
-      )
-      -- Or zero if no decimal
-      +++ return 0
+    return id
+      +++ ( do
+              -- After decimal single or more digits
+              '.' <- get
+              digits <- some getDigit
+              return $ (+) (fractionDigit $ combineDigits digits)
+          )
+  -- Or zero if no decimal
   -- The number exponent
   expo <-
     -- Can be 1 if no exponent.
@@ -314,7 +310,7 @@ readNumber = do
           )
       return $ expBase $ 10 ** expDigits
   -- Then combine everything.
-  return $ sign $ expo $ beforeDecimal + afterDecimal
+  return $ sign $ expo $ afterDecimal beforeDecimal
   where
     getDigit = readMap $ zip ['0' .. '9'] [0 .. 9]
     getNonZeroDigit = readMap $ zip ['1' .. '9'] [1 .. 9]
