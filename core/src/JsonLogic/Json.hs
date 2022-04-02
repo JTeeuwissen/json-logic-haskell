@@ -5,6 +5,7 @@ import Data.Char (isSpace)
 import Data.List (intercalate)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
+import Debug.Trace
 import Text.Read
 
 -- | Json is a collection of possible JSON values.
@@ -285,7 +286,7 @@ readNumber = do
   -- The number exponent
   expo <-
     -- Can be 1 if no exponent.
-    return 1 +++ do
+    return id +++ do
       -- Otherwise may start with e or E
       ( do
           'e' <- get
@@ -297,14 +298,14 @@ readNumber = do
             )
       -- Then may have a sign, defaulting to positive
       expBase <-
-        return 10
+        return (*)
           +++ ( do
                   '-' <- get
-                  return $ 1 / 10
+                  return $ flip (/)
               )
           +++ ( do
                   '+' <- get
-                  return 10
+                  return (*)
               )
       -- Then some digits determining the size.
       expDigits <-
@@ -312,9 +313,9 @@ readNumber = do
             digits <- some getDigit
             return $ combineDigits digits
           )
-      return $ expBase ** expDigits
+      return $ expBase $ 10 ** expDigits
   -- Then combine everything.
-  return $ sign $ (beforeDecimal + afterDecimal) * expo
+  return $ sign $ expo $ beforeDecimal + afterDecimal
   where
     getDigit = readMap $ zip ['0' .. '9'] [0 .. 9]
     getNonZeroDigit = readMap $ zip ['1' .. '9'] [1 .. 9]
