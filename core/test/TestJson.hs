@@ -33,12 +33,12 @@ parseUnitTests =
         U.assertEqual
           "Result is correct"
           (jNum 0.0012)
-          (read "1.0"),
+          (read "1.2e-3"),
       testCase "read \"string\"" $
         U.assertEqual
           "Result is correct"
           (jStr "string")
-          (read "string"),
+          (read "\"string\""),
       testCase "[1,2]" $
         U.assertEqual
           "Result is correct"
