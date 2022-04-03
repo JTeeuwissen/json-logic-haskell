@@ -44,7 +44,7 @@ getJsonWithDefault (JsonArray (x : y : _)) = (x, y)
 getJsonWithDefault j = (j, JsonNull)
 
 -- | Evaluates which elements are missing from the Json
-evaluateMissing :: Monad m => Function m
+evaluateMissing :: Monad m => Function Json m
 evaluateMissing evaluator keys' vars = do
   keys <- evaluator keys' vars
   -- Only keep the missing values in the json array
@@ -53,7 +53,7 @@ evaluateMissing evaluator keys' vars = do
 -- | Evaluates whether more than x items are missing from the original array
 -- If so, it returns the entire list of missing items
 -- Otherwise it returns an empty list
-evaluateMissingSome :: Monad m => Function m
+evaluateMissingSome :: Monad m => Function Json m
 evaluateMissingSome evaluator (JsonArray [minKeys', keys']) vars = do
   minKeys <- evaluateInt evaluator minKeys' vars
   keys <- evaluator keys' vars

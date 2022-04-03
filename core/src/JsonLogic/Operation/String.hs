@@ -14,7 +14,7 @@ cat, substr :: Monad m => Operation m
 cat = ("cat", evaluateCat)
 substr = ("substr", evaluateSubstr)
 
-evaluateCat :: Monad m => Function m
+evaluateCat :: Monad m => Function Json m
 evaluateCat evaluator args vars = do
   res <- evaluator args vars
   case res of
@@ -22,7 +22,7 @@ evaluateCat evaluator args vars = do
     json -> return $ JsonString $ stringify json
 
 -- | Evaluate substr operation
-evaluateSubstr :: Monad m => Function m
+evaluateSubstr :: Monad m => Function Json m
 evaluateSubstr evaluator param vars = do
   res <- evaluator param vars
   JsonString <$> case res of

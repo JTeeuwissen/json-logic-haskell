@@ -3,6 +3,7 @@
 module JsonLogic.Operation.Misc (miscOperations, trace) where
 
 import Debug.Trace (traceShow)
+import JsonLogic.Json
 import JsonLogic.Type
 import Prelude hiding (log)
 
@@ -12,7 +13,7 @@ miscOperations = [trace]
 trace :: Monad m => Operation m
 trace = ("trace", evaluateTrace)
 
-evaluateTrace :: Monad m => Function m
+evaluateTrace :: Monad m => Function Json m
 evaluateTrace evaluator args vars = do
   res <- evaluator args vars
   traceShow res return res

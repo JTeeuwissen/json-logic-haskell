@@ -27,7 +27,7 @@ if' = ("if", evaluateIf)
 and = ("and", evaluateLogic (P.&&))
 or = ("or", evaluateLogic (P.||))
 
-evaluateIf :: Monad m => Function m
+evaluateIf :: Monad m => Function Json m
 evaluateIf evaluator (JsonArray [c, x, y]) vars = do
   res <- evaluateBool evaluator c vars
   evaluator (if res then x else y) vars
@@ -35,15 +35,15 @@ evaluateIf _ _ _ = throwError "Wrong number of arguments for if"
 
 -- Helper functions
 
-evaluateLogic :: Monad m => (Bool -> Bool -> Bool) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
+evaluateLogic :: Monad m => (Bool -> Bool -> Bool) -> Function Json m
 evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
   x' <- evaluateBool evaluator x vars
   y' <- evaluateBool evaluator y vars
   return $ JsonBool $ x' `operator` y'
 evaluateLogic _ _ _ _ = throwError "Wrong number of arguments for logic operator"
 
-evaluateTruthy :: Monad m => SubEvaluator m -> Rule -> Data -> ExceptT String m Json
+evaluateTruthy :: Monad m => Function Json m
 evaluateTruthy evaluator json vars = JsonBool <$> evaluateBool evaluator (evaluateUnaryArgument json) vars
 
-evaluateFalsey :: Monad m => SubEvaluator m -> Rule -> Data -> ExceptT String m Json
+evaluateFalsey :: Monad m => Function Json m
 evaluateFalsey evaluator json vars = JsonBool . not <$> evaluateBool evaluator (evaluateUnaryArgument json) vars
