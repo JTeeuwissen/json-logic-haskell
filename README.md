@@ -7,10 +7,15 @@ JsonLogic library for Haskell
 
 ## Packages
 
-Holds packages for:
+This repository holds the packages for: 
 
 * jsonlogic
 * jsonlogic-aeson
+
+## Example
+```hs
+TODO
+```
 
 ## Run tests
 

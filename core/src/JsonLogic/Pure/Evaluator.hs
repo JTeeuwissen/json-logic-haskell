@@ -1,4 +1,4 @@
-module JsonLogic.Pure.Evaluator (eval) where
+module JsonLogic.Pure.Evaluator (Result, SubEvaluator, Function, Operation, eval) where
 
 import Control.Monad.Except
 import Control.Monad.Identity
