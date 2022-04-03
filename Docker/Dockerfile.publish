@@ -26,7 +26,8 @@ RUN cabal sdist --builddir="sdist" core aeson
 RUN cabal haddock --builddir="haddock" --haddock-for-hackage --enable-doc core aeson
 
 # Upload the code
-CMD ["sh", "-c", "cabal upload --username=$username --password=$password $(find sdist -name \"*.tar.gz\") &&\
-                  cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-[[:digit:]]*-docs.tar.gz\") &&\
-                  cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-aeson*-docs.tar.gz\") &&\
-                  "]
+CMD ["sh", "-c","\
+      cabal upload --username=$username --password=$password $(find sdist -name \"*.tar.gz\") &&\
+      cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-[[:digit:]]*-docs.tar.gz\") &&\
+      cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-aeson*-docs.tar.gz\")\
+    "]
