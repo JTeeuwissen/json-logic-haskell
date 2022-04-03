@@ -21,6 +21,7 @@ import Operation.String.TestCat
 import Operation.String.TestSubstr
 import Test.Tasty
 import Test.Tasty.HUnit as U
+import TestJson
 import TestStringify
 import TestToNumber
 import TestTruthy
@@ -60,6 +61,7 @@ unitTests =
       inUnitTests,
       reduceUnitTests,
       -- JS casting tests
+      parseUnitTests,
       stringifyUnitTests,
       toNumberUnitTests,
       truthyUnitTests

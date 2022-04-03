@@ -8,9 +8,9 @@ import qualified JsonLogic.Type as T
 
 -- Our monad type, contains the logicEnv
 -- Now we can use JL (which holds our env) when we need it
-type JL a m = Reader (JsonLogicEnv m) a
+type JL a m = Reader (JsonLogicEnv_ m) a
 
-getFunction :: Monad m => String -> JL (Maybe (Function m)) m
+getFunction :: Monad m => String -> JL (Maybe (Function Json m)) m
 getFunction name = asks (M.lookup name . T.operations)
 
 getOperations :: Monad m => JL (Operations m) m

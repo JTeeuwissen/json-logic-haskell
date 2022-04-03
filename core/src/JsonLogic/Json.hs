@@ -1,10 +1,11 @@
 module JsonLogic.Json where
 
+import Control.Applicative
 import Data.Char (isSpace)
 import Data.List (intercalate)
-import qualified Data.Map as M (Map, toList)
+import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
-import Text.Read (readMaybe)
+import Text.Read
 
 -- | Json is a collection of possible JSON values.
 data Json
@@ -34,6 +35,9 @@ instance Show Json where
   show (JsonString s) = show s
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
+
+instance Read Json where
+  readPrec = parens readValue
 
 -- | A pretty formatted show for the json, with identation and depth
 -- Use putStr so the newline characters will be interpreted in console
@@ -128,3 +132,214 @@ infinity = 1 / 0
 -- | Gives a NaN
 notANumber :: Double
 notANumber = 0 / 0
+
+-- Parsing
+-- See https://www.json.org/json-en.html
+
+-- | Read an object, a map with strings as keys.
+readObject :: ReadPrec JsonObject
+readObject = do
+  '{' <- get
+  items <-
+    ( do
+        readWhitespace
+        return []
+      )
+      +++ ( do
+              h <- readKvp
+              t <- many $ do
+                ',' <- get
+                readKvp
+              return $ h : t
+          )
+  '}' <- get
+  return $ M.fromList items
+  where
+    readKvp = do
+      readWhitespace
+      key <- readString
+      readWhitespace
+      ':' <- get
+      value <- readValue
+      return (key, value)
+
+-- | Read an array, can contain multiple comma separated values.
+readArray :: ReadPrec [Json]
+readArray = do
+  '[' <- get
+  items <-
+    ( do
+        readWhitespace
+        return []
+      )
+      +++ ( do
+              h <- readValue
+              t <- many $ do
+                ',' <- get
+                readValue
+              return $ h : t
+          )
+  ']' <- get
+  return items
+
+-- | Read a value, wrapper around many of the other parsers.
+readValue :: ReadPrec Json
+readValue = do
+  readWhitespace
+  value <-
+    (JsonString <$> readString)
+      +++ (JsonNumber <$> readNumber)
+      +++ (JsonObject <$> readObject)
+      +++ (JsonArray <$> readArray)
+      +++ ( do
+              "true" <- many get
+              return $ JsonBool True
+          )
+      +++ ( do
+              "false" <- many get
+              return $ JsonBool False
+          )
+      +++ ( do
+              "null" <- many get
+              return JsonNull
+          )
+  readWhitespace
+  return value
+
+-- | Reads a string with escaping.
+readString :: ReadPrec String
+readString = do
+  '\"' <- get
+  xs <-
+    many $
+      ( do
+          char <- get
+          case char of
+            '\\' -> pfail
+            '\"' -> pfail
+            plain -> return plain
+      )
+        +++ ( do
+                '\\' <- get
+                char <- get
+                case char of
+                  '\"' -> return '\"'
+                  '\\' -> return '\\'
+                  '/' -> return '/'
+                  'b' -> return '\b'
+                  'f' -> return '\f'
+                  'n' -> return '\n'
+                  'r' -> return '\r'
+                  't' -> return '\t'
+                  'u' -> do
+                    a <- readHex
+                    b <- readHex
+                    c <- readHex
+                    d <- readHex
+                    return $ toEnum $ foldl (\l r -> l * 16 + r) 0 [a, b, c, d]
+                  _ -> pfail
+            )
+  '\"' <- get
+  return xs
+  where
+    readHex = readMap $ zip (['0' .. '9'] ++ ['A' .. 'F'] ++ ['a' .. 'f']) ([0 .. 9] ++ [10 .. 15] ++ [10 .. 15])
+
+-- | Reads a number, including the sign and exponent as a double.
+readNumber :: ReadPrec Double
+readNumber = do
+  -- An optional negative sign
+  sign <-
+    return id
+      +++ ( do
+              '-' <- get
+              return negate
+          )
+  -- Numbers before the optional decimal.
+  beforeDecimal <-
+    ( -- Can be just 0
+      do
+        '0' <- get
+        return 0
+      )
+      +++ (
+            -- Or can be non zero, without starting with a 0
+            do
+              nonZeroDigit <- getNonZeroDigit
+              digits <- many getDigit
+              return $ foldl (\l r -> l * 10 + r) nonZeroDigit digits
+          )
+  -- Numbers after the optional decimal
+  afterDecimal <-
+    return id
+      +++ ( do
+              -- After decimal single or more digits
+              '.' <- get
+              digits <- some getDigit
+              -- Added 0 to the front of the digits to make it below 1
+              return $ (+) $ foldr1 (\l r -> l + r / 10) (0 : digits)
+          )
+  -- Or zero if no decimal
+  -- The number exponent
+  expo <-
+    -- Can be 1 if no exponent.
+    return id +++ do
+      -- Otherwise may start with e or E
+      ( do
+          'e' <- get
+          return ()
+        )
+        +++ ( do
+                'E' <- get
+                return ()
+            )
+      -- Then may have a sign, defaulting to positive
+      expBase <-
+        return (*)
+          +++ ( do
+                  '-' <- get
+                  return $ flip (/)
+              )
+          +++ ( do
+                  '+' <- get
+                  return (*)
+              )
+      -- Then some digits determining the size.
+      expDigits <-
+        ( do
+            digits <- some getDigit
+            return $ foldl1 (\l r -> l * 10 + r) digits
+          )
+      return $ expBase $ 10 ** expDigits
+  -- Then combine everything.
+  return $ sign $ expo $ afterDecimal beforeDecimal
+  where
+    getDigit = readMap $ zip ['0' .. '9'] [0 .. 9]
+    getNonZeroDigit = readMap $ zip ['1' .. '9'] [1 .. 9]
+
+-- | Reads whitespace and throws it away.
+readWhitespace :: ReadPrec ()
+readWhitespace =
+  ()
+    <$ many
+      ( ( do
+            ' ' <- get
+            readWhitespace
+        )
+          +++ ( do
+                  '\n' <- get
+                  readWhitespace
+              )
+          +++ ( do
+                  '\t' <- get
+                  readWhitespace
+              )
+          +++ ( do
+                  '\r' <- get
+                  readWhitespace
+              )
+      )
+
+readMap :: [(Char, a)] -> ReadPrec a
+readMap xs = do
+  x <- get
+  maybe pfail return (lookup x xs)
