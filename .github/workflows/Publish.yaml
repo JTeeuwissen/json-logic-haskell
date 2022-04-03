@@ -1,0 +1,24 @@
+name: publish
+on:
+  push:
+    tags:
+      - '*.*.*.*'
+
+jobs:
+  publish:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Echo github ref name
+        run: echo $GITHUB_REF_NAME
+      - name: Check cabal versions
+        run: 'grep -q "version: *${GITHUB_REF_NAME}" "aeson/jsonlogic-aeson.cabal" && grep -q "version: *${GITHUB_REF_NAME}" "core/jsonlogic.cabal"'
+      - name: Create action id
+        run: echo "ACTION_ID=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
+      - name: Build Publish Image
+        run: docker build --force-rm --tag $ACTION_ID -f Docker/Dockerfile.publish .
+      - name: Run Publish
+        run: docker run --rm -e username=JTeeuwissen -e password=${{ secrets.HACKAGE_PASSWORD }} $ACTION_ID
+      - name: Remove Doctest Image
+        run: docker image rm --no-prune $ACTION_ID
+        if: always()
