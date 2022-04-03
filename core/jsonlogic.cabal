@@ -38,8 +38,8 @@ library
         JsonLogic.Pure.Type
     other-modules:
         JsonLogic.IO.Mapping,
-        JsonLogic.Pure.Mapping,
         JsonLogic.IO.Operation.Misc,
+        JsonLogic.Pure.Mapping,
         JsonLogic.Operation.Array,
         JsonLogic.Operation.Boolean,
         JsonLogic.Operation.Data,
