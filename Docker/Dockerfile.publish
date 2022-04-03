@@ -22,5 +22,9 @@ COPY . .
 # Package the code
 RUN cabal sdist core aeson
 
+# Package the documentation
+RUN cabal haddock --haddock-for-hackage --enable-doc core aeson
+
 # Upload the code
-CMD ["sh", "-c", "cabal upload --username=$username --password=$password $(find . -name \"*.tar.gz\")"]
+CMD ["sh", "-c", "cabal upload --username=$username --password=$password $(find . -name \"*.tar.gz\") &&\
+                  cabal upload -d --username=$username --password=$password $(find . -name \"*-docs.tar.gz\")"]
