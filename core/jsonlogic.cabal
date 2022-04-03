@@ -2,30 +2,25 @@ cabal-version:      2.4
 name:               jsonlogic
 version:            0.1.0.0
 
--- A short (one-line) description of the package.
--- synopsis:
+synopsis:           JsonLogic Evaluation
+description:        JsonLogic is a library for evaluating JSON logic.
+                    It can be extended with additional operations
+category:           JSON
 
--- A longer description of the package.
--- description:
-
--- A URL where users can report bugs.
 bug-reports: https://github.com/JTeeuwissen/json-logic-haskell
 
-
--- The license under which the package is released.
--- license:
+license:            MIT
+license-file:       LICENSE
 author:             Marien Matser, Gerard van Schie, Jelle Teeuwissen
 maintainer:         jelleteeuwissen@hotmail.nl
 
--- A copyright notice.
--- copyright:
--- category:
 extra-source-files:
     CHANGELOG.md
     README.md
 
 flag error
   description: Error on ghc warnings
+  manual: True
   default: False
 
 library
@@ -61,9 +56,9 @@ library
     hs-source-dirs:
         src
     build-depends:
-        base >= 4.14.3.0,
-        containers,
-        mtl >= 2.2.2
+        base         >= 4.14.3 && < 4.15,
+        containers   >= 0.6.5 && < 0.7,
+        mtl          >= 2.2.2 && < 2.3
 
     if flag(error)
         ghc-options:

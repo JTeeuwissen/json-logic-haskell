@@ -11,6 +11,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Echo github ref name
         run: echo $GITHUB_REF_NAME
+      - name: Check cabal versions
+        run: 'grep -q "version:            ${GITHUB_RUN_ID}" "aeson/jsonlogic-aeson.cabal" && grep -q "version:            ${GITHUB_RUN_ID}" "core/jsonlogic.cabal"'
       - name: Create action id
         run: echo "ACTION_ID=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
       - name: Build Publish Image
