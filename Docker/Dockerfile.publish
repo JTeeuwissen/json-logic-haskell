@@ -20,7 +20,7 @@ RUN cabal build --only-dependencies all
 COPY . .
 
 # Package the code
-RUN cabal sdist all
+RUN cabal sdist core aeson
 
 # Upload the code
 CMD ["sh", "-c", "cabal upload --username=$username --password=$password $(find . -name \"*.tar.gz\")"]
