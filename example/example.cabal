@@ -2,9 +2,9 @@ cabal-version:      2.4
 name:               example
 version:            0.1.0.0
 
-synopsis: Json Logic Example
+synopsis:           Json Logic Example
 
-bug-reports: https://github.com/JTeeuwissen/json-logic-haskell
+bug-reports:        https://github.com/JTeeuwissen/json-logic-haskell
 
 author:             Marien Matser, Gerard van Schie, Jelle Teeuwissen
 maintainer:         jelleteeuwissen@hotmail.nl
@@ -13,6 +13,7 @@ extra-source-files: CHANGELOG.md
 
 flag error
   description: Error on ghc warnings
+  manual: True
   default: False
 
 executable example
@@ -20,7 +21,7 @@ executable example
         Main.hs
     build-depends:
         base ^>=4.14.3.0,
-        jsonlogic
+        jsonlogic >= 0.1.0 && < 0.2
     hs-source-dirs:
         app
     default-language:

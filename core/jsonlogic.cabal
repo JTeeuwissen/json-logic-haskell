@@ -30,11 +30,7 @@ flag error
 
 library
     exposed-modules:
-        JsonLogic.Evaluator,
-        JsonLogic.JL,
         JsonLogic.Json,
-        JsonLogic.Operation,
-        JsonLogic.Type,
         JsonLogic.IO.Evaluator,
         JsonLogic.IO.Operation,
         JsonLogic.IO.Type,
@@ -42,9 +38,10 @@ library
         JsonLogic.Pure.Operation,
         JsonLogic.Pure.Type
     other-modules:
-        JsonLogic.IO.Mapping,
-        JsonLogic.Pure.Mapping,
-        JsonLogic.IO.Operation.Misc,
+        JsonLogic.Evaluator,
+        JsonLogic.JL,
+        JsonLogic.Operation,
+        JsonLogic.Type,
         JsonLogic.Operation.Array,
         JsonLogic.Operation.Boolean,
         JsonLogic.Operation.Data,
@@ -52,7 +49,10 @@ library
         JsonLogic.Operation.Numeric,
         JsonLogic.Operation.Primitive,
         JsonLogic.Operation.String,
-        JsonLogic.Operation.Utils
+        JsonLogic.Operation.Utils,
+        JsonLogic.IO.Operation.Misc,
+        JsonLogic.IO.Mapping,
+        JsonLogic.Pure.Mapping
 
     default-language:
         Haskell2010
