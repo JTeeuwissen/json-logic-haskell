@@ -7,7 +7,7 @@ description:        JsonLogic is a library for evaluating JSON logic.
                     It can be extended with additional operations
 category:           JSON
 
-bug-reports: https://github.com/JTeeuwissen/json-logic-haskell
+bug-reports:        https://github.com/JTeeuwissen/json-logic-haskell
 
 license:            MIT
 license-file:       LICENSE

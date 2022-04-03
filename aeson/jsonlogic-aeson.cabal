@@ -7,7 +7,7 @@ description:        JsonLogic Aeson allows for the translation
                     of JsonLogic json to Aeson json.and vice versa.
 category:           JSON
 
-bug-reports: https://github.com/JTeeuwissen/json-logic-haskell
+bug-reports:        https://github.com/JTeeuwissen/json-logic-haskell
 
 license:            MIT
 license-file:       LICENSE
