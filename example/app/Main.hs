@@ -20,7 +20,7 @@ main = do
 -- The two numbers are placed into an data object and given to the evaluator with the following logic:
 -- {"**":[{"var":"base"}, {"var":"exp"}]}
 -- >>> evaluate (read "3") (read "4")
--- 81
+-- Right 81
 evaluate :: Json -> Json -> Result Json
 evaluate base expo = evaluatorWithPow (read "{\"**\":[{\"var\":\"base\"}, {\"var\":\"exp\"}]}") (JsonObject [("base", base), ("exp", expo)])
 
