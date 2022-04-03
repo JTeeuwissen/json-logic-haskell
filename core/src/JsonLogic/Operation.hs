@@ -9,7 +9,8 @@ module JsonLogic.Operation
     dataOperations, var, missing, missingSome, preserve,
     miscOperations, trace,
     numericOperations, (>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%),
-    stringOperations, cat, substr
+    stringOperations, cat, substr,
+    evaluateDouble, evaluateInt, evaluateBool, evaluateArray, evaluateObject, evaluateString
   )
 where
 {- ORMOLU_ENABLE -}
@@ -21,10 +22,10 @@ import JsonLogic.Operation.Boolean
 import JsonLogic.Operation.Data
 import JsonLogic.Operation.Misc
 import JsonLogic.Operation.Numeric
+import JsonLogic.Operation.Primitive
 import JsonLogic.Operation.String
 import JsonLogic.Type
-import Prelude (String)
 
 -- Default operators
-defaultOperations :: Monad m => M.Map String (Function m)
+defaultOperations :: Monad m => Operations m
 defaultOperations = M.unions [arrayOperations, booleanOperations, dataOperations, miscOperations, numericOperations, stringOperations]
