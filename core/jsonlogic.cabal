@@ -42,7 +42,6 @@ library
         JsonLogic.Pure.Operation,
         JsonLogic.Pure.Type
     other-modules:
-        JsonLogic.IO.Mapping,
         JsonLogic.Pure.Mapping,
         JsonLogic.IO.Operation.Misc,
         JsonLogic.Operation.Array,
