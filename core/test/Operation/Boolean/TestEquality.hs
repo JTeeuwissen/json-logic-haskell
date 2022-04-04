@@ -19,7 +19,7 @@ equalityUnitTests =
       testCase "Numbers and Bools" $ assertEqual (JsonNumber 0) (JsonBool False) True,
       testCase "Numbers and Null" $ assertEqual (JsonNumber 0) JsonNull False,
       testCase "Numbers and not not Null" $ assertEqual (JsonNumber 0) (JsonObject [("!!", JsonNull)]) True,
-      testCase "Objects" $ assertEqual (JsonObject [("key", JsonString "value")]) (JsonObject [("key", JsonString "value")]) True
+      testCase "Objects" $ assertEqual (JsonObject [("preserve", JsonObject [("key", JsonString "value")])]) (JsonObject [("preserve", JsonObject [("key", JsonString "value")])]) True
     ]
 
 assertEqual :: Json -> Json -> Bool -> U.Assertion

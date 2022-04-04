@@ -3,6 +3,8 @@
 module JsonLogic.Operation.Boolean (booleanOperations, if', (==), (===), (!=), (!==), (!), (!!), and, or) where
 
 import Control.Monad.Except
+import qualified Data.Map as M
+import Debug.Trace
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
 import JsonLogic.Operation.Utils
@@ -19,9 +21,9 @@ if' = ("if", evaluateIf)
 -- Implementation for bool -> bool -> bool operators
 (==), (===), (!=), (!==), (!), (!!), and, or :: Monad m => Operation m
 (==) = ("==", looseEquals)
-(===) = ("==", evaluateLogic (P.==))
+(===) = ("===", evaluateLogic (P.==))
 (!=) = ("!=", looseNotEquals)
-(!==) = ("!=", evaluateLogic (P./=))
+(!==) = ("!==", evaluateLogic (P./=))
 (!) = ("!", evaluateFalsey)
 (!!) = ("!!", evaluateTruthy)
 and = ("and", evaluateLogic (P.&&))
@@ -53,16 +55,14 @@ looseEquals :: Monad m => Function m Json
 looseEquals evaluator (JsonArray [x', y']) vars = do
   x <- evaluator x' vars
   y <- evaluator y' vars
-  return $
-    JsonBool $ looseEq x y
+  return $ JsonBool $ looseEq x y
 looseEquals _ _ _ = throwError "Wrong number of arguments for loose not equals operator"
 
 looseNotEquals :: Monad m => Function m Json
 looseNotEquals evaluator (JsonArray [x', y']) vars = do
   x <- evaluator x' vars
   y <- evaluator y' vars
-  return $
-    JsonBool $ not $ looseEq x y
+  return $ JsonBool $ not $ looseEq x y
 looseNotEquals _ _ _ = throwError "Wrong number of arguments for loose not equals operator"
 
 -- | See: https://github.com/gregsdennis/json-everything/blob/master/JsonLogic/JsonElementExtensions.cs#L117
