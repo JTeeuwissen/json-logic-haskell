@@ -2,7 +2,7 @@
 
 module Operation.Array.TestFilter where
 
-import JsonLogic.Json (Json (..))
+import JsonLogic.Json
 import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
@@ -15,7 +15,7 @@ filterUnitTests =
         U.assertEqual
           "Return True elements"
           (Right $ JsonArray [JsonBool True, JsonBool True])
-          ( eval
+          ( apply
               []
               ( JsonObject
                   [ ( "filter",
@@ -32,7 +32,7 @@ filterUnitTests =
         U.assertEqual
           "Only the first item is < 2"
           (Right $ JsonArray [JsonNumber 1])
-          ( eval
+          ( apply
               []
               ( JsonObject
                   [ ( "filter",
@@ -45,11 +45,11 @@ filterUnitTests =
               )
               JsonNull
           ),
-      testCase "Evaluate array values" $
+      testCase "applyuate array values" $
         U.assertEqual
-          "The array value gets evaluated to True and returned."
+          "The array value gets applyuated to True and returned."
           (Right $ JsonArray [JsonBool True])
-          ( eval
+          ( apply
               []
               ( JsonObject
                   [ ( "filter",
@@ -69,7 +69,7 @@ filterUnitTests =
         U.assertEqual
           "No errors occur when handed an empty array"
           (Right $ JsonArray [])
-          ( eval
+          ( apply
               []
               ( JsonObject
                   [ ( "filter",
@@ -86,7 +86,7 @@ filterUnitTests =
         U.assertEqual
           "Two consecutive filter more."
           (Right $ JsonArray [JsonNumber 2])
-          ( eval
+          ( apply
               []
               ( JsonObject
                   [ ( "filter",

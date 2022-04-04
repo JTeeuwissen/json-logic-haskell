@@ -4,8 +4,13 @@ import Control.Monad.Except
 import qualified Data.Map as M
 import JsonLogic.Json
 
+data Exception
+  = UnrecognizedOperation {operationName :: String}
+  | EvalException {message :: String}
+  deriving (Show, Eq)
+
 -- | The result of a function can be an error or another json value.
-type Result m r = ExceptT String m r
+type Result m r = ExceptT Exception m r
 
 -- | Subevaluator, with rule, its context and resulting json.
 type SubEvaluator m = Rule -> Data -> Result m Json
@@ -28,3 +33,7 @@ data JsonLogicEnv m = JLEnv
 -- | Show the current environment.
 instance Show (JsonLogicEnv m) where
   show (JLEnv os vs) = "Operations: " ++ show (M.keys os) ++ "\nVariables: " ++ show vs
+
+-- | Throw an evaluation exception.
+throw :: Monad m => String -> Result m a
+throw = throwError . EvalException

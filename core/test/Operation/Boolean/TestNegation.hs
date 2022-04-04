@@ -20,22 +20,22 @@ negationUnitTests =
         U.assertEqual
           "Negated true is false"
           (Right (JsonBool False))
-          (eval [] (JsonObject [("!", JsonArray [JsonBool True])]) JsonNull),
+          (apply [] (JsonObject [("!", JsonArray [JsonBool True])]) JsonNull),
       testCase "logic: {\"!\": true} data: null" $
         U.assertEqual
           "Negated true is false"
           (Right (JsonBool False))
-          (eval [] (JsonObject [("!", JsonBool True)]) JsonNull),
+          (apply [] (JsonObject [("!", JsonBool True)]) JsonNull),
       testCase "logic: {\"!!\": [ [] ] } data: null" $
         U.assertEqual
           "Empty array is false"
           (Right (JsonBool False))
-          (eval [] (JsonObject [("!!", JsonArray [JsonArray []])]) JsonNull),
+          (apply [] (JsonObject [("!!", JsonArray [JsonArray []])]) JsonNull),
       testCase "logic: {\"!!\": [\"0\"] } data: null" $
         U.assertEqual
           "Non empty array is true"
           (Right (JsonBool True))
-          (eval [] (JsonObject [("!!", JsonArray [JsonString "0"])]) JsonNull)
+          (apply [] (JsonObject [("!!", JsonArray [JsonString "0"])]) JsonNull)
     ]
 
 negationGeneratorTests :: TestTree
@@ -45,9 +45,9 @@ negationGeneratorTests =
     [ hTestProperty "negation works" $
         property $ do
           paramJson <- forAll $ Gen.sized genSizedRandomJson
-          Right (JsonBool $ isFalsy paramJson) === eval [] (JsonObject [("!", JsonObject [("preserve", paramJson)])]) JsonNull,
+          Right (JsonBool $ isFalsy paramJson) === apply [] (JsonObject [("!", JsonObject [("preserve", paramJson)])]) JsonNull,
       hTestProperty "double negation works" $
         property $ do
           paramJson <- forAll $ Gen.sized genSizedRandomJson
-          Right (JsonBool $ isTruthy paramJson) === eval [] (JsonObject [("!!", JsonObject [("preserve", paramJson)])]) JsonNull
+          Right (JsonBool $ isTruthy paramJson) === apply [] (JsonObject [("!!", JsonObject [("preserve", paramJson)])]) JsonNull
     ]

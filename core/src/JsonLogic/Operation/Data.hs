@@ -2,7 +2,6 @@
 
 module JsonLogic.Operation.Data (dataOperations, var, missing, missingSome, preserve) where
 
-import Control.Monad.Except
 import Data.Maybe
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
@@ -21,7 +20,7 @@ preserve :: Monad m => Operation m
 preserve = ("preserve", \_ rule _ -> return rule)
 
 -- Evaluates a var
-evaluateVar :: Monad m => SubEvaluator m -> Rule -> Data -> ExceptT String m Json
+evaluateVar :: Monad m => Function m Json
 evaluateVar evaluator param vars = do
   res <- evaluator param vars
   -- Extracts default value from array if it has one
@@ -66,7 +65,7 @@ evaluateMissingSome evaluator (JsonArray [minKeys', keys']) vars = do
     _ | 1 - length miss >= minKeys -> return $ JsonArray []
     _ -> return $ JsonArray miss
 -- The parameters are invalid
-evaluateMissingSome _ json _ = throwError $ "Error: missing_some expects an array of two arguments, instead it got: " ++ show json
+evaluateMissingSome _ json _ = throw $ "Error: missing_some expects an array of two arguments, instead it got: " ++ show json
 
 -- | Returns the missing keys from the original array
 missingKeys :: Json -> Data -> [Json]

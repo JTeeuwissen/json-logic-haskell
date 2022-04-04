@@ -1,6 +1,5 @@
 module JsonLogic.Operation.Primitive (evaluateDouble, evaluateInt, evaluateBool, evaluateArray, evaluateObject, evaluateString) where
 
-import Control.Monad.Except
 import JsonLogic.Json
 import JsonLogic.Type
 
@@ -14,7 +13,7 @@ evaluateInt :: Monad m => Function m Int
 evaluateInt evaluator param vars = do
   res <- evaluateDouble evaluator param vars
   if isNaN res
-    then throwError "NotImplemented: NaN to int evaluation"
+    then throw "NotImplemented: NaN to int evaluation"
     else return $ floor res
 
 evaluateBool :: Monad m => Function m Bool
@@ -27,14 +26,14 @@ evaluateArray evaluator param vars = do
   res <- evaluator param vars
   case res of
     JsonArray xs -> return xs
-    j -> throwError $ "Invalid parameter type, was expecting array. Got: " ++ show j
+    j -> throw $ "Invalid parameter type, was expecting array. Got: " ++ show j
 
 evaluateObject :: Monad m => Function m JsonObject
 evaluateObject evaluator param vars = do
   res <- evaluator param vars
   case res of
     JsonObject v -> return v
-    j -> throwError $ "Invalid parameter type, was expecting object. Got: " ++ show j
+    j -> throw $ "Invalid parameter type, was expecting object. Got: " ++ show j
 
 evaluateString :: Monad m => Function m String
 evaluateString evaluator param vars = do
