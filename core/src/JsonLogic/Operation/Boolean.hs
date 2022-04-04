@@ -3,8 +3,6 @@
 module JsonLogic.Operation.Boolean (booleanOperations, if', (==), (===), (!=), (!==), (!), (!!), and, or) where
 
 import Control.Monad.Except
-import qualified Data.Map as M
-import Debug.Trace
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
 import JsonLogic.Operation.Utils
