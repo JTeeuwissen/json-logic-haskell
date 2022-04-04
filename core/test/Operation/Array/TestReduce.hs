@@ -3,7 +3,7 @@
 module Operation.Array.TestReduce where
 
 import JsonLogic.Pure.Evaluator
-import JsonLogic.Type (Exception (EvalException))
+import JsonLogic.Pure.Type (Exception (EvalException))
 import Test.Tasty
 import Test.Tasty.HUnit as U
 import Utils
