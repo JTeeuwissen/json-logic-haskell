@@ -25,11 +25,7 @@ flag error
 
 library
     exposed-modules:
-        JsonLogic.Evaluator,
-        JsonLogic.JL,
         JsonLogic.Json,
-        JsonLogic.Operation,
-        JsonLogic.Type,
         JsonLogic.IO.Evaluator,
         JsonLogic.IO.Operation,
         JsonLogic.IO.Type,
@@ -40,6 +36,10 @@ library
         JsonLogic.IO.Mapping,
         JsonLogic.IO.Operation.Misc,
         JsonLogic.Pure.Mapping,
+        JsonLogic.Evaluator,
+        JsonLogic.JL,
+        JsonLogic.Operation,
+        JsonLogic.Type,
         JsonLogic.Operation.Array,
         JsonLogic.Operation.Boolean,
         JsonLogic.Operation.Data,

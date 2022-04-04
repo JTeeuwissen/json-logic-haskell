@@ -35,6 +35,8 @@ jobs:
         run: docker run --rm $ACTION_ID doctest core
       - name: Run Doctest aeson dir
         run: docker run --rm $ACTION_ID doctest aeson
+      - name: Run Doctest example dir
+        run: docker run --rm $ACTION_ID doctest example
       - name: Remove Doctest Image
         run: docker image rm --no-prune $ACTION_ID
         if: always()

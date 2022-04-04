@@ -1,11 +1,11 @@
-# Core
+{-# LANGUAGE OverloadedLists #-}
 
-The core JsonLogic evaluation package.
-Allows for creating and adding custom operations to the evaluator in a pure and IO context.
-See the example below for more information.
+module Main where
 
-## Example
-```hs
+import JsonLogic.Json
+import JsonLogic.Pure.Evaluator
+import JsonLogic.Pure.Operation
+
 -- | The main function
 -- Perform simple power function
 main :: IO ()
@@ -20,7 +20,7 @@ main = do
 -- The two numbers are placed into an data object and given to the evaluator with the following logic:
 -- {"**":[{"var":"base"}, {"var":"exp"}]}
 -- >>> evaluate (read "3") (read "4")
--- 81
+-- Right 81.0
 evaluate :: Json -> Json -> Result Json
 evaluate base expo = evaluatorWithPow (read "{\"**\":[{\"var\":\"base\"}, {\"var\":\"exp\"}]}") (JsonObject [("base", base), ("exp", expo)])
 
@@ -44,4 +44,3 @@ powFunction evaluator (JsonArray [base', expo']) vars = do
   expo <- evaluateDouble evaluator expo' vars
   return $ JsonNumber $ base ** expo
 powFunction _ _ _ = Left "Wrong number of arguments for **"
-```

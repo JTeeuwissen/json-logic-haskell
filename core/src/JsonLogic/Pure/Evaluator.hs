@@ -1,4 +1,4 @@
-module JsonLogic.Pure.Evaluator (eval) where
+module JsonLogic.Pure.Evaluator (Result, SubEvaluator, Function, Operation, eval) where
 
 import qualified Data.Map as M
 import qualified JsonLogic.Evaluator as E
