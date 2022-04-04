@@ -33,6 +33,9 @@ library
         JsonLogic.Pure.Operation,
         JsonLogic.Pure.Type
     other-modules:
+        JsonLogic.IO.Mapping,
+        JsonLogic.IO.Operation.Misc,
+        JsonLogic.Pure.Mapping,
         JsonLogic.Evaluator,
         JsonLogic.JL,
         JsonLogic.Operation,
@@ -44,10 +47,7 @@ library
         JsonLogic.Operation.Numeric,
         JsonLogic.Operation.Primitive,
         JsonLogic.Operation.String,
-        JsonLogic.Operation.Utils,
-        JsonLogic.IO.Operation.Misc,
-        JsonLogic.IO.Mapping,
-        JsonLogic.Pure.Mapping
+        JsonLogic.Operation.Utils
 
     default-language:
         Haskell2010

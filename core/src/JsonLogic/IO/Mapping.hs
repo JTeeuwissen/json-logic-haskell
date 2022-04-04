@@ -5,10 +5,10 @@ import qualified Data.Map as M
 import JsonLogic.IO.Type
 import qualified JsonLogic.Type as T
 
-toResult :: T.Result r IO -> Result r
+toResult :: T.Result IO r -> Result r
 toResult = runExceptT
 
-fromResult :: Result r -> T.Result r IO
+fromResult :: Result r -> T.Result IO r
 fromResult = ExceptT
 
 toSubEvaluator :: T.SubEvaluator IO -> SubEvaluator
@@ -17,10 +17,10 @@ toSubEvaluator s r d = toResult $ s r d
 fromSubEvaluator :: SubEvaluator -> T.SubEvaluator IO
 fromSubEvaluator s r d = fromResult $ s r d
 
-toFunction :: T.Function r IO -> Function r
+toFunction :: T.Function IO r -> Function r
 toFunction f s r d = toResult $ f (fromSubEvaluator s) r d
 
-fromFunction :: Function r -> T.Function r IO
+fromFunction :: Function r -> T.Function IO r
 fromFunction f s r d = fromResult $ f (toSubEvaluator s) r d
 
 toOperation :: T.Operation IO -> Operation
@@ -35,8 +35,8 @@ toOperations = M.map toFunction
 fromOperations :: Operations -> T.Operations IO
 fromOperations = M.map fromFunction
 
-toEnv :: T.JsonLogicEnv_ IO -> JsonLogicEnv
-toEnv (T.JLEnv_ ops vars) = JLEnv (toOperations ops) vars
+toEnv :: T.JsonLogicEnv IO -> JsonLogicEnv
+toEnv (T.JLEnv ops vars) = JLEnv (toOperations ops) vars
 
-fromEnv :: JsonLogicEnv -> T.JsonLogicEnv_ IO
-fromEnv (JLEnv ops vars) = T.JLEnv_ (fromOperations ops) vars
+fromEnv :: JsonLogicEnv -> T.JsonLogicEnv IO
+fromEnv (JLEnv ops vars) = T.JLEnv (fromOperations ops) vars

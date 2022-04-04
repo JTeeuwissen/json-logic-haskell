@@ -13,7 +13,10 @@ miscOperations = [trace]
 trace :: Monad m => Operation m
 trace = ("trace", evaluateTrace)
 
-evaluateTrace :: Monad m => Function Json m
+evaluateTrace :: Monad m => Function m Json
 evaluateTrace evaluator args vars = do
   res <- evaluator args vars
-  traceShow res return res
+  let val = case res of
+        JsonArray (item : _) -> item
+        oth -> oth
+  traceShow val return val

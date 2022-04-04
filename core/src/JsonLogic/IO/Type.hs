@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 module JsonLogic.IO.Type where
 
 import qualified Data.Map as M

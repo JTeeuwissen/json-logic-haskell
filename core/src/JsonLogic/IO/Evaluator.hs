@@ -7,5 +7,7 @@ import JsonLogic.IO.Operation (defaultOperations)
 import JsonLogic.IO.Type
 import JsonLogic.Json
 
+-- >>> eval [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
+-- Right "Hello, World!"
 eval :: [Operation] -> Rule -> Data -> Result Json
 eval ops rule dat = toResult $ E.eval (M.map fromFunction $ M.union (M.fromList ops) defaultOperations) rule dat

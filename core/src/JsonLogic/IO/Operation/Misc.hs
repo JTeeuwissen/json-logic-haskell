@@ -17,7 +17,10 @@ trace = toOperation O.trace
 log = ("log", evaluateLog)
 
 evaluateLog :: Function Json
-evaluateLog evaluator args vars = do
-  res <- evaluator args vars
-  liftIO $ print res --TODO proper printing
-  return res
+evaluateLog evaluator args vars = runExceptT $ do
+  res <- ExceptT $ evaluator args vars
+  let val = case res of
+        JsonArray (item : _) -> item
+        oth -> oth
+  liftIO $ print val
+  return val
