@@ -11,6 +11,7 @@ import Operation.Array.TestFilter
 import Operation.Array.TestIn
 import Operation.Array.TestMerge
 import Operation.Array.TestReduce
+import Operation.Boolean.TestEquality
 import Operation.Boolean.TestIf
 import Operation.Boolean.TestNegation
 import Operation.Data.TestMissing
@@ -44,6 +45,7 @@ unitTests =
   testGroup
     "Unit tests"
     [ simpleUnitTests,
+      equalityUnitTests,
       ifUnitTests,
       filterUnitTests,
       varUnitTests,
