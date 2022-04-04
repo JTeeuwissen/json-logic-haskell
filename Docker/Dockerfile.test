@@ -12,6 +12,7 @@ RUN cabal install containers mtl tasty tasty-hunit tasty-hedgehog hedgehog aeson
 COPY cabal.project .
 COPY ./core/*.cabal ./core/
 COPY ./aeson/*.cabal ./aeson/
+COPY ./example/*.cabal ./example/
 
 # Build all the dependencies
 RUN cabal build --only-dependencies --enable-tests all
