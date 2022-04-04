@@ -87,6 +87,7 @@ Test-Suite jsonlogic-tests
         Operation.Array.TestIn,
         Operation.Array.TestMerge,
         Operation.Array.TestReduce,
+        Operation.Boolean.TestEquality,
         Operation.Boolean.TestIf,
         Operation.Boolean.TestNegation,
         Operation.Data.TestMissing,

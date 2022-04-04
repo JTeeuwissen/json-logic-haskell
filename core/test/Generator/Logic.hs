@@ -18,7 +18,7 @@ genBetweenOperator :: Gen (Double -> Double -> Bool, [Char])
 genBetweenOperator = element [((<), "<"), ((<=), "<=")]
 
 genLogicOperator :: Gen (Bool -> Bool -> Bool, [Char])
-genLogicOperator = element [((&&), "and"), ((||), "or"), ((==), "=="), ((/=), "!=")]
+genLogicOperator = element [((&&), "and"), ((||), "or"), ((==), "==="), ((/=), "!==")]
 
 genArrayOperator :: Gen ([Double] -> Double, [Char])
 genArrayOperator = element [(minimum, "min"), (maximum, "max"), (sum, "sum")]
@@ -72,8 +72,8 @@ sizedGenLogicJson s@(Size size)
     choice
       [ createLogicObject "&&" (Prelude.&&) s,
         createLogicObject "||" (Prelude.||) s,
-        createLogicObject "!=" (Prelude./=) s,
-        createLogicObject "==" (Prelude.==) s
+        createLogicObject "!==" (Prelude./=) s,
+        createLogicObject "===" (Prelude.==) s
       ]
 
 -- Creates the Logic generator given the operator
@@ -95,8 +95,8 @@ sizedGenBoolJson s@(Size size)
     choice
       [ createBoolObject "&&" (Prelude.&&) s,
         createBoolObject "||" (Prelude.||) s,
-        createBoolObject "!=" (Prelude./=) s,
-        createBoolObject "==" (Prelude.==) s,
+        createBoolObject "!==" (Prelude./=) s,
+        createBoolObject "===" (Prelude.==) s,
         createBoolObject "<" (Prelude.<) s,
         createBoolObject ">" (Prelude.>) s,
         createBoolObject "<=" (Prelude.<=) s,
