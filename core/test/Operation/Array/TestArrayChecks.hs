@@ -51,7 +51,7 @@ someUnitTests =
         U.assertEqual
           "Object case"
           (Right $ JsonBool True)
-          (apply [] (JsonObject [("some", JsonArray [JsonObject [("var", JsonString "pies")], JsonObject [("==", JsonArray [JsonObject [("var", JsonString "filling")], JsonString "apple"])]])]) (JsonObject [("pies", JsonArray [JsonObject [("filling", JsonString "pumpkin"), ("temp", JsonNumber 110)], JsonObject [("filling", JsonString "rhubarb"), ("temp", JsonNumber 210)], JsonObject [("filling", JsonString "apple"), ("temp", JsonNumber 310)]])]))
+          (apply [] (JsonObject [("some", JsonArray [JsonObject [("var", JsonString "pies")], JsonObject [("===", JsonArray [JsonObject [("var", JsonString "filling")], JsonString "apple"])]])]) (JsonObject [("pies", JsonArray [JsonObject [("filling", JsonString "pumpkin"), ("temp", JsonNumber 110)], JsonObject [("filling", JsonString "rhubarb"), ("temp", JsonNumber 210)], JsonObject [("filling", JsonString "apple"), ("temp", JsonNumber 310)]])]))
     ]
 
 noneUnitTests :: TestTree
