@@ -27,4 +27,4 @@ assertEqual l r b =
   U.assertEqual
     "Result is correct"
     (Right $ JsonBool b)
-    (eval [] (JsonObject [("==", JsonArray [l, r])]) JsonNull)
+    (apply [] (JsonObject [("==", JsonArray [l, r])]) JsonNull)
