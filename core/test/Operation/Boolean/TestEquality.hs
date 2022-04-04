@@ -12,7 +12,7 @@ import qualified Test.Tasty.HUnit as U
 equalityUnitTests :: TestTree
 equalityUnitTests =
   testGroup
-    "Read json unit tests"
+    "Equality unit tests"
     [ testCase "Numbers" $ assertEqual (JsonNumber 1) (JsonNumber 1) True,
       testCase "Strings" $ assertEqual (JsonString "hello") (JsonString "hello") True,
       testCase "Strings and Numbers" $ assertEqual (JsonString "1") (JsonNumber 1) True,
