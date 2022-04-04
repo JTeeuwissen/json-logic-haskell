@@ -1,4 +1,4 @@
-module JsonLogic.IO.Evaluator (Result, SubEvaluator, Function, Operation, eval) where
+module JsonLogic.IO.Evaluator (apply) where
 
 import qualified Data.Map as M
 import qualified JsonLogic.Evaluator as E
@@ -7,7 +7,7 @@ import JsonLogic.IO.Operation (defaultOperations)
 import JsonLogic.IO.Type
 import JsonLogic.Json
 
--- >>> eval [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
+-- >>> apply [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
 -- Right "Hello, World!"
-eval :: [Operation] -> Rule -> Data -> Result Json
-eval ops rule dat = toResult $ E.eval (M.map fromFunction $ M.union (M.fromList ops) defaultOperations) rule dat
+apply :: [Operation] -> Rule -> Data -> Result Json
+apply ops rule dat = toResult $ E.apply (M.map fromFunction $ M.union (M.fromList ops) defaultOperations) rule dat

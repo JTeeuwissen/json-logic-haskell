@@ -1,4 +1,4 @@
-module JsonLogic.Evaluator (eval) where
+module JsonLogic.Evaluator (apply) where
 
 import Control.Monad.Except
 import Control.Monad.Reader
@@ -8,8 +8,8 @@ import JsonLogic.Json
 import JsonLogic.Type
 
 -- evaluate JsonLogic without bothering about monads
-eval :: Monad m => Operations m -> Rule -> Json -> Result m Json
-eval ops rule d = runReader (evalRule rule) $ JLEnv ops d
+apply :: Monad m => Operations m -> Rule -> Json -> Result m Json
+apply ops rule d = runReader (evalRule rule) $ JLEnv ops d
 
 -- | Evaluate a rule
 -- Evaluate an object or array, return other items.
@@ -29,7 +29,7 @@ evalFunc fName param = do
   vars <- getVariables
   function <- getFunction fName
   return $ case function of
-    Nothing -> throwError $ "Function: " ++ fName ++ " not found"
+    Nothing -> throwError $ UnrecognizedOperation fName
     Just f -> f (subEval ops) param vars
 
 subEval :: Monad m => Operations m -> Rule -> Data -> Result m Json

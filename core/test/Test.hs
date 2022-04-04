@@ -95,12 +95,12 @@ simpleUnitTests =
         U.assertEqual
           "Result is correct"
           (Right $ JsonNumber 3)
-          (eval [] (JsonObject [("+", JsonArray [JsonNumber 1, JsonNumber 2])]) JsonNull),
+          (apply [] (JsonObject [("+", JsonArray [JsonNumber 1, JsonNumber 2])]) JsonNull),
       testCase "Nested plus" $
         U.assertEqual
           "Result is correct"
           (Right $ JsonNumber 6)
-          (eval [] (JsonObject [("+", JsonArray [JsonNumber 1, JsonObject [("+", JsonArray [JsonNumber 2, JsonNumber 3])]])]) JsonNull)
+          (apply [] (JsonObject [("+", JsonArray [JsonNumber 1, JsonObject [("+", JsonArray [JsonNumber 2, JsonNumber 3])]])]) JsonNull)
     ]
 
 mapUnitTests :: TestTree
@@ -112,19 +112,19 @@ mapUnitTests =
         U.assertEqual
           "Empty list case"
           (Right $ JsonArray [])
-          (eval [] (JsonObject [("map", JsonArray [JsonArray [], JsonObject [("+", JsonArray [JsonNumber 1, JsonNumber 2])]])]) JsonNull),
+          (apply [] (JsonObject [("map", JsonArray [JsonArray [], JsonObject [("+", JsonArray [JsonNumber 1, JsonNumber 2])]])]) JsonNull),
       -- logic{"map":[[1,2], {"+", [{"var":""},2]} => [3,4]
       testCase "logic{\"map\":\"[[1,2], {\"+\":[{\"var\":\"\"}, 2]}]\"} data{}" $
         U.assertEqual
           "Empty list case"
           (Right $ JsonArray [JsonNumber 3, JsonNumber 4])
-          (eval [] (JsonObject [("map", JsonArray [JsonArray [JsonNumber 1, JsonNumber 2], JsonObject [("+", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) JsonNull),
+          (apply [] (JsonObject [("map", JsonArray [JsonArray [JsonNumber 1, JsonNumber 2], JsonObject [("+", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) JsonNull),
       -- logic{"map":[{"var":"x"}, {"+", [{"var":""},2]} data[1,2,3]=> [3,4,5]
       testCase "logic{\"map\":\"[{\"var\":\"x\"}, {\"+\":[{\"var\":\"\"}, 2]}]\"} data{\"x\":[1,2,3]\"}" $
         U.assertEqual
           "Empty list case"
           (Right $ JsonArray [JsonNumber 3, JsonNumber 4, JsonNumber 5])
-          (eval [] (JsonObject [("map", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [("+", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) (JsonObject [("x", JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3])]))
+          (apply [] (JsonObject [("map", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [("+", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 2])]])]) (JsonObject [("x", JsonArray [JsonNumber 1, JsonNumber 2, JsonNumber 3])]))
     ]
 
 hedgehogTests :: TestTree
@@ -136,31 +136,31 @@ hedgehogTests =
           (f, n) <- forAllWith snd genArithmeticOperator
           l <- forAll genDouble
           r <- forAll genDouble1
-          Right (JsonNumber (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
+          Right (JsonNumber (f l r)) === apply [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
       hTestProperty "Simple comparison operations" $
         property $ do
           (f, n) <- forAllWith snd genComparisonOperator
           l <- forAll genDouble
           r <- forAll genDouble
-          Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
+          Right (JsonBool (f l r)) === apply [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber r])]) JsonNull,
       hTestProperty "Between comparison operations" $
         property $ do
           (f, n) <- forAllWith snd genBetweenOperator
           l <- forAll genDouble
           m <- forAll genDouble
           r <- forAll genDouble
-          Right (JsonBool (f l m && f m r)) === eval [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber m, JsonNumber r])]) JsonNull,
+          Right (JsonBool (f l m && f m r)) === apply [] (JsonObject [(n, JsonArray [JsonNumber l, JsonNumber m, JsonNumber r])]) JsonNull,
       hTestProperty "Simple logic operations" $
         property $ do
           (f, n) <- forAllWith snd genLogicOperator
           l <- forAll Gen.bool
           r <- forAll Gen.bool
-          Right (JsonBool (f l r)) === eval [] (JsonObject [(n, JsonArray [JsonBool l, JsonBool r])]) JsonNull,
+          Right (JsonBool (f l r)) === apply [] (JsonObject [(n, JsonArray [JsonBool l, JsonBool r])]) JsonNull,
       hTestProperty "Simple double array operations" $
         property $ do
           (f, n) <- forAllWith snd genArrayOperator
           arr <- forAll genDoubleArray
-          Right (JsonNumber (f arr)) === eval [] (JsonObject [(n, JsonArray (map JsonNumber arr))]) JsonNull,
+          Right (JsonNumber (f arr)) === apply [] (JsonObject [(n, JsonArray (map JsonNumber arr))]) JsonNull,
       hTestProperty "Nested arihmetic operations" $
         property $ do
           (f1, n1) <- forAllWith snd genArithmeticOperator
@@ -170,7 +170,7 @@ hedgehogTests =
           lr <- forAll genDouble1
           rl <- forAll genDouble
           rr <- forAll genDouble1
-          Right (JsonNumber (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonNumber rl, JsonNumber rr])]])]) JsonNull,
+          Right (JsonNumber (f1 (f2 ll lr) (f3 rl rr))) === apply [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonNumber rl, JsonNumber rr])]])]) JsonNull,
       hTestProperty "Nested boolean operations" $
         property $ do
           (f1, n1) <- forAllWith snd genLogicOperator
@@ -180,7 +180,7 @@ hedgehogTests =
           lr <- forAll genDouble1
           rl <- forAll Gen.bool
           rr <- forAll Gen.bool
-          Right (JsonBool (f1 (f2 ll lr) (f3 rl rr))) === eval [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonBool rl, JsonBool rr])]])]) JsonNull
+          Right (JsonBool (f1 (f2 ll lr) (f3 rl rr))) === apply [] (JsonObject [(n1, JsonArray [JsonObject [(n2, JsonArray [JsonNumber ll, JsonNumber lr])], JsonObject [(n3, JsonArray [JsonBool rl, JsonBool rr])]])]) JsonNull
     ]
 
 genDouble :: Gen Double

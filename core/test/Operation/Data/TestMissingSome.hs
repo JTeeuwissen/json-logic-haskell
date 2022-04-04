@@ -21,17 +21,17 @@ missingSomeUnitTests =
         U.assertEqual
           "empty case"
           (Right $ jArr [])
-          (eval [] (jObj [("missing_some", jArr [jNum 0, jArr []])]) (jObj [])),
+          (apply [] (jObj [("missing_some", jArr [jNum 0, jArr []])]) (jObj [])),
       testCase "logic {\"missing_some\":[1, [\"a\", \"b\", \"c\"]]} data {\"a\":\"apple\"} => [\"b\",\"c\"]" $
         U.assertEqual
           "first test case on site"
           (Right $ jArr [])
-          (eval [] (jObj [("missing_some", jArr [jNum 1, jArr [jStr "a", jStr "b", jStr "c"]])]) (jObj [("a", jStr "apple")])),
+          (apply [] (jObj [("missing_some", jArr [jNum 1, jArr [jStr "a", jStr "b", jStr "c"]])]) (jObj [("a", jStr "apple")])),
       testCase "logic {\"missing_some\":[2, [\"a\", \"b\", \"c\"]]} data {\"a\":\"apple\"} => [\"b\",\"c\"]" $
         U.assertEqual
           "second test case on site"
           (Right $ jArr [jStr "b", jStr "c"])
-          (eval [] (jObj [("missing_some", jArr [jNum 2, jArr [jStr "a", jStr "b", jStr "c"]])]) (jObj [("a", jStr "apple")])),
+          (apply [] (jObj [("missing_some", jArr [jNum 2, jArr [jStr "a", jStr "b", jStr "c"]])]) (jObj [("a", jStr "apple")])),
       testCase
         ( "logic {\"if\" :[{\"merge\": [{\"missing\":[\"first_name\", \"last_name\"]},{\"missing_some\":[1, [\"cell_phone\", \"home_phone\"] ]}]}, \"We require first name, last name, and one phone number.\",\"OK to proceed\"]}"
             ++ "data {\"first_name\":\"Bruce\", \"last_name\":\"Wayne\"} => \"We require first name, last name, and one phone number.\""
@@ -39,7 +39,7 @@ missingSomeUnitTests =
         $ U.assertEqual
           "third test case on site"
           (Right $ jStr "We require first name, last name, and one phone number.")
-          (eval [] (jObj [("if", jArr [jObj [("merge", jArr [jObj [("missing", jArr [jStr "first_name", jStr "last_name"])], jObj [("missing_some", jArr [jNum 1, jArr [jStr "cell_phone", jStr "home_phone"]])]])], jStr "We require first name, last name, and one phone number.", jStr "OK to proceed"])]) (jObj [("first_name", jStr "Bruce"), ("last_name", jStr "Wayne")]))
+          (apply [] (jObj [("if", jArr [jObj [("merge", jArr [jObj [("missing", jArr [jStr "first_name", jStr "last_name"])], jObj [("missing_some", jArr [jNum 1, jArr [jStr "cell_phone", jStr "home_phone"]])]])], jStr "We require first name, last name, and one phone number.", jStr "OK to proceed"])]) (jObj [("first_name", jStr "Bruce"), ("last_name", jStr "Wayne")]))
     ]
 
 missingSomeGeneratorTests :: TestTree
@@ -55,8 +55,8 @@ missingSomeGeneratorTests =
           dataJsonArray <- forAll $ Gen.sized genSizedRandomJsonArray
           dataJsonObject <- forAll $ Gen.sized genSizedRandomJsonObject
           -- Indexing empty missing_some over random data returns empty array
-          Right (jArr []) === eval [] missingSomeEmpty dataJsonArray
-          Right (jArr []) === eval [] missingSomeEmpty (JsonObject dataJsonObject),
+          Right (jArr []) === apply [] missingSomeEmpty dataJsonArray
+          Right (jArr []) === apply [] missingSomeEmpty (JsonObject dataJsonObject),
       hTestProperty "missing_some when all keys are present" $
         property $ do
           -- Generate flat array as data
@@ -66,7 +66,7 @@ missingSomeGeneratorTests =
           -- Missing a random integer when all are present will result in an empty array
           x <- forAll $ Gen.int $ Range.constant 0 30
           let rule = jObj [("missing_some", jArr [jNum $ fromIntegral x, jArr indexes])]
-          Right (jArr []) === eval [] rule jsonData,
+          Right (jArr []) === apply [] rule jsonData,
       hTestProperty "missing_some when no keys are present" $
         property $ do
           -- Generate a flat array as data
@@ -77,7 +77,7 @@ missingSomeGeneratorTests =
           nrMissing <- forAll $ Gen.int $ Range.constant 1 30
           let rule = jObj [("missing_some", jArr [jNum $ fromIntegral nrMissing, JsonArray missingIndexes])]
           -- Always should return entire list of missing items
-          Right (jArr missingIndexes) === eval [] rule jsonData,
+          Right (jArr missingIndexes) === apply [] rule jsonData,
       hTestProperty "missing_some when some keys are present" $
         property $ do
           -- Generate a flat array as data
@@ -89,7 +89,7 @@ missingSomeGeneratorTests =
           nrRequired <- forAll $ fromIntegral <$> (Gen.int $ Range.constant 0 (length js * 2) :: Gen Int)
           let rule = jObj [("missing_some", jArr [jNum nrRequired, JsonArray $ presentIndexes ++ missingIndexes])]
           -- Evaluate the rule with the data
-          case eval [] rule jsonData of
+          case apply [] rule jsonData of
             -- If there are more indexes present than the number required then it returns an empty array.
             Right (JsonArray []) -> H.assert $ fromIntegral (length presentIndexes) >= nrRequired || null missingIndexes
             -- Otherwise it returns all the missing items

@@ -6,6 +6,7 @@ See the example below for more information.
 
 ## Example
 ```hs
+
 -- | The main function
 -- Perform simple power function
 main :: IO ()
@@ -20,18 +21,18 @@ main = do
 -- The two numbers are placed into an data object and given to the evaluator with the following logic:
 -- {"**":[{"var":"base"}, {"var":"exp"}]}
 -- >>> evaluate (read "3") (read "4")
--- 81
+-- Right 81.0
 evaluate :: Json -> Json -> Result Json
-evaluate base expo = evaluatorWithPow (read "{\"**\":[{\"var\":\"base\"}, {\"var\":\"exp\"}]}") (JsonObject [("base", base), ("exp", expo)])
+evaluate base expo = applyWithPow (read "{\"**\":[{\"var\":\"base\"}, {\"var\":\"exp\"}]}") (JsonObject [("base", base), ("exp", expo)])
 
 -- | An evaluator that can evaluate operations with power (**).
-evaluatorWithPow :: Rule -> Data -> Result Json
-evaluatorWithPow = eval [powEvaluator]
+applyWithPow :: Rule -> Data -> Result Json
+applyWithPow = apply [powOperation]
 
 -- | The power operation.
 -- Takes the power function and adds a name to it to create an operation.
-powEvaluator :: Operation
-powEvaluator = ("**", powFunction)
+powOperation :: Operation
+powOperation = ("**", powFunction)
 
 -- | The power function.
 -- Takes an subevaluator, function arguments (in this case just a list) and data to pass through.
@@ -43,5 +44,5 @@ powFunction evaluator (JsonArray [base', expo']) vars = do
   base <- evaluateDouble evaluator base' vars
   expo <- evaluateDouble evaluator expo' vars
   return $ JsonNumber $ base ** expo
-powFunction _ _ _ = Left "Wrong number of arguments for **"
+powFunction _ _ _ = throw "Wrong number of arguments for **"
 ```

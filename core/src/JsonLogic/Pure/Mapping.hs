@@ -37,9 +37,3 @@ toOperations = M.map toFunction
 
 fromOperations :: Operations -> T.Operations Identity
 fromOperations = M.map fromFunction
-
-toEnv :: T.JsonLogicEnv Identity -> JsonLogicEnv
-toEnv (T.JLEnv ops vars) = JLEnv (toOperations ops) vars
-
-fromEnv :: JsonLogicEnv -> T.JsonLogicEnv Identity
-fromEnv (JLEnv ops vars) = T.JLEnv (fromOperations ops) vars

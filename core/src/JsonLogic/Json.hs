@@ -1,4 +1,4 @@
-module JsonLogic.Json where
+module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, infinity, notANumber) where
 
 import Control.Applicative
 import Data.Char (isSpace)

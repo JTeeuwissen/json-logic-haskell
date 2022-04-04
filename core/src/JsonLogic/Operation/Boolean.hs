@@ -31,7 +31,7 @@ evaluateIf :: Monad m => Function m Json
 evaluateIf evaluator (JsonArray [c, x, y]) vars = do
   res <- evaluateBool evaluator c vars
   evaluator (if res then x else y) vars
-evaluateIf _ _ _ = throwError "Wrong number of arguments for if"
+evaluateIf _ _ _ = throw "Wrong number of arguments for if"
 
 -- Helper functions
 
@@ -40,7 +40,7 @@ evaluateLogic operator evaluator (JsonArray [x, y]) vars = do
   x' <- evaluateBool evaluator x vars
   y' <- evaluateBool evaluator y vars
   return $ JsonBool $ x' `operator` y'
-evaluateLogic _ _ _ _ = throwError "Wrong number of arguments for logic operator"
+evaluateLogic _ _ _ _ = throw "Wrong number of arguments for logic operator"
 
 evaluateTruthy :: Monad m => Function m Json
 evaluateTruthy evaluator json vars = JsonBool <$> evaluateBool evaluator (evaluateUnaryArgument json) vars
@@ -54,14 +54,14 @@ looseEquals evaluator (JsonArray [x, y]) vars = do
   x' <- evaluator x vars
   y' <- evaluator y vars
   return $ JsonBool $ looseEq x' y'
-looseEquals _ _ _ = throwError "Wrong number of arguments for loose not equals operator"
+looseEquals _ _ _ = throw "Wrong number of arguments for loose not equals operator"
 
 looseNotEquals :: Monad m => Function m Json
 looseNotEquals evaluator (JsonArray [x, y]) vars = do
   x' <- evaluator x vars
   y' <- evaluator y vars
   return $ JsonBool $ not $ looseEq x' y'
-looseNotEquals _ _ _ = throwError "Wrong number of arguments for loose not equals operator"
+looseNotEquals _ _ _ = throw "Wrong number of arguments for loose not equals operator"
 
 -- | See: https://github.com/gregsdennis/json-everything/blob/master/JsonLogic/JsonElementExtensions.cs#L117
 -- See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality

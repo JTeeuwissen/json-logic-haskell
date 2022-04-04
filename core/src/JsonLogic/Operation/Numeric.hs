@@ -33,15 +33,15 @@ sum = ("sum", evaluateDoubleArray P.sum)
 (/) = ("/", evaluateMath (P./))
 (%) = ("%", evaluateMath F.mod')
 
-evaluateComparison :: Monad m => (Double -> Double -> Bool) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
+evaluateComparison :: Monad m => (Double -> Double -> Bool) -> Function m Json
 evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
   x' <- evaluateDouble evaluator x vars
   y' <- evaluateDouble evaluator y vars
   return $ JsonBool $ x' `operator` y'
-evaluateComparison _ _ _ _ = throwError "Wrong number of arguments for comparison operator"
+evaluateComparison _ _ _ _ = throw "Wrong number of arguments for comparison operator"
 
 -- Adds the between operator to check whether a number is between two other numbers
-evaluateBetween :: Monad m => (Double -> Double -> Bool) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
+evaluateBetween :: Monad m => (Double -> Double -> Bool) -> Function m Json
 evaluateBetween operator evaluator (JsonArray [x, y, z]) vars = do
   x' <- evaluateDouble evaluator x vars
   y' <- evaluateDouble evaluator y vars
@@ -51,17 +51,17 @@ evaluateBetween operator evaluator (JsonArray [x, y, z]) vars = do
 evaluateBetween operator evaluator json vars = evaluateComparison operator evaluator json vars
 
 -- Function evaluators
-evaluateMath :: Monad m => (Double -> Double -> Double) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
+evaluateMath :: Monad m => (Double -> Double -> Double) -> Function m Json
 evaluateMath operator evaluator (JsonArray [x, y]) vars = do
   x' <- evaluateDouble evaluator x vars
   y' <- evaluateDouble evaluator y vars
   return $ JsonNumber $ x' `operator` y'
-evaluateMath _ _ _ _ = throwError "Wrong number of arguments for math operator"
+evaluateMath _ _ _ _ = throw "Wrong number of arguments for math operator"
 
 -- Evaluation for max/min
-evaluateDoubleArray :: Monad m => ([Double] -> Double) -> SubEvaluator m -> Rule -> Data -> ExceptT String m Json
-evaluateDoubleArray _ _ (JsonArray []) _ = throwError "Can't evaluate array action an empty list"
+evaluateDoubleArray :: Monad m => ([Double] -> Double) -> Function m Json
+evaluateDoubleArray _ _ (JsonArray []) _ = throw "Can't evaluate array action an empty list"
 evaluateDoubleArray operator evaluator (JsonArray arr) vars = do
   arr' <- mapM (\x -> evaluateDouble evaluator x vars) arr
   return $ JsonNumber $ operator arr'
-evaluateDoubleArray _ _ json _ = throwError $ "Can't evaluate array action on non array, namely: " ++ show json
+evaluateDoubleArray _ _ json _ = throw $ "Can't evaluate array action on non array, namely: " ++ show json

@@ -17,5 +17,5 @@ preserveGeneratorTests =
     [ hTestProperty "preserve works" $
         property $ do
           paramJson <- forAll $ Gen.sized genSizedRandomJson
-          Right paramJson === eval [] (JsonObject [("preserve", paramJson)]) JsonNull
+          Right paramJson === apply [] (JsonObject [("preserve", paramJson)]) JsonNull
     ]

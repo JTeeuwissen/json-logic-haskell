@@ -34,9 +34,3 @@ toOperations = M.map toFunction
 
 fromOperations :: Operations -> T.Operations IO
 fromOperations = M.map fromFunction
-
-toEnv :: T.JsonLogicEnv IO -> JsonLogicEnv
-toEnv (T.JLEnv ops vars) = JLEnv (toOperations ops) vars
-
-fromEnv :: JsonLogicEnv -> T.JsonLogicEnv IO
-fromEnv (JLEnv ops vars) = T.JLEnv (fromOperations ops) vars

@@ -4,7 +4,6 @@
 module JsonLogic.Operation.Array (arrayOperations, map, reduce, filter, all, none, some, merge, in') where
 
 import Control.Monad
-import Control.Monad.Except
 import qualified Data.List as L
 import JsonLogic.Json
 import JsonLogic.Operation.Primitive
@@ -33,28 +32,28 @@ evaluateMap :: Monad m => Function m Json
 evaluateMap evaluator (JsonArray [xs, f]) vars = do
   xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
   JsonArray <$> mapM (evaluator f) xs'
-evaluateMap _ _ _ = throwError "Map received the wrong arguments"
+evaluateMap _ _ _ = throw "Map received the wrong arguments"
 
 evaluateReduce :: Monad m => Function m Json
 evaluateReduce evaluator (JsonArray [arrayExp, reduceFunction, initalExp]) vars = do
   array <- evaluateArray evaluator arrayExp vars
   initial <- evaluator initalExp vars
   foldM (\acc cur -> evaluator reduceFunction (JsonObject [("current", cur), ("accumulator", acc)])) initial array
-evaluateReduce _ _ _ = throwError "Wrong number of arguments for reduce"
+evaluateReduce _ _ _ = throw "Wrong number of arguments for reduce"
 
 evaluateFilter :: Monad m => Function m Json
 evaluateFilter evaluator (JsonArray [xs, f]) vars = do
   array <- evaluateArray evaluator xs vars
   filtered <- filterM (evaluateBool evaluator f) array
   return $ JsonArray filtered
-evaluateFilter _ _ _ = throwError "Wrong number of arguments for filter"
+evaluateFilter _ _ _ = throw "Wrong number of arguments for filter"
 
 evaluateArrayToBool :: Monad m => ([Bool] -> Bool) -> Function m Json
 evaluateArrayToBool operator evaluator (JsonArray [xs, f]) vars = do
   xs' <- evaluateArray evaluator xs vars -- This is our data we evaluate
   bools <- mapM (evaluateBool evaluator f) xs'
   return $ JsonBool $ operator bools
-evaluateArrayToBool _ _ _ _ = throwError "Map received the wrong arguments"
+evaluateArrayToBool _ _ _ _ = throw "Map received the wrong arguments"
 
 -- | Merge operations flattens the array in the top level
 evaluateMerge :: Monad m => Function m Json
