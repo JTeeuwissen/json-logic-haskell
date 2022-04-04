@@ -1,3 +1,10 @@
+-- |
+-- Module      : JsonLogic.Evaluator
+-- Description : Internal JsonLogic evaluator
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Evaluator (apply) where
 
 import Control.Monad.Except

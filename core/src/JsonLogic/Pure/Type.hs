@@ -1,5 +1,10 @@
-{-# LANGUAGE FlexibleInstances #-}
-
+-- |
+-- Module      : JsonLogic.Pure.Type
+-- Description : JsonLogic Pure types
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Pure.Type (Result, SubEvaluator, Function, Operation, Operations, throw, T.Exception (..)) where
 
 import qualified Data.Map as M

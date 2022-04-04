@@ -1,3 +1,10 @@
+-- |
+-- Module      : JsonLogic.JL
+-- Description : Internal JsonLogic JL monad to keep track of the current data and function environment
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.JL where
 
 import Control.Monad.Reader (Reader, asks)

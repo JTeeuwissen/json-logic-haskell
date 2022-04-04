@@ -1,5 +1,12 @@
 {-# OPTIONS_GHC -Wno-unused-imports #-}
 
+-- |
+-- Module      : JsonLogic.Operation.Utils
+-- Description : Internal JsonLogic operations utilities
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Operation.Utils where
 
 -- IMPORTANT!! Needs singleton import for doctests

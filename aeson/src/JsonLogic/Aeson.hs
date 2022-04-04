@@ -1,3 +1,10 @@
+-- |
+-- Module      : JsonLogic.Aeson
+-- Description : Json Logic Aeson conversion functions
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Aeson (readJson, prettyPrintJson) where
 
 import Data.Aeson (FromJSON (parseJSON), ToJSON (toJSON), Value (..), decode)
