@@ -12,6 +12,7 @@ RUN cabal install containers mtl tasty tasty-hunit tasty-hedgehog hedgehog aeson
 COPY cabal.project .
 COPY ./core/*.cabal ./core/
 COPY ./aeson/*.cabal ./aeson/
+COPY ./example/*.cabal ./example/
 
 # Build all the dependencies
 RUN cabal build --only-dependencies all
@@ -27,7 +28,7 @@ RUN cabal haddock --builddir="haddock" --haddock-for-hackage --enable-doc core a
 
 # Upload the code
 CMD ["sh", "-c","\
-      cabal upload --username=$username --password=$password $(find sdist -name \"*.tar.gz\") &&\
-      cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-[[:digit:]]*-docs.tar.gz\") &&\
-      cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-aeson*-docs.tar.gz\")\
+      cabal upload --username=$username --password=$password $(find sdist -name \"*-${version}.tar.gz\") &&\
+      cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-${version}-docs.tar.gz\") &&\
+      cabal upload -d --username=$username --password=$password $(find haddock -name \"jsonlogic-aeson-${version}-docs.tar.gz\")\
     "]

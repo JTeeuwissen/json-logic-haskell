@@ -18,7 +18,7 @@ jobs:
       - name: Build Publish Image
         run: docker build --force-rm --tag $ACTION_ID -f Docker/Dockerfile.publish .
       - name: Run Publish
-        run: docker run --rm -e username=JTeeuwissen -e password=${{ secrets.HACKAGE_PASSWORD }} $ACTION_ID
+        run: docker run --rm -e username=JTeeuwissen -e password=${{ secrets.HACKAGE_PASSWORD }} -e version=$GITHUB_REF_NAME $ACTION_ID
       - name: Remove Doctest Image
         run: docker image rm --no-prune $ACTION_ID
         if: always()
