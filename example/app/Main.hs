@@ -5,6 +5,7 @@ module Main where
 import JsonLogic.Json
 import JsonLogic.Pure.Evaluator
 import JsonLogic.Pure.Operation
+import JsonLogic.Pure.Type
 
 -- | The main function
 -- Perform simple power function
@@ -43,4 +44,4 @@ powFunction evaluator (JsonArray [base', expo']) vars = do
   base <- evaluateDouble evaluator base' vars
   expo <- evaluateDouble evaluator expo' vars
   return $ JsonNumber $ base ** expo
-powFunction _ _ _ = Left "Wrong number of arguments for **"
+powFunction _ _ _ = throw "Wrong number of arguments for **"
