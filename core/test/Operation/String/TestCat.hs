@@ -7,7 +7,7 @@ import Hedgehog (forAll, property, (===))
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import JsonLogic.Json (Json (..))
-import JsonLogic.Pure.Evaluator (eval)
+import JsonLogic.Pure.Evaluator (apply)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit as U (assertEqual, testCase)
 import Utils
@@ -43,7 +43,7 @@ catUnitTests =
           (apply [] (jObj [("cat", jArr [jBool True, jBool False])]) jNull),
       testCase "cat of nested array" $
         U.assertEqual
-          "rule gets evaluated"
+          "rule gets applyuated"
           (Right $ jStr "12,3,4,5false")
           (apply [] (jObj [("cat", jArr [jStr "1", jArr [jStr "2", jStr "3", jStr "4", jStr "5"], jBool False])]) jNull),
       testCase "cat an object" $
