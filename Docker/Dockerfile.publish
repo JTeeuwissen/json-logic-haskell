@@ -1,9 +1,6 @@
 FROM haskell:9.2.1-buster
 WORKDIR /opt/project
 
-# Install haskell-platform-doc for references to external modules.
-RUN apt-get install haskell-platform-doc
-
 # Update cabal to get the latest index.
 RUN cabal update
 
@@ -18,7 +15,7 @@ COPY ./aeson/*.cabal ./aeson/
 COPY ./example/*.cabal ./example/
 
 # Build all the dependencies
-RUN cabal build --only-dependencies all
+RUN cabal build --only-dependencies --enable-documentation all
 
 # Add and Install Application Code
 COPY . .
