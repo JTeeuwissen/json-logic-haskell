@@ -29,17 +29,19 @@ import JsonLogic.Json
 import qualified JsonLogic.Operation as O
 import qualified Prelude as P
 
--- Default operators
+-- | A map of all the default operations.
 defaultOperations :: Operations
 defaultOperations = M.unions [arrayOperations, booleanOperations, dataOperations, miscOperations, numericOperations, stringOperations]
 
+-- | Groups of operations on similar data.
 arrayOperations, booleanOperations, dataOperations, numericOperations, stringOperations :: Operations
 arrayOperations = toOperations O.arrayOperations
-booleanOperations = toOperations O.arrayOperations
-dataOperations = toOperations O.arrayOperations
-numericOperations = toOperations O.arrayOperations
-stringOperations = toOperations O.arrayOperations
+booleanOperations = toOperations O.booleanOperations
+dataOperations = toOperations O.dataOperations
+numericOperations = toOperations O.numericOperations
+stringOperations = toOperations O.stringOperations
 
+-- | Array operations.
 map, reduce, filter, all, none, some, merge, in' :: Operation
 map = toOperation O.map
 reduce = toOperation O.reduce
@@ -50,6 +52,7 @@ some = toOperation O.some
 merge = toOperation O.merge
 in' = toOperation O.in'
 
+-- | Boolean operations.
 if', (==), (===), (!=), (!==), (!), (!!), and, or :: Operation
 if' = toOperation O.if'
 (==) = toOperation (O.==)
@@ -61,12 +64,14 @@ if' = toOperation O.if'
 and = toOperation O.and
 or = toOperation O.or
 
+-- | Data operations.
 var, missing, missingSome, preserve :: Operation
 var = toOperation O.var
 missing = toOperation O.missing
 missingSome = toOperation O.missingSome
 preserve = toOperation O.preserve
 
+-- | Numeric operations.
 (>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%) :: Operation
 (>) = toOperation (O.>)
 (>=) = toOperation (O.>=)
@@ -81,26 +86,33 @@ sum = toOperation O.sum
 (/) = toOperation (O./)
 (%) = toOperation (O.%)
 
+-- | String operations.
 cat, substr :: Operation
 cat = toOperation O.cat
 substr = toOperation O.substr
 
 -- Primitive Evaluators
 
+-- | Evaluate to a double.
 evaluateDouble :: Function P.Double
 evaluateDouble = toFunction O.evaluateDouble
 
+-- | Evaluate to an int.
 evaluateInt :: Function P.Int
 evaluateInt = toFunction O.evaluateInt
 
+-- | Evaluate to a bool.
 evaluateBool :: Function P.Bool
 evaluateBool = toFunction O.evaluateBool
 
+-- | Evaluate to an array.
 evaluateArray :: Function [Json]
 evaluateArray = toFunction O.evaluateArray
 
+-- | Evaluate to an object.
 evaluateObject :: Function JsonObject
 evaluateObject = toFunction O.evaluateObject
 
+-- | Evaluate to a string.
 evaluateString :: Function P.String
 evaluateString = toFunction O.evaluateString

@@ -65,7 +65,7 @@ mergeGeneratorTests =
             _ -> H.failure
     ]
 
--- | Computes the maximum nesting of a json array
+-- | Computes the maximum nesting of a Json array
 maxJsonDepth :: Json -> Int
 maxJsonDepth (JsonArray as) = 1 + foldl (\a b -> max a $ maxJsonDepth b) 0 as
 maxJsonDepth _ = 0

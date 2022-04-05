@@ -26,7 +26,7 @@ import Data.Text.IO as TIO (putStrLn)
 import Data.Vector (toList)
 import JsonLogic.Json (Json (..))
 
--- Convert to aeson json format
+-- Convert to aeson Json format
 instance ToJSON Json where
   toJSON JsonNull = Null
   toJSON (JsonBool b) = toJSON b
@@ -47,7 +47,7 @@ instance FromJSON Json where
 readJson :: String -> Maybe Json
 readJson s = decode $ BLU.fromString s
 
--- | Pretty print the JSON
+-- | Pretty print the Json
 prettyPrintJson :: Json -> IO ()
 prettyPrintJson = TIO.putStrLn . DTE.decodeUtf8 . DBL.toStrict . encodePretty' config
   where

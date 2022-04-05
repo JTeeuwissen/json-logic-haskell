@@ -17,9 +17,10 @@ main = do
   second <- getLine
   print $ evaluate (read first) (read second)
 
--- | Evaluate two numbers with pow operation using json logic.
+-- | Evaluate two numbers with pow operation using Json logic.
 -- The two numbers are placed into an data object and given to the evaluator with the following logic:
 -- {"**":[{"var":"base"}, {"var":"exp"}]}
+--
 -- >>> evaluate (read "3") (read "4")
 -- Right 81.0
 evaluate :: Json -> Json -> Result Json
@@ -37,7 +38,7 @@ powOperation = ("**", powFunction)
 -- | The power function.
 -- Takes an subevaluator, function arguments (in this case just a list) and data to pass through.
 -- 1. tries to evaluate the arguments to double values
---  (as they might be json logic evaluating to doubles, instead of direct numbers).
+--  (as they might be Json logic evaluating to doubles, instead of direct numbers).
 -- 2. if successful, returns the result of the power operation
 powFunction :: Function Json
 powFunction evaluator (JsonArray [base', expo']) vars = do

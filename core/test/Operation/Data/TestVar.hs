@@ -122,10 +122,10 @@ varGeneratorTests =
           Right JsonNull === apply [] objVar dataJson,
       hTestProperty "Number var returns index" $
         property $ do
-          -- Insert json data at index
+          -- Insert Json data at index
           index <- forAll $ Gen.int $ Range.constant 0 15
           let logic = JsonObject [("var", JsonNumber $ fromIntegral index)]
-          -- Generate random json and random data and inject it at the index
+          -- Generate random Json and random data and inject it at the index
           dataJson <- forAll $ Gen.sized genSizedRandomJson
           randomJson <- forAll $ Gen.sized genSizedRandomJsonArray
           resultJson <- forAll $ return $ insertAtPath [show index] dataJson randomJson
@@ -136,7 +136,7 @@ varGeneratorTests =
           -- The member to index
           (indexJson, indexStr) <- forAll genGenericNonEmptyJsonString
           let logic = JsonObject [("var", indexJson)]
-          -- Generate random json and random data and inject it at the string member
+          -- Generate random Json and random data and inject it at the string member
           randomJson <- forAll $ Gen.sized genSizedRandomJsonArray
           dataJson <- forAll $ Gen.sized genSizedRandomJson
           resultJson <- forAll $ return $ insertAtPath [indexStr] dataJson randomJson
@@ -145,10 +145,10 @@ varGeneratorTests =
       hTestProperty "Nested indexing for strings returns item correctly" $
         property $ do
           -- Generate a list of strings denoting a path
-          -- f.e ["aa", "bb"] is path "aa.bb" in json
+          -- f.e ["aa", "bb"] is path "aa.bb" in Json
           recIndex <- forAll $ Gen.list (Range.constant 2 10) $ snd <$> genGenericNonEmptyJsonString
           let logic = JsonObject [("var", JsonString $ L.intercalate "." recIndex)]
-          -- Generate random json and random data and inject it at path
+          -- Generate random Json and random data and inject it at path
           randomJson <- forAll $ Gen.sized genSizedRandomJsonObject
           dataJson <- forAll $ Gen.sized genSizedRandomJson
           resultJson <- forAll $ return $ insertAtPath recIndex dataJson (JsonObject randomJson)
