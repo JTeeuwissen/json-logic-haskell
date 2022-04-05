@@ -41,7 +41,7 @@ type Rule = Json
 -- | Data can be any kind of Json value.
 type Data = Json
 
--- An instance to show Json in clear format for users
+-- An instance to show Json in clear format for users.
 instance Show Json where
   show JsonNull = "null"
   show (JsonBool True) = "true"
