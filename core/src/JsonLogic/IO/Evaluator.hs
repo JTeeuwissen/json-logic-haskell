@@ -5,7 +5,7 @@
 -- License     : MIT
 -- Maintainer  : jelleteeuwissen@hotmail.nl
 -- Stability   : experimental
-module JsonLogic.IO.Evaluator (apply) where
+module JsonLogic.IO.Evaluator (apply, applyEmpty) where
 
 import qualified Data.Map as M
 import qualified JsonLogic.Evaluator as E
@@ -17,4 +17,9 @@ import JsonLogic.Json
 -- >>> apply [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
 -- Right "Hello, World!"
 apply :: [Operation] -> Rule -> Data -> Result Json
-apply ops rule dat = toResult $ E.apply (M.map fromFunction $ M.union (M.fromList ops) defaultOperations) rule dat
+apply ops = applyEmpty (ops ++ M.toList defaultOperations)
+
+-- >>> applyEmpty [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
+-- Left (UnrecognizedOperation {operationName = "log"})
+applyEmpty :: [Operation] -> Rule -> Data -> Result Json
+applyEmpty ops rule dat = toResult $ E.apply (M.map fromFunction $ M.fromList ops) rule dat
