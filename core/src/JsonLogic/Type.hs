@@ -11,10 +11,15 @@ import Control.Monad.Except
 import qualified Data.Map as M
 import JsonLogic.Json
 
+-- | An evaluation exception thrown by the evaluator or operations.
+-- Is used in the result type.
 data Exception
-  = UnrecognizedOperation {operationName :: String}
-  | InvalidRule {operationNames :: [String]}
-  | EvalException {message :: String}
+  = -- | Exception thrown when an unknown operation is applied.
+    UnrecognizedOperation {operationName :: String}
+  | -- | Exception thrown when a rule does not contain exactly one operation.
+    InvalidRule {operationNames :: [String]}
+  | -- | Exception thrown for any other error.
+    EvalException {message :: String}
   deriving (Show, Eq)
 
 -- | The result of a function can be an error or another json value.

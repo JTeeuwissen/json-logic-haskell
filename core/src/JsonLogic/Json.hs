@@ -5,7 +5,7 @@
 -- License     : MIT
 -- Maintainer  : jelleteeuwissen@hotmail.nl
 -- Stability   : experimental
-module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, infinity, notANumber) where
+module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat) where
 
 import Control.Applicative
 import Data.Char (isSpace)
@@ -13,6 +13,14 @@ import Data.List (intercalate)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
 import Text.Read
+  ( Read (readPrec),
+    ReadPrec,
+    get,
+    parens,
+    pfail,
+    readMaybe,
+    (+++),
+  )
 
 -- | Json is a collection of possible JSON values.
 data Json
@@ -24,7 +32,7 @@ data Json
   | JsonObject JsonObject
   deriving (Eq)
 
--- | A Json object is a collection of key-value pairs.
+-- | A Json object is a map of string-json pairs.
 type JsonObject = M.Map String Json
 
 -- | A rule can be any kind of JSON value, but objects and arrays will be evaluated.
@@ -33,7 +41,7 @@ type Rule = Json
 -- | Data can be any kind of JSON value.
 type Data = Json
 
--- | An instance to show json in clear format for users
+-- An instance to show json in clear format for users
 instance Show Json where
   show JsonNull = "null"
   show (JsonBool True) = "true"
@@ -43,6 +51,7 @@ instance Show Json where
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
+-- Using a custom parser to read the json according to specification.
 instance Read Json where
   readPrec = parens readValue
 
@@ -82,6 +91,7 @@ prettyShow = prettyShow' 0
     tab depth = replicate (depth + 2) ' '
 
 -- | Convert json to string, used in string operations
+-- See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString for more information.
 stringify :: Json -> String
 stringify JsonNull = ""
 stringify (JsonBool True) = "true"
@@ -92,6 +102,7 @@ stringify (JsonArray js) = intercalate "," $ map stringify js
 stringify (JsonObject _) = "[object Object]"
 
 -- | Truthy test for json
+-- See https://developer.mozilla.org/en-US/docs/Glossary/Truthy for more information.
 isTruthy :: Json -> Bool
 isTruthy JsonNull = False
 isTruthy (JsonBool b) = b
@@ -103,6 +114,7 @@ isTruthy (JsonArray []) = False
 isTruthy (JsonArray _) = True
 isTruthy (JsonObject _) = True
 
+-- | The opposite of `isTruthy`
 isFalsy :: Json -> Bool
 isFalsy = not . isTruthy
 
@@ -132,18 +144,18 @@ parseFloat (JsonArray (a : _)) = parseFloat a
 -- Everything else is NaN
 parseFloat _ = notANumber
 
--- | Gives a Infinity
+-- Gives a Infinity
 infinity :: Double
 infinity = 1 / 0
 
--- | Gives a NaN
+-- Gives a NaN
 notANumber :: Double
 notANumber = 0 / 0
 
 -- Parsing
 -- See https://www.json.org/json-en.html
 
--- | Read an object, a map with strings as keys.
+-- Read an object, a map with strings as keys.
 readObject :: ReadPrec JsonObject
 readObject = do
   '{' <- get
@@ -170,7 +182,7 @@ readObject = do
       value <- readValue
       return (key, value)
 
--- | Read an array, can contain multiple comma separated values.
+-- Read an array, can contain multiple comma separated values.
 readArray :: ReadPrec [Json]
 readArray = do
   '[' <- get
@@ -189,7 +201,7 @@ readArray = do
   ']' <- get
   return items
 
--- | Read a value, wrapper around many of the other parsers.
+-- Read a value, wrapper around many of the other parsers.
 readValue :: ReadPrec Json
 readValue = do
   readWhitespace
@@ -213,7 +225,7 @@ readValue = do
   readWhitespace
   return value
 
--- | Reads a string with escaping.
+-- Reads a string with escaping.
 readString :: ReadPrec String
 readString = do
   '\"' <- get
@@ -251,7 +263,7 @@ readString = do
   where
     readHex = readMap $ zip (['0' .. '9'] ++ ['A' .. 'F'] ++ ['a' .. 'f']) ([0 .. 9] ++ [10 .. 15] ++ [10 .. 15])
 
--- | Reads a number, including the sign and exponent as a double.
+-- Reads a number, including the sign and exponent as a double.
 readNumber :: ReadPrec Double
 readNumber = do
   -- An optional negative sign
@@ -323,10 +335,11 @@ readNumber = do
     getDigit = readMap $ zip ['0' .. '9'] [0 .. 9]
     getNonZeroDigit = readMap $ zip ['1' .. '9'] [1 .. 9]
 
--- | Reads whitespace and throws it away.
+-- Reads whitespace and throws it away.
 readWhitespace :: ReadPrec ()
 readWhitespace = () <$ many (readMap $ zip " \t\n\r" (repeat ()))
 
+-- Use a lookup table to parse characters.
 readMap :: [(Char, a)] -> ReadPrec a
 readMap xs = do
   x <- get

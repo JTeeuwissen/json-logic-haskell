@@ -14,11 +14,15 @@ import JsonLogic.IO.Operation (defaultOperations)
 import JsonLogic.IO.Type
 import JsonLogic.Json
 
+-- | Apply takes a list of operations, a rule and data.
+-- And together with the default operations evaluates it.
 -- >>> apply [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
 -- Right "Hello, World!"
 apply :: [Operation] -> Rule -> Data -> Result Json
 apply ops = applyEmpty (ops ++ M.toList defaultOperations)
 
+-- | applyEmpty takes a list of operations, a rule and data.
+-- And without the default operations evaluates it.
 -- >>> applyEmpty [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
 -- Left (UnrecognizedOperation {operationName = "log"})
 applyEmpty :: [Operation] -> Rule -> Data -> Result Json
