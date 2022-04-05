@@ -318,26 +318,7 @@ readNumber = do
 
 -- | Reads whitespace and throws it away.
 readWhitespace :: ReadPrec ()
-readWhitespace =
-  ()
-    <$ many
-      ( ( do
-            ' ' <- get
-            readWhitespace
-        )
-          +++ ( do
-                  '\n' <- get
-                  readWhitespace
-              )
-          +++ ( do
-                  '\t' <- get
-                  readWhitespace
-              )
-          +++ ( do
-                  '\r' <- get
-                  readWhitespace
-              )
-      )
+readWhitespace = () <$ many (readMap $ zip " \t\n\r" (repeat ()))
 
 readMap :: [(Char, a)] -> ReadPrec a
 readMap xs = do
