@@ -1,5 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
+-- |
+-- Module      : JsonLogic.IO.Operation
+-- Description : JsonLogic IO operations
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
+
 {- ORMOLU_DISABLE -}
 module JsonLogic.IO.Operation
   ( defaultOperations,

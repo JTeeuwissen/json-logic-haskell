@@ -1,5 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
+-- |
+-- Module      : JsonLogic.Operation
+-- Description : Internal JsonLogic operations
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
+
 -- Prevent Ormolu from putting everything on a separate line.
 {- ORMOLU_DISABLE -}
 module JsonLogic.Operation

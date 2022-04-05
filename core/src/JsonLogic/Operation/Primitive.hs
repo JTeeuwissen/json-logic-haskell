@@ -1,3 +1,10 @@
+-- |
+-- Module      : JsonLogic.Operation.Primitive
+-- Description : Internal JsonLogic functions to evaluate to primitive types
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Operation.Primitive (evaluateDouble, evaluateInt, evaluateBool, evaluateArray, evaluateObject, evaluateString) where
 
 import JsonLogic.Json
