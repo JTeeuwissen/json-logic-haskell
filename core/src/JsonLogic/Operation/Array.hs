@@ -1,6 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedLists #-}
 
+-- |
+-- Module      : JsonLogic.Operation.Array
+-- Description : Internal JsonLogic operations on arrays
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Operation.Array (arrayOperations, map, reduce, filter, all, none, some, merge, in') where
 
 import Control.Monad

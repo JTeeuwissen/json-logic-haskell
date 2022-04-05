@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedLists #-}
 
+-- |
+-- Module      : JsonLogic.Operation.Data
+-- Description : Internal JsonLogic operations on objects and data
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Operation.Data (dataOperations, var, missing, missingSome, preserve) where
 
 import Data.Maybe

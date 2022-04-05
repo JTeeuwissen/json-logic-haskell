@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedLists #-}
 
+-- |
+-- Module      : JsonLogic.Operation.Boolean
+-- Description : Internal JsonLogic operations on booleans
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Operation.Boolean (booleanOperations, if', (==), (===), (!=), (!==), (!), (!!), and, or) where
 
 import Control.Monad.Except

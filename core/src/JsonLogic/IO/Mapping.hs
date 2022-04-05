@@ -1,3 +1,10 @@
+-- |
+-- Module      : JsonLogic.IO.Mapping
+-- Description : Internal JsonLogic IO functions to map from exposed types to internal types and vice versa
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.IO.Mapping where
 
 import Control.Monad.Except

@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedLists #-}
 
+-- |
+-- Module      : JsonLogic.IO.Operation.Misc
+-- Description : JsonLogic misc IO operations
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.IO.Operation.Misc (miscOperations, trace, log) where
 
 import Control.Monad.Except

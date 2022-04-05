@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedLists #-}
 
+-- |
+-- Module      : JsonLogic.Operation.String
+-- Description : Internal JsonLogic operations on strings
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Operation.String (stringOperations, cat, substr) where
 
 import JsonLogic.Json
