@@ -5,7 +5,7 @@
 -- License     : MIT
 -- Maintainer  : jelleteeuwissen@hotmail.nl
 -- Stability   : experimental
-module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat) where
+module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, infinity, notANumber) where
 
 import Control.Applicative
 import Data.Char (isSpace)
@@ -131,14 +131,14 @@ parseFloat (JsonString s) = fromMaybe notANumber $ readMaybe $ dropAfterSecondPo
 parseFloat (JsonArray (a : _)) = parseFloat a
 -- Everything else is NaN
 parseFloat _ = notANumber
-  where
-    -- Gives a Infinity
-    infinity :: Double
-    infinity = 1 / 0
 
-    -- Gives a NaN
-    notANumber :: Double
-    notANumber = 0 / 0
+-- | Gives a Infinity
+infinity :: Double
+infinity = 1 / 0
+
+-- | Gives a NaN
+notANumber :: Double
+notANumber = 0 / 0
 
 -- Parsing
 -- See https://www.json.org/json-en.html
