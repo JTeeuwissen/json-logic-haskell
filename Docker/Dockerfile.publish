@@ -24,7 +24,7 @@ COPY . .
 RUN cabal sdist --builddir="sdist" core aeson
 
 # Package the documentation
-RUN cabal haddock --builddir="haddock" --haddock-for-hackage --enable-doc core aeson
+RUN cabal haddock --builddir="haddock" --haddock-for-hackage --enable-doc --haddock-html-location="https://hackage.haskell.org/package/$pkg-$version/docs" core aeson
 
 # Upload the code
 CMD ["sh", "-c","\
