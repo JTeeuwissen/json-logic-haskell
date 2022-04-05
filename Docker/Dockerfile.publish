@@ -3,7 +3,7 @@ WORKDIR /opt/project
 
 # Install linking external packages dependencies
 RUN apt update
-RUN apt install haskell-platform-doc
+RUN apt install -y haskell-platform-doc
 
 # Update cabal to get the latest index.
 RUN cabal update
