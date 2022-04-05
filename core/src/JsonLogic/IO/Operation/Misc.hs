@@ -16,9 +16,11 @@ import JsonLogic.Json
 import qualified JsonLogic.Operation as O
 import Prelude hiding (log)
 
+-- | Groups of operations on similar data.
 miscOperations :: Operations
 miscOperations = [trace, log]
 
+-- | Misc operations.
 trace, log :: Operation
 trace = toOperation O.trace
 log = ("log", evaluateLog)

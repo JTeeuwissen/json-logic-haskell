@@ -23,7 +23,7 @@ where
 {- ORMOLU_ENABLE -}
 import qualified Data.Map as M
 import JsonLogic.IO.Mapping
-import qualified JsonLogic.IO.Operation.Misc as T
+import JsonLogic.IO.Operation.Misc (miscOperations, trace, log)
 import JsonLogic.IO.Type
 import JsonLogic.Json
 import qualified JsonLogic.Operation as O
@@ -34,11 +34,10 @@ defaultOperations :: Operations
 defaultOperations = M.unions [arrayOperations, booleanOperations, dataOperations, miscOperations, numericOperations, stringOperations]
 
 -- | Groups of operations on similar data.
-arrayOperations, booleanOperations, dataOperations, miscOperations, numericOperations, stringOperations :: Operations
+arrayOperations, booleanOperations, dataOperations,  numericOperations, stringOperations :: Operations
 arrayOperations = toOperations O.arrayOperations
 booleanOperations = toOperations O.booleanOperations
 dataOperations = toOperations O.dataOperations
-miscOperations = toOperations O.miscOperations
 numericOperations = toOperations O.numericOperations
 stringOperations = toOperations O.stringOperations
 
@@ -71,11 +70,6 @@ var = toOperation O.var
 missing = toOperation O.missing
 missingSome = toOperation O.missingSome
 preserve = toOperation O.preserve
-
--- | Misc operations.
-trace, log :: Operation
-trace = toOperation O.trace
-log = T.log
 
 -- | Numeric operations.
 (>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%) :: Operation

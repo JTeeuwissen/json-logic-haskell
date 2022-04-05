@@ -17,7 +17,7 @@ import JsonLogic.Pure.Type
 -- | Apply takes a list of operations, a rule and data.
 -- And together with the default operations evaluates it.
 -- >>> apply [] (read "{\"trace\":\"Hello, World!\"}":: Json) JsonNull
--- Right "Hello, World!"
+-- "Hello, World!"
 apply :: [Operation] -> Rule -> Data -> Result Json
 apply ops = applyEmpty (ops ++ M.toList defaultOperations)
 
