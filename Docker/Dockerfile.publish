@@ -1,6 +1,9 @@
 FROM haskell:9.2.1-buster
 WORKDIR /opt/project
 
+# Install haskell-platform-doc for references to external modules.
+RUN apt-get install haskell-platform-doc
+
 # Update cabal to get the latest index.
 RUN cabal update
 
