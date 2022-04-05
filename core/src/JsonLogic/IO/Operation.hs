@@ -34,7 +34,7 @@ defaultOperations :: Operations
 defaultOperations = M.unions [arrayOperations, booleanOperations, dataOperations, miscOperations, numericOperations, stringOperations]
 
 -- | Groups of operations on similar data.
-arrayOperations, booleanOperations, dataOperations,  numericOperations, stringOperations :: Operations
+arrayOperations, booleanOperations, dataOperations, numericOperations, stringOperations :: Operations
 arrayOperations = toOperations O.arrayOperations
 booleanOperations = toOperations O.booleanOperations
 dataOperations = toOperations O.dataOperations
