@@ -20,6 +20,7 @@ main = do
 -- | Evaluate two numbers with pow operation using Json logic.
 -- The two numbers are placed into an data object and given to the evaluator with the following logic:
 -- {"**":[{"var":"base"}, {"var":"exp"}]}
+--
 -- >>> evaluate (read "3") (read "4")
 -- Right 81.0
 evaluate :: Json -> Json -> Result Json

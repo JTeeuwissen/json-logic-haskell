@@ -16,16 +16,22 @@ import JsonLogic.Type
 import Text.Read
 
 -- | Index a json object using a string seperated by periods.
+--
 -- >>> indexWithJson (JsonString "x.y") (JsonObject $ M.singleton "x" $ JsonObject $ M.singleton "y" JsonNull)
 -- Just null
+--
 -- >>> indexWithJson (JsonString "x.y") (JsonObject $ M.singleton "x" JsonNull)
 -- Nothing
+--
 -- >>> indexWithJson (JsonString "") (JsonNumber 1)
 -- Just 1.0
+--
 -- >>> indexWithJson (JsonString "1") (JsonArray [JsonString "abc", JsonString "def"])
 -- Just "def"
+--
 -- >>> indexWithJson (JsonString "1.0") (JsonArray [JsonString "abc", JsonString "def"])
 -- Just "d"
+--
 -- >>> indexWithJson (JsonString "abs") (JsonArray [JsonString "abc", JsonString "def"])
 -- Nothing
 indexWithJson :: Rule -> Data -> Maybe Json
@@ -44,6 +50,7 @@ indexWithString _ _ = Nothing
 
 -- | Splits string on periods
 -- Same definition as words at: https://github.com/ghc/ghc/blob/master/libraries/base/Data/OldList.hs
+--
 -- >>> splitOnPeriod "foo.bar.tea"
 -- ["foo","bar","tea"]
 splitOnPeriod :: String -> [String]
@@ -64,8 +71,10 @@ _ !? n | n < 0 = Nothing
 -- | Returns the single item in a list if the argument is an array, otherwise returns the argument
 -- If you like, we support syntactic sugar to skip the array around single arguments
 -- Should only be used for unary operations.
+--
 -- >>> evaluateUnaryArgument $ JsonArray [JsonString "abc"]
 -- "abc"
+--
 -- >>> evaluateUnaryArgument $ JsonString "abc"
 -- "abc"
 evaluateUnaryArgument :: Data -> Data
@@ -75,6 +84,7 @@ evaluateUnaryArgument json = json
 -- | Put a single item in a list
 -- Included in base since: base-4.15.0.0
 -- But currently on older version.
+--
 -- >>> singleton "single value"
 -- ["single value"]
 singleton :: a -> [a]

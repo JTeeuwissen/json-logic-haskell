@@ -57,12 +57,16 @@ instance Read Json where
 
 -- | A pretty formatted show for the Json, with identation and depth
 -- Use putStr so the newline characters will be interpreted in console
+--
 -- >>> putStr $ prettyShow JsonNull
 -- null
+--
 -- >>> putStr $ prettyShow $ JsonNumber 3.0
 -- 3.0
+--
 -- >>> prettyShow (JsonArray [JsonNumber 1, JsonNumber 2])
 -- "[\n  1.0,\n  2.0\n]"
+--
 -- >>> putStr $ prettyShow (JsonArray [JsonNumber 1, JsonBool True])
 -- [
 --   1.0,
