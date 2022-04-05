@@ -13,6 +13,7 @@ import JsonLogic.Json
 
 data Exception
   = UnrecognizedOperation {operationName :: String}
+  | InvalidRule {operationNames :: [String]}
   | EvalException {message :: String}
   deriving (Show, Eq)
 
