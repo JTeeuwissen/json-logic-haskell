@@ -22,10 +22,10 @@ data Exception
     EvalException {message :: String}
   deriving (Show, Eq)
 
--- | The result of a function can be an error or another json value.
+-- | The result of a function can be an error or another Json value.
 type Result m r = ExceptT Exception m r
 
--- | Subevaluator, with rule, its context and resulting json.
+-- | Subevaluator, with rule, its context and resulting Json.
 type SubEvaluator m = Rule -> Data -> Result m Json
 
 -- | A function takes a subevaluator, a rule and data and returns a result.

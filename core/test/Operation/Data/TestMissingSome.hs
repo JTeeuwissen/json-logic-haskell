@@ -51,7 +51,7 @@ missingSomeGeneratorTests =
           -- Missing some over random integer
           (jsonNumber, _) <- forAll genGenericJsonNumber
           let missingSomeEmpty = jObj [("missing_some", jArr [jsonNumber, jArr []])]
-          -- Random json data
+          -- Random Json data
           dataJsonArray <- forAll $ Gen.sized genSizedRandomJsonArray
           dataJsonObject <- forAll $ Gen.sized genSizedRandomJsonObject
           -- Indexing empty missing_some over random data returns empty array
@@ -98,6 +98,6 @@ missingSomeGeneratorTests =
             _ -> H.failure
     ]
 
--- | Given a range, generate a random json list with these indexes as numbers
+-- | Given a range, generate a random Json list with these indexes as numbers
 genRandomJsonIndexes :: (Int, Int) -> Gen [Json]
 genRandomJsonIndexes (lowerBound, upperBound) = map (JsonNumber . fromIntegral) <$> Gen.subsequence [lowerBound .. upperBound]

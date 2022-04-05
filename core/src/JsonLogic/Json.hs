@@ -22,7 +22,7 @@ import Text.Read
     (+++),
   )
 
--- | Json is a collection of possible JSON values.
+-- | Json is a collection of possible Json values.
 data Json
   = JsonNull
   | JsonBool Bool
@@ -32,16 +32,16 @@ data Json
   | JsonObject JsonObject
   deriving (Eq)
 
--- | A Json object is a map of string-json pairs.
+-- | A Json object is a map of string-Json pairs.
 type JsonObject = M.Map String Json
 
--- | A rule can be any kind of JSON value, but objects and arrays will be evaluated.
+-- | A rule can be any kind of Json value, but objects and arrays will be evaluated.
 type Rule = Json
 
--- | Data can be any kind of JSON value.
+-- | Data can be any kind of Json value.
 type Data = Json
 
--- An instance to show json in clear format for users
+-- An instance to show Json in clear format for users
 instance Show Json where
   show JsonNull = "null"
   show (JsonBool True) = "true"
@@ -51,11 +51,11 @@ instance Show Json where
   show (JsonArray js) = show js
   show (JsonObject o) = "{" ++ intercalate "," (map (\(k, v) -> show k ++ ":" ++ show v) $ M.toList o) ++ "}"
 
--- Using a custom parser to read the json according to specification.
+-- Using a custom parser to read the Json according to specification.
 instance Read Json where
   readPrec = parens readValue
 
--- | A pretty formatted show for the json, with identation and depth
+-- | A pretty formatted show for the Json, with identation and depth
 -- Use putStr so the newline characters will be interpreted in console
 -- >>> putStr $ prettyShow JsonNull
 -- null
@@ -90,7 +90,7 @@ prettyShow = prettyShow' 0
     tab :: Int -> String
     tab depth = replicate (depth + 2) ' '
 
--- | Convert json to string, used in string operations
+-- | Convert Json to string, used in string operations
 -- See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString for more information.
 stringify :: Json -> String
 stringify JsonNull = ""
@@ -101,7 +101,7 @@ stringify (JsonString s) = s
 stringify (JsonArray js) = intercalate "," $ map stringify js
 stringify (JsonObject _) = "[object Object]"
 
--- | Truthy test for json
+-- | Truthy test for Json
 -- See https://developer.mozilla.org/en-US/docs/Glossary/Truthy for more information.
 isTruthy :: Json -> Bool
 isTruthy JsonNull = False
@@ -118,7 +118,7 @@ isTruthy (JsonObject _) = True
 isFalsy :: Json -> Bool
 isFalsy = not . isTruthy
 
--- | Convert json to a numeric value, including NaN
+-- | Convert Json to a numeric value, including NaN
 -- Same as the Parsefloat function in JS
 -- Parsefloat source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat
 -- NaN source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
