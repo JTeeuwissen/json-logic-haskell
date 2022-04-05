@@ -7,7 +7,12 @@ import JsonLogic.IO.Operation (defaultOperations)
 import JsonLogic.IO.Type
 import JsonLogic.Json
 
--- >>> apply [] (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
+-- >>> apply M.empty (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
 -- Right "Hello, World!"
-apply :: [Operation] -> Rule -> Data -> Result Json
-apply ops rule dat = toResult $ E.apply (M.map fromFunction $ M.union (M.fromList ops) defaultOperations) rule dat
+apply :: Operations -> Rule -> Data -> Result Json
+apply ops = applyEmpty (M.union ops defaultOperations)
+
+-- >>> applyEmpty M.empty (read "{\"log\":\"Hello, World!\"}":: Json) JsonNull
+-- Left (UnrecognizedOperation {operationName = "log"})
+applyEmpty :: Operations -> Rule -> Data -> Result Json
+applyEmpty ops rule dat = toResult $ E.apply (M.map fromFunction ops) rule dat
