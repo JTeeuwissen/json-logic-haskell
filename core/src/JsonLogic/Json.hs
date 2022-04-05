@@ -1,3 +1,10 @@
+-- |
+-- Module      : JsonLogic.Json
+-- Description : JsonLogic Json object with utility functions and read/show instances
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, infinity, notANumber) where
 
 import Control.Applicative

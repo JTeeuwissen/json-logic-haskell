@@ -1,3 +1,10 @@
+-- |
+-- Module      : JsonLogic.IO.Type
+-- Description : JsonLogic IO types
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.IO.Type (Result, SubEvaluator, Function, Operation, Operations, throw, T.Exception (..)) where
 
 import Control.Monad.Except

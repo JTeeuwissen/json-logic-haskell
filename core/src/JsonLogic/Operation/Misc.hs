@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedLists #-}
 
+-- |
+-- Module      : JsonLogic.Operation.Misc
+-- Description : Internal JsonLogic misc operations
+-- Copyright   : (c) Marien Matser, Gerard van Schie, Jelle Teeuwissen, 2022
+-- License     : MIT
+-- Maintainer  : jelleteeuwissen@hotmail.nl
+-- Stability   : experimental
 module JsonLogic.Operation.Misc (miscOperations, trace) where
 
 import Debug.Trace (traceShow)
