@@ -5,7 +5,7 @@
 -- License     : MIT
 -- Maintainer  : jelleteeuwissen@hotmail.nl
 -- Stability   : experimental
-module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, infinity, notANumber) where
+module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat) where
 
 import Control.Applicative
 import Data.Char (isSpace)
