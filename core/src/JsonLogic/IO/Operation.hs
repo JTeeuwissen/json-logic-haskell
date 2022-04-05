@@ -23,7 +23,7 @@ where
 {- ORMOLU_ENABLE -}
 import qualified Data.Map as M
 import JsonLogic.IO.Mapping
-import JsonLogic.IO.Operation.Misc (miscOperations, trace, log)
+import JsonLogic.IO.Operation.Misc (log, miscOperations, trace)
 import JsonLogic.IO.Type
 import JsonLogic.Json
 import qualified JsonLogic.Operation as O
