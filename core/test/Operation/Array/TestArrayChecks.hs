@@ -2,10 +2,14 @@
 
 module Operation.Array.TestArrayChecks where
 
+import Generator.Logic
+import Hedgehog as H (forAllWith, property, (===))
+import qualified Hedgehog.Gen as Gen
 import JsonLogic.Json (Json (..))
 import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
+import Utils
 
 allUnitTests :: TestTree
 allUnitTests =
@@ -26,6 +30,22 @@ allUnitTests =
           "False case"
           (Right $ JsonBool False)
           (apply [] (JsonObject [("all", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [(">=", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) (JsonObject [("x", JsonArray [JsonNumber (-1), JsonNumber 2, JsonNumber 3])]))
+    ]
+
+allGeneratorTests :: TestTree
+allGeneratorTests =
+  testGroup
+    "all generator tests"
+    [ hTestProperty "Using double array" $
+        property $ do
+          -- Generate random data
+          ((opJson, op), (arrayJson, array)) <- forAllWith (show . \((a, _), c) -> (a, c)) $ Gen.sized sizedGenNumericArrayComparisonJson
+          -- Create the rule
+          let rule = JsonObject [("all", JsonArray [arrayJson, opJson])]
+          -- Empty array works differently
+          case array of
+            [] -> Right (JsonBool False) === apply [] rule JsonNull
+            _ : _ -> Right (JsonBool (all op array)) === apply [] rule JsonNull
     ]
 
 someUnitTests :: TestTree
@@ -54,6 +74,19 @@ someUnitTests =
           (apply [] (JsonObject [("some", JsonArray [JsonObject [("var", JsonString "pies")], JsonObject [("===", JsonArray [JsonObject [("var", JsonString "filling")], JsonString "apple"])]])]) (JsonObject [("pies", JsonArray [JsonObject [("filling", JsonString "pumpkin"), ("temp", JsonNumber 110)], JsonObject [("filling", JsonString "rhubarb"), ("temp", JsonNumber 210)], JsonObject [("filling", JsonString "apple"), ("temp", JsonNumber 310)]])]))
     ]
 
+someGeneratorTests :: TestTree
+someGeneratorTests =
+  testGroup
+    "some generator tests"
+    [ hTestProperty "Using double array" $
+        property $ do
+          -- Generate random data
+          ((opJson, op), (arrayJson, array)) <- forAllWith (show . \((a, _), c) -> (a, c)) $ Gen.sized sizedGenNumericArrayComparisonJson
+          -- Create the rule
+          let rule = JsonObject [("some", JsonArray [arrayJson, opJson])]
+          Right (JsonBool (any op array)) === apply [] rule JsonNull
+    ]
+
 noneUnitTests :: TestTree
 noneUnitTests =
   testGroup
@@ -73,4 +106,17 @@ noneUnitTests =
           "False case"
           (Right $ JsonBool False)
           (apply [] (JsonObject [("none", JsonArray [JsonObject [("var", JsonString "x")], JsonObject [("<=", JsonArray [JsonObject [("var", JsonString "")], JsonNumber 0])]])]) (JsonObject [("x", JsonArray [JsonNumber (-1), JsonNumber 2, JsonNumber 3])]))
+    ]
+
+noneGeneratorTests :: TestTree
+noneGeneratorTests =
+  testGroup
+    "none generator tests"
+    [ hTestProperty "Using double array" $
+        property $ do
+          -- Generate random data
+          ((opJson, op), (arrayJson, array)) <- forAllWith (show . \((a, _), c) -> (a, c)) $ Gen.sized sizedGenNumericArrayComparisonJson
+          -- Create the rule
+          let rule = JsonObject [("none", JsonArray [arrayJson, opJson])]
+          Right (JsonBool (not (any op array))) === apply [] rule JsonNull
     ]
