@@ -1,5 +1,6 @@
 module Generator.Logic where
 
+import Data.Bifunctor
 import Data.Fixed as F
 import qualified Data.Map as M
 import Generator.Generic
@@ -115,7 +116,7 @@ createBoolObject str op size = do
 sizedGenArrayJson :: (Size -> Gen (Json, a)) -> Size -> Gen (Json, [a])
 sizedGenArrayJson subGen size = do
   sizes <- genUnbalancedSizeList size
-  (\(x,y) -> (JsonArray x, y)) . unzip <$> mapM subGen sizes
+  first JsonArray . unzip <$> mapM subGen sizes
 
 -- Generates a random array of numbers
 sizedGenNumericArrayJson :: Size -> Gen (Json, [Double])
@@ -124,9 +125,9 @@ sizedGenNumericArrayJson = sizedGenArrayJson sizedGenNumericJson
 -- Generates a random array of numbers and an operation that maps these to a boolean
 sizedGenNumericArrayComparisonJson :: Size -> Gen ((Json, Double -> Bool), (Json, [Double]))
 sizedGenNumericArrayComparisonJson size = do
-  (op1, op2)   <- genComparisonOperator
+  (op1, op2) <- genComparisonOperator
   (num1, num2) <- sizedGenNumericJson (size * 2)
-  array        <- sizedGenNumericArrayJson size
+  array <- sizedGenNumericArrayJson size
   return ((JsonObject (M.fromList [(op2, JsonArray [JsonObject (M.fromList [("var", JsonString "")]), num1])]), flip op1 num2), array)
 
 -- Generates a random array of numbers and a reduce operation
@@ -134,5 +135,5 @@ sizedGenNumericArrayArithmeticJson :: Size -> Gen ((Json, Double -> Double -> Do
 sizedGenNumericArrayArithmeticJson size = do
   -- The modulo operation has bad behaviour with zero
   (op1, op2) <- Hedgehog.Gen.filter ((/=) "%" . snd) genArithmeticOperator
-  array      <- sizedGenNumericArrayJson size
+  array <- sizedGenNumericArrayJson size
   return ((JsonObject (M.fromList [(op2, JsonArray [JsonObject (M.fromList [("var", JsonString "current")]), JsonObject (M.fromList [("var", JsonString "accumulator")])])]), flip op1), array)

@@ -45,7 +45,7 @@ allGeneratorTests =
           -- Empty array works differently
           case array of
             [] -> Right (JsonBool False) === apply [] rule JsonNull
-            _:_ -> Right (JsonBool (all op array)) === apply [] rule JsonNull
+            _ : _ -> Right (JsonBool (all op array)) === apply [] rule JsonNull
     ]
 
 someUnitTests :: TestTree
