@@ -2,10 +2,14 @@
 
 module Operation.Array.TestFilter where
 
+import Generator.Logic
+import Hedgehog as H (forAllWith, property, (===))
+import qualified Hedgehog.Gen as Gen
 import JsonLogic.Json
 import JsonLogic.Pure.Evaluator
 import Test.Tasty
 import Test.Tasty.HUnit as U
+import Utils
 
 filterUnitTests :: TestTree
 filterUnitTests =
@@ -106,4 +110,17 @@ filterUnitTests =
               )
               JsonNull
           )
+    ]
+
+filterGeneratorTests :: TestTree
+filterGeneratorTests =
+  testGroup
+    "filter generator tests"
+    [ hTestProperty "Using double array" $
+        property $ do
+          -- Generate random data
+          ((opJson, op), (arrayJson, array)) <- forAllWith (show . \((a, _), c) -> (a, c)) $ Gen.sized sizedGenNumericArrayComparisonJson
+          -- Create the rule
+          let rule = JsonObject [("filter", JsonArray [arrayJson, opJson])]
+          Right (JsonArray (map JsonNumber (filter op array))) === apply [] rule JsonNull
     ]
