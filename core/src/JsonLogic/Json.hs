@@ -145,6 +145,9 @@ parseFloat (JsonString s) = fromMaybe notANumber $ readMaybe $ dropAfterSecondPo
       (l, _) -> l
 -- For an array always take the first element.
 parseFloat (JsonArray (a : _)) = parseFloat a
+-- Booleans are either 1 or 0.
+parseFloat (JsonBool True) = 1
+parseFloat (JsonBool False) = 0
 -- Everything else is NaN
 parseFloat _ = notANumber
 
