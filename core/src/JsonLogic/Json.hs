@@ -8,7 +8,7 @@
 module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat) where
 
 import Control.Applicative
-import Data.Char (isSpace)
+import Data.Char (isControl, isSpace)
 import Data.List (intercalate)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
@@ -240,7 +240,7 @@ readString = do
           case char of
             '\\' -> pfail
             '\"' -> pfail
-            plain -> return plain
+            _ -> if isControl char then pfail else return char
       )
         +++ ( do
                 '\\' <- get
