@@ -2,6 +2,10 @@
 
 module Operation.Array.TestReduce where
 
+import Generator.Logic
+import Hedgehog as H (forAll, forAllWith, property, (===))
+import qualified Hedgehog.Gen as Gen
+import JsonLogic.Json (Json (..))
 import JsonLogic.Pure.Evaluator
 import JsonLogic.Pure.Type (Exception (EvalException))
 import Test.Tasty
@@ -37,4 +41,18 @@ reduceUnitTests =
           "Returns initial value"
           (Right $ jStr "abc")
           (apply [] (jObj [("reduce", jArr [jObj [("var", jStr "integers")], jObj [("+", jArr [jObj [("var", jStr "current")], jObj [("var", jStr "accumulator")]])], jStr "abc"])]) (jObj [("integers", jArr [])]))
+    ]
+
+reduceGeneratorTests :: TestTree
+reduceGeneratorTests =
+  testGroup
+    "reduce generator tests"
+    [ hTestProperty "Using double array" $
+        property $ do
+          -- Generate random data
+          ((opJson, op), (arrayJson, array)) <- forAllWith (show . \((a, _), c) -> (a, c)) $ Gen.sized sizedGenNumericArrayArithmeticJson
+          (nJson, n) <- forAll genNumericJson
+          -- Create the rule
+          let rule = JsonObject [("reduce", JsonArray [arrayJson, opJson, nJson])]
+          Right (JsonNumber (foldl op n array)) === apply [] rule JsonNull
     ]
