@@ -87,6 +87,8 @@ generatorTests =
       reduceGeneratorTests,
       missingGeneratorTests,
       missingSomeGeneratorTests,
+      equalityGeneratorTests,
+      ifGeneratorTests,
       negationGeneratorTests,
       mergeGeneratorTests,
       preserveGeneratorTests

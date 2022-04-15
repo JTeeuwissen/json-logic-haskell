@@ -71,8 +71,8 @@ sizedGenLogicJson s@(Size size)
   | size <= 0 = genGenericJsonBool
   | otherwise =
     choice
-      [ createLogicObject "&&" (Prelude.&&) s,
-        createLogicObject "||" (Prelude.||) s,
+      [ createLogicObject "and" (Prelude.&&) s,
+        createLogicObject "or" (Prelude.||) s,
         createLogicObject "!==" (Prelude./=) s,
         createLogicObject "===" (Prelude.==) s
       ]
@@ -94,8 +94,8 @@ sizedGenBoolJson s@(Size size)
   | size <= 0 = genGenericJsonBool
   | otherwise =
     choice
-      [ createBoolObject "&&" (Prelude.&&) s,
-        createBoolObject "||" (Prelude.||) s,
+      [ createBoolObject "and" (Prelude.&&) s,
+        createBoolObject "or" (Prelude.||) s,
         createBoolObject "!==" (Prelude./=) s,
         createBoolObject "===" (Prelude.==) s,
         createBoolObject "<" (Prelude.<) s,
@@ -137,3 +137,13 @@ sizedGenNumericArrayArithmeticJson size = do
   (op1, op2) <- Hedgehog.Gen.filter ((/=) "%" . snd) genArithmeticOperator
   array <- sizedGenNumericArrayJson size
   return ((JsonObject (M.fromList [(op2, JsonArray [JsonObject (M.fromList [("var", JsonString "current")]), JsonObject (M.fromList [("var", JsonString "accumulator")])])]), flip op1), array)
+
+-- Generates a random Json object
+sizedGenJson :: Size -> Gen (Json, ())
+sizedGenJson size
+  | size <= 0 =
+    choice
+      [ (\x -> (fst x, ())) <$> sizedGenNumericJson size,
+        (\x -> (fst x, ())) <$> sizedGenBoolJson size
+      ]
+  | otherwise = (\x -> (fst x, ())) <$> sizedGenArrayJson sizedGenJson size
