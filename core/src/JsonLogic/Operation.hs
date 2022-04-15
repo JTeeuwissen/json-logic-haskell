@@ -18,7 +18,7 @@ module JsonLogic.Operation
     miscOperations, trace,
     numericOperations, (>), (>=), (<), (<=), max, min, sum, (+), (-), (*), (/), (%),
     stringOperations, cat, substr,
-    evaluateDouble, evaluateInt, evaluateBool, evaluateArray, evaluateObject, evaluateString
+    evaluateDouble, evaluateNumber, evaluateInt, evaluateBool, evaluateArray, evaluateObject, evaluateString
   )
 where
 {- ORMOLU_ENABLE -}
