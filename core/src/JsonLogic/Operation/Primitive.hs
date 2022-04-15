@@ -5,7 +5,7 @@
 -- License     : MIT
 -- Maintainer  : jelleteeuwissen@hotmail.nl
 -- Stability   : experimental
-module JsonLogic.Operation.Primitive (evaluateDouble, evaluateDouble', evaluateInt, evaluateBool, evaluateArray, evaluateObject, evaluateString) where
+module JsonLogic.Operation.Primitive (evaluateDouble, evaluateNumber, evaluateInt, evaluateBool, evaluateArray, evaluateObject, evaluateString) where
 
 import JsonLogic.Json
 import JsonLogic.Type
@@ -16,10 +16,10 @@ evaluateDouble evaluator param vars = do
   res <- evaluator param vars
   return $ parseFloat res
 
-evaluateDouble' :: Monad m => Function m Double
-evaluateDouble' evaluator param vars = do
+evaluateNumber :: Monad m => Function m Double
+evaluateNumber evaluator param vars = do
   res <- evaluator param vars
-  return $ parseFloat' res
+  return $ toNumber res
 
 evaluateInt :: Monad m => Function m Int
 evaluateInt evaluator param vars = do

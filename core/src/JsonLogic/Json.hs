@@ -5,7 +5,7 @@
 -- License     : MIT
 -- Maintainer  : jelleteeuwissen@hotmail.nl
 -- Stability   : experimental
-module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, parseFloat') where
+module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, toNumber) where
 
 import Control.Applicative
 import Data.Char (isSpace)
@@ -148,11 +148,11 @@ parseFloat (JsonArray (a : _)) = parseFloat a
 -- Everything else is NaN
 parseFloat _ = notANumber
 
-parseFloat' :: Json -> Double
+toNumber :: Json -> Double
 -- Booleans are either 1 or 0.
-parseFloat' (JsonBool True) = 1
-parseFloat' (JsonBool False) = 0
-parseFloat' f = parseFloat f
+toNumber (JsonBool True) = 1
+toNumber (JsonBool False) = 0
+toNumber f = parseFloat f
 
 -- Gives a Infinity
 infinity :: Double

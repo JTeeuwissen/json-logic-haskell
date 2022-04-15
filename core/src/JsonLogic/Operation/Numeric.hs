@@ -42,8 +42,8 @@ sum = ("sum", evaluateDoubleArray P.sum)
 
 evaluateComparison :: Monad m => (Double -> Double -> Bool) -> Function m Json
 evaluateComparison operator evaluator (JsonArray [x, y]) vars = do
-  x' <- evaluateDouble' evaluator x vars
-  y' <- evaluateDouble' evaluator y vars
+  x' <- evaluateNumber evaluator x vars
+  y' <- evaluateNumber evaluator y vars
   return $ JsonBool $ x' `operator` y'
 evaluateComparison _ _ _ _ = throw "Wrong number of arguments for comparison operator"
 
