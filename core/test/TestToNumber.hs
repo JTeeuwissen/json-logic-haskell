@@ -18,8 +18,8 @@ toNumberUnitTests =
     "Number conversion unit tests"
     -- Simple unit tests that are deterministic
     [ testCase "test for null" $ assertBool "NaN == null" (isNaN $ parseFloat jNull),
-      testCase "test for bool" $ assertEqual "0 == false" 0 (parseFloat $ jBool False),
-      testCase "test for bool" $ assertEqual "1 == true" 1 (parseFloat $ jBool True),
+      testCase "test for bool" $ assertBool "0 == false" (isNaN $ parseFloat $ jBool False),
+      testCase "test for bool" $ assertBool "1 == true" (isNaN $ parseFloat $ jBool True),
       testCase "test for number" $ assertEqual "1.0 == 1.0" 1 $ parseFloat $ jNum 1.0,
       testCase "test for string" $ assertBool "0 == \"\"" (isNaN $ parseFloat $ jStr ""),
       testCase "test for string" $ assertEqual "2 == 2" 2 $ parseFloat $ jStr "2",

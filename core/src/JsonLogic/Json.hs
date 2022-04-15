@@ -5,7 +5,7 @@
 -- License     : MIT
 -- Maintainer  : jelleteeuwissen@hotmail.nl
 -- Stability   : experimental
-module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat) where
+module JsonLogic.Json (Json (..), JsonObject, Rule, Data, prettyShow, stringify, isTruthy, isFalsy, parseFloat, parseFloat') where
 
 import Control.Applicative
 import Data.Char (isSpace)
@@ -145,11 +145,14 @@ parseFloat (JsonString s) = fromMaybe notANumber $ readMaybe $ dropAfterSecondPo
       (l, _) -> l
 -- For an array always take the first element.
 parseFloat (JsonArray (a : _)) = parseFloat a
--- Booleans are either 1 or 0.
-parseFloat (JsonBool True) = 1
-parseFloat (JsonBool False) = 0
 -- Everything else is NaN
 parseFloat _ = notANumber
+
+parseFloat' :: Json -> Double
+-- Booleans are either 1 or 0.
+parseFloat' (JsonBool True) = 1
+parseFloat' (JsonBool False) = 0
+parseFloat' f = parseFloat f
 
 -- Gives a Infinity
 infinity :: Double
